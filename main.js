@@ -6,16 +6,19 @@ const territoryOwner = document.getElementById("territory-owner");
 
 
 // ============================================================
-// MAP SIZE
+// MAP
 // ============================================================
 
-const COLS = 100;
-const ROWS = 60;
+const COLS = 150;
+const ROWS = 90;
 
 const HEX_SIZE = 14;
 
 const HEX_WIDTH = Math.sqrt(3) * HEX_SIZE;
-const HEX_HEIGHT = HEX_SIZE * 2;
+const HEX_VERTICAL_DISTANCE = HEX_SIZE * 1.5;
+
+const MAP_WIDTH = COLS * HEX_WIDTH + HEX_WIDTH / 2;
+const MAP_HEIGHT = ROWS * HEX_VERTICAL_DISTANCE + HEX_SIZE;
 
 
 // ============================================================
@@ -25,22 +28,17 @@ const HEX_HEIGHT = HEX_SIZE * 2;
 let camera = {
     x: 0,
     y: 0,
-    zoom: 1.0
+    zoom: 0.8
 };
 
+const MIN_ZOOM = 0.55;
+const MAX_ZOOM = 3.0;
+
 let isDragging = false;
+let wasDragging = false;
 
 let lastMouseX = 0;
 let lastMouseY = 0;
-
-let wasDragging = false;
-
-
-// ============================================================
-// TILE DATA
-// ============================================================
-
-const tiles = [];
 
 
 // ============================================================
@@ -132,19 +130,22 @@ const countries = {
 
 
 // ============================================================
-// CREATE TILES
+// TILES
 // ============================================================
 
+const tiles = [];
+
 function createTiles() {
+
+    tiles.length = 0;
 
     for (let row = 0; row < ROWS; row++) {
 
         for (let col = 0; col < COLS; col++) {
 
             tiles.push({
-                col: col,
-                row: row,
-
+                col,
+                row,
                 owner: "ocean"
             });
         }
@@ -158,345 +159,15 @@ function createTiles() {
 
 function hexToWorld(col, row) {
 
-    const x =
-        col * HEX_WIDTH +
-        (row % 2) * (HEX_WIDTH / 2);
-
-    const y =
-        row * HEX_SIZE * 1.5;
-
     return {
-        x: x,
-        y: y
+        x:
+            col * HEX_WIDTH +
+            (row % 2) * HEX_WIDTH / 2,
+
+        y:
+            row * HEX_VERTICAL_DISTANCE
     };
 }
-
-
-// ============================================================
-// DISTANCE FROM POINT
-// ============================================================
-
-function distance(x1, y1, x2, y2) {
-
-    const dx = x1 - x2;
-    const dy = y1 - y2;
-
-    return Math.sqrt(
-        dx * dx +
-        dy * dy
-    );
-}
-
-
-// ============================================================
-// MAKE COUNTRY SHAPE
-// ============================================================
-//
-// This uses simple mathematical shapes to create the initial
-// political map. Later we can replace this with actual
-// historical GIS boundaries.
-//
-
-function generateEurope() {
-
-    for (const tile of tiles) {
-
-        const p = hexToWorld(
-            tile.col,
-            tile.row
-        );
-
-        const x = p.x;
-        const y = p.y;
-
-
-        // --------------------------------------------
-        // LAND MASS
-        // --------------------------------------------
-
-        let land = false;
-
-
-        // Main European landmass
-        if (
-            x > 250 &&
-            x < 1350 &&
-            y > 180 &&
-            y < 780
-        ) {
-            land = true;
-        }
-
-
-        // Iberian peninsula
-        if (
-            x > 150 &&
-            x < 480 &&
-            y > 500 &&
-            y < 760
-        ) {
-            land = true;
-        }
-
-
-        // Italy
-        if (
-            x > 600 &&
-            x < 850 &&
-            y > 600 &&
-            y < 950
-        ) {
-            land = true;
-        }
-
-
-        // Scandinavia
-        if (
-            x > 600 &&
-            x < 1000 &&
-            y > 0 &&
-            y < 330
-        ) {
-            land = true;
-        }
-
-
-        // Eastern Europe / Russia
-        if (
-            x > 1000 &&
-            x < 1700 &&
-            y > 100 &&
-            y < 650
-        ) {
-            land = true;
-        }
-
-
-        // Balkans
-        if (
-            x > 850 &&
-            x < 1300 &&
-            y > 650 &&
-            y < 900
-        ) {
-            land = true;
-        }
-
-
-        if (!land) {
-            tile.owner = "ocean";
-            continue;
-        }
-
-
-        // --------------------------------------------
-        // COUNTRY ASSIGNMENT
-        // --------------------------------------------
-
-
-        // Portugal
-        if (
-            x > 180 &&
-            x < 260 &&
-            y > 540 &&
-            y < 720
-        ) {
-            tile.owner = "portugal";
-            continue;
-        }
-
-
-        // Spain
-        if (
-            x > 230 &&
-            x < 500 &&
-            y > 520 &&
-            y < 750
-        ) {
-            tile.owner = "spain";
-            continue;
-        }
-
-
-        // Great Britain
-        if (
-            x > 430 &&
-            x < 560 &&
-            y > 130 &&
-            y < 400
-        ) {
-            tile.owner = "britain";
-            continue;
-        }
-
-
-        // France
-        if (
-            x > 420 &&
-            x < 720 &&
-            y > 360 &&
-            y < 610
-        ) {
-            tile.owner = "france";
-            continue;
-        }
-
-
-        // Netherlands
-        if (
-            x > 650 &&
-            x < 760 &&
-            y > 270 &&
-            y < 380
-        ) {
-            tile.owner = "netherlands";
-            continue;
-        }
-
-
-        // Denmark
-        if (
-            x > 700 &&
-            x < 850 &&
-            y > 100 &&
-            y < 260
-        ) {
-            tile.owner = "denmark";
-            continue;
-        }
-
-
-        // Prussia
-        if (
-            x > 800 &&
-            x < 1080 &&
-            y > 300 &&
-            y < 470
-        ) {
-            tile.owner = "prussia";
-            continue;
-        }
-
-
-        // Saxony
-        if (
-            x > 760 &&
-            x < 900 &&
-            y > 440 &&
-            y < 520
-        ) {
-            tile.owner = "saxony";
-            continue;
-        }
-
-
-        // Bavaria
-        if (
-            x > 650 &&
-            x < 850 &&
-            y > 500 &&
-            y < 650
-        ) {
-            tile.owner = "bavaria";
-            continue;
-        }
-
-
-        // Switzerland
-        if (
-            x > 540 &&
-            x < 670 &&
-            y > 570 &&
-            y < 680
-        ) {
-            tile.owner = "switzerland";
-            continue;
-        }
-
-
-        // Austria
-        if (
-            x > 820 &&
-            x < 1100 &&
-            y > 500 &&
-            y < 700
-        ) {
-            tile.owner = "austria";
-            continue;
-        }
-
-
-        // Italy
-        if (
-            x > 620 &&
-            x < 850 &&
-            y > 650 &&
-            y < 880
-        ) {
-            tile.owner = "italy";
-            continue;
-        }
-
-
-        // Sweden
-        if (
-            x > 800 &&
-            x < 980 &&
-            y > 20 &&
-            y < 280
-        ) {
-            tile.owner = "sweden";
-            continue;
-        }
-
-
-        // Russia
-        if (
-            x > 1080 &&
-            x < 1650 &&
-            y > 150 &&
-            y < 600
-        ) {
-            tile.owner = "russia";
-            continue;
-        }
-
-
-        // Ottoman Empire
-        if (
-            x > 950 &&
-            x < 1400 &&
-            y > 700 &&
-            y < 900
-        ) {
-            tile.owner = "ottoman";
-            continue;
-        }
-
-
-        // Remaining land
-        // becomes Austria by default
-        tile.owner = "austria";
-    }
-}
-
-
-// ============================================================
-// RESIZE
-// ============================================================
-
-function resizeCanvas() {
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    draw();
-}
-
-window.addEventListener(
-    "resize",
-    resizeCanvas
-);
 
 
 // ============================================================
@@ -526,6 +197,283 @@ function screenToWorld(x, y) {
 
 
 // ============================================================
+// GENERATE MAP
+// ============================================================
+
+function generateEurope() {
+
+    for (const tile of tiles) {
+
+        const p =
+            hexToWorld(
+                tile.col,
+                tile.row
+            );
+
+        const x = p.x;
+        const y = p.y;
+
+
+        // ----------------------------------------------------
+        // LAND MASS
+        // ----------------------------------------------------
+
+        let land = false;
+
+
+        // Mainland Europe
+        if (
+            x > 250 &&
+            x < 1500 &&
+            y > 150 &&
+            y < 850
+        ) {
+            land = true;
+        }
+
+
+        // Iberia
+        if (
+            x > 120 &&
+            x < 500 &&
+            y > 500 &&
+            y < 820
+        ) {
+            land = true;
+        }
+
+
+        // Scandinavia
+        if (
+            x > 500 &&
+            x < 1050 &&
+            y > 0 &&
+            y < 350
+        ) {
+            land = true;
+        }
+
+
+        // Italy
+        if (
+            x > 600 &&
+            x < 900 &&
+            y > 650 &&
+            y < 1000
+        ) {
+            land = true;
+        }
+
+
+        // Balkans
+        if (
+            x > 850 &&
+            x < 1400 &&
+            y > 700 &&
+            y < 950
+        ) {
+            land = true;
+        }
+
+
+        // Eastern Europe / Russia
+        if (
+            x > 1150 &&
+            x < 2100 &&
+            y > 100 &&
+            y < 700
+        ) {
+            land = true;
+        }
+
+
+        // ----------------------------------------------------
+        // OCEAN
+        // ----------------------------------------------------
+
+        if (!land) {
+
+            tile.owner = "ocean";
+
+            continue;
+        }
+
+
+        // ----------------------------------------------------
+        // COUNTRIES
+        // ----------------------------------------------------
+
+        if (
+            x > 170 &&
+            x < 260 &&
+            y > 520 &&
+            y < 760
+        ) {
+            tile.owner = "portugal";
+            continue;
+        }
+
+
+        if (
+            x > 230 &&
+            x < 500 &&
+            y > 520 &&
+            y < 780
+        ) {
+            tile.owner = "spain";
+            continue;
+        }
+
+
+        if (
+            x > 400 &&
+            x < 570 &&
+            y > 100 &&
+            y < 400
+        ) {
+            tile.owner = "britain";
+            continue;
+        }
+
+
+        if (
+            x > 420 &&
+            x < 750 &&
+            y > 350 &&
+            y < 620
+        ) {
+            tile.owner = "france";
+            continue;
+        }
+
+
+        if (
+            x > 650 &&
+            x < 780 &&
+            y > 270 &&
+            y < 390
+        ) {
+            tile.owner = "netherlands";
+            continue;
+        }
+
+
+        if (
+            x > 700 &&
+            x < 850 &&
+            y > 100 &&
+            y < 270
+        ) {
+            tile.owner = "denmark";
+            continue;
+        }
+
+
+        if (
+            x > 800 &&
+            x < 1100 &&
+            y > 300 &&
+            y < 470
+        ) {
+            tile.owner = "prussia";
+            continue;
+        }
+
+
+        if (
+            x > 760 &&
+            x < 900 &&
+            y > 440 &&
+            y < 530
+        ) {
+            tile.owner = "saxony";
+            continue;
+        }
+
+
+        if (
+            x > 650 &&
+            x < 850 &&
+            y > 500 &&
+            y < 650
+        ) {
+            tile.owner = "bavaria";
+            continue;
+        }
+
+
+        if (
+            x > 540 &&
+            x < 680 &&
+            y > 570 &&
+            y < 690
+        ) {
+            tile.owner = "switzerland";
+            continue;
+        }
+
+
+        if (
+            x > 820 &&
+            x < 1120 &&
+            y > 500 &&
+            y < 700
+        ) {
+            tile.owner = "austria";
+            continue;
+        }
+
+
+        if (
+            x > 620 &&
+            x < 880 &&
+            y > 650 &&
+            y < 900
+        ) {
+            tile.owner = "italy";
+            continue;
+        }
+
+
+        if (
+            x > 800 &&
+            x < 1000 &&
+            y > 20 &&
+            y < 300
+        ) {
+            tile.owner = "sweden";
+            continue;
+        }
+
+
+        if (
+            x > 1080 &&
+            x < 2050 &&
+            y > 150 &&
+            y < 650
+        ) {
+            tile.owner = "russia";
+            continue;
+        }
+
+
+        if (
+            x > 950 &&
+            x < 1450 &&
+            y > 700 &&
+            y < 950
+        ) {
+            tile.owner = "ottoman";
+            continue;
+        }
+
+
+        tile.owner = "austria";
+    }
+}
+
+
+// ============================================================
 // DRAW HEX
 // ============================================================
 
@@ -534,7 +482,8 @@ function drawHex(
     y,
     size,
     fillColor,
-    borderColor
+    borderColor,
+    borderWidth
 ) {
 
     ctx.beginPath();
@@ -569,7 +518,7 @@ function drawHex(
     ctx.fill();
 
     ctx.strokeStyle = borderColor;
-    ctx.lineWidth = 0.7;
+    ctx.lineWidth = borderWidth;
 
     ctx.stroke();
 }
@@ -590,10 +539,10 @@ function draw() {
 
 
     // --------------------------------------------
-    // OCEAN
+    // MAP BACKGROUND
     // --------------------------------------------
 
-    ctx.fillStyle = "#6f9eaf";
+    ctx.fillStyle = "#4f8194";
 
     ctx.fillRect(
         0,
@@ -604,7 +553,7 @@ function draw() {
 
 
     // --------------------------------------------
-    // HEX TILES
+    // HEXES
     // --------------------------------------------
 
     for (const tile of tiles) {
@@ -621,7 +570,6 @@ function draw() {
                 world.y
             );
 
-
         const country =
             countries[tile.owner];
 
@@ -631,10 +579,92 @@ function draw() {
             screen.y,
             HEX_SIZE * camera.zoom,
             country.color,
-            "#30302d"
+            "#30302d",
+            0.7
         );
     }
 }
+
+
+// ============================================================
+// CAMERA LIMITS
+// ============================================================
+
+function clampCamera() {
+
+    const visibleWidth =
+        canvas.width /
+        camera.zoom;
+
+    const visibleHeight =
+        canvas.height /
+        camera.zoom;
+
+
+    // --------------------------------------------
+    // Horizontal
+    // --------------------------------------------
+
+    const maxX =
+        Math.max(
+            0,
+            MAP_WIDTH -
+            visibleWidth
+        );
+
+    camera.x =
+        Math.max(
+            0,
+            Math.min(
+                camera.x,
+                maxX
+            )
+        );
+
+
+    // --------------------------------------------
+    // Vertical
+    // --------------------------------------------
+
+    const maxY =
+        Math.max(
+            0,
+            MAP_HEIGHT -
+            visibleHeight
+        );
+
+    camera.y =
+        Math.max(
+            0,
+            Math.min(
+                camera.y,
+                maxY
+            )
+        );
+}
+
+
+// ============================================================
+// RESIZE
+// ============================================================
+
+function resizeCanvas() {
+
+    canvas.width =
+        window.innerWidth;
+
+    canvas.height =
+        window.innerHeight;
+
+    clampCamera();
+
+    draw();
+}
+
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
 
 
 // ============================================================
@@ -646,36 +676,89 @@ function getTileAt(
     worldY
 ) {
 
+    const approxCol =
+        Math.round(
+            worldX / HEX_WIDTH
+        );
+
+    const approxRow =
+        Math.round(
+            worldY /
+            HEX_VERTICAL_DISTANCE
+        );
+
+
     let closest = null;
 
-    let closestDistance = Infinity;
+    let closestDistance =
+        HEX_SIZE;
 
 
-    for (const tile of tiles) {
+    // Only inspect nearby hexes
+    for (
+        let row =
+            approxRow - 2;
 
-        const p =
-            hexToWorld(
-                tile.col,
-                tile.row
-            );
+        row <=
+        approxRow + 2;
 
-        const d =
-            distance(
-                worldX,
-                worldY,
-                p.x,
-                p.y
-            );
+        row++
+    ) {
 
-        if (
-            d <
-            HEX_SIZE &&
-            d <
-            closestDistance
+        for (
+            let col =
+                approxCol - 2;
+
+            col <=
+            approxCol + 2;
+
+            col++
         ) {
 
-            closest = tile;
-            closestDistance = d;
+            if (
+                col < 0 ||
+                col >= COLS ||
+                row < 0 ||
+                row >= ROWS
+            ) {
+                continue;
+            }
+
+
+            const p =
+                hexToWorld(
+                    col,
+                    row
+                );
+
+
+            const dx =
+                worldX - p.x;
+
+            const dy =
+                worldY - p.y;
+
+
+            const d =
+                Math.sqrt(
+                    dx * dx +
+                    dy * dy
+                );
+
+
+            if (
+                d <
+                closestDistance
+            ) {
+
+                closestDistance = d;
+
+                closest =
+                    tiles[
+                        row * COLS +
+                        col
+                    ];
+            }
         }
     }
 
@@ -695,6 +778,7 @@ canvas.addEventListener(
         if (wasDragging) {
             return;
         }
+
 
         const rect =
             canvas.getBoundingClientRect();
@@ -737,31 +821,7 @@ canvas.addEventListener(
 
 
         territoryOwner.textContent =
-            `Hex: ${tile.col}, ${tile.row}`;
-
-
-        // Temporary selection effect
-        const p =
-            hexToWorld(
-                tile.col,
-                tile.row
-            );
-
-        const screen =
-            worldToScreen(
-                p.x,
-                p.y
-            );
-
-
-        drawHex(
-            screen.x,
-            screen.y,
-            HEX_SIZE *
-            camera.zoom,
-            country.color,
-            "#ffffff"
-        );
+            `Tile: ${tile.col}, ${tile.row}`;
     }
 );
 
@@ -808,15 +868,21 @@ canvas.addEventListener(
             Math.abs(dx) > 2 ||
             Math.abs(dy) > 2
         ) {
+
             wasDragging = true;
         }
 
 
         camera.x -=
-            dx / camera.zoom;
+            dx /
+            camera.zoom;
 
         camera.y -=
-            dy / camera.zoom;
+            dy /
+            camera.zoom;
+
+
+        clampCamera();
 
 
         lastMouseX =
@@ -881,18 +947,21 @@ canvas.addEventListener(
 
 
         if (event.deltaY < 0) {
+
             camera.zoom *= 1.1;
+
         }
         else {
+
             camera.zoom *= 0.9;
         }
 
 
         camera.zoom =
             Math.max(
-                0.35,
+                MIN_ZOOM,
                 Math.min(
-                    3.0,
+                    MAX_ZOOM,
                     camera.zoom
                 )
             );
@@ -914,6 +983,8 @@ canvas.addEventListener(
             after.y;
 
 
+        clampCamera();
+
         draw();
     }
 );
@@ -928,9 +999,9 @@ createTiles();
 generateEurope();
 
 
-// Start looking roughly at Europe
-camera.x = 150;
-camera.y = 50;
-camera.zoom = 0.8;
+// Start at top-left of the world
+camera.x = 0;
+camera.y = 0;
+camera.zoom = MIN_ZOOM;
 
 resizeCanvas();
