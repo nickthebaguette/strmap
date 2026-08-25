@@ -1,1 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Strategy Map Editor</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+    <canvas id="map"></canvas>
+
+
+    <div id="editor-panel">
+
+        <h2>Map Editor</h2>
+
+
+        <div class="editor-section">
+
+            <strong>Country</strong>
+
+            <select id="country-select">
+
+                <option value="ocean">
+                    Ocean
+                </option>
+
+                <option value="france">
+                    France
+                </option>
+
+                <option value="spain">
+                    Spain
+                </option>
+
+                <option value="portugal">
+                    Portugal
+                </option>
+
+                <option value="britain">
+                    Great Britain
+                </option>
+
+                <option value="netherlands">
+                    Batavian Republic
+                </option>
+
+                <option value="prussia">
+                    Prussia
+                </option>
+
+                <option value="austria">
+                    Austria
+                </option>
+
+                <option value="russia">
+                    Russian Empire
+                </option>
+
+                <option value="sweden">
+                    Sweden
+                </option>
+
+                <option value="denmark">
+                    Denmark-Norway
+                </option>
+
+                <option value="italy">
+                    Kingdom of Italy
+                </option>
+
+                <option value="ottoman">
+                    Ottoman Empire
+                </option>
+
+                <option value="switzerland">
+                    Switzerland
+                </option>
+
+                <option value="bavaria">
+                    Bavaria
+                </option>
+
+                <option value="saxony">
+                    Saxony
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="editor-section">
+
+            <button id="save-button">
+                Save Map
+            </button>
+
+            <button id="download-button">
+                Download JSON
+            </button>
+
+        </div>
+
+
+        <div class="editor-section">
+
+            <p id="status">
+                Unsaved changes
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <script src="editor.js"></script>
+
+</body>
+
+</html>
