@@ -1,8 +1,14 @@
 const canvas = document.getElementById("map");
 const ctx = canvas.getContext("2d");
 
-const territoryName = document.getElementById("territory-name");
-const territoryOwner = document.getElementById("territory-owner");
+const mapCanvas = document.createElement("canvas");
+const mapCtx = mapCanvas.getContext("2d");
+
+const territoryName =
+    document.getElementById("territory-name");
+
+const territoryOwner =
+    document.getElementById("territory-owner");
 
 
 // ============================================================
@@ -14,11 +20,19 @@ const ROWS = 90;
 
 const HEX_SIZE = 14;
 
-const HEX_WIDTH = Math.sqrt(3) * HEX_SIZE;
-const HEX_VERTICAL_DISTANCE = HEX_SIZE * 1.5;
+const HEX_WIDTH =
+    Math.sqrt(3) * HEX_SIZE;
 
-const MAP_WIDTH = COLS * HEX_WIDTH + HEX_WIDTH / 2;
-const MAP_HEIGHT = ROWS * HEX_VERTICAL_DISTANCE + HEX_SIZE;
+const HEX_VERTICAL_DISTANCE =
+    HEX_SIZE * 1.5;
+
+const MAP_WIDTH =
+    COLS * HEX_WIDTH +
+    HEX_WIDTH;
+
+const MAP_HEIGHT =
+    ROWS * HEX_VERTICAL_DISTANCE +
+    HEX_SIZE;
 
 
 // ============================================================
@@ -28,17 +42,11 @@ const MAP_HEIGHT = ROWS * HEX_VERTICAL_DISTANCE + HEX_SIZE;
 let camera = {
     x: 0,
     y: 0,
-    zoom: 0.8
+    zoom: 0.55
 };
 
 const MIN_ZOOM = 0.55;
 const MAX_ZOOM = 3.0;
-
-let isDragging = false;
-let wasDragging = false;
-
-let lastMouseX = 0;
-let lastMouseY = 0;
 
 
 // ============================================================
@@ -49,7 +57,7 @@ const countries = {
 
     ocean: {
         name: "Ocean",
-        color: "#6f9eaf"
+        color: "#4f8194"
     },
 
     france: {
@@ -144,10 +152,11 @@ function createTiles() {
         for (let col = 0; col < COLS; col++) {
 
             tiles.push({
-                col,
-                row,
+                col: col,
+                row: row,
                 owner: "ocean"
             });
+
         }
     }
 }
@@ -160,12 +169,15 @@ function createTiles() {
 function hexToWorld(col, row) {
 
     return {
+
         x:
             col * HEX_WIDTH +
-            (row % 2) * HEX_WIDTH / 2,
+            (row % 2) *
+            HEX_WIDTH / 2,
 
         y:
             row * HEX_VERTICAL_DISTANCE
+
     };
 }
 
@@ -177,8 +189,15 @@ function hexToWorld(col, row) {
 function worldToScreen(x, y) {
 
     return {
-        x: (x - camera.x) * camera.zoom,
-        y: (y - camera.y) * camera.zoom
+
+        x:
+            (x - camera.x) *
+            camera.zoom,
+
+        y:
+            (y - camera.y) *
+            camera.zoom
+
     };
 }
 
@@ -190,309 +209,40 @@ function worldToScreen(x, y) {
 function screenToWorld(x, y) {
 
     return {
-        x: x / camera.zoom + camera.x,
-        y: y / camera.zoom + camera.y
+
+        x:
+            x / camera.zoom +
+            camera.x,
+
+        y:
+            y / camera.zoom +
+            camera.y
+
     };
 }
 
 
 // ============================================================
-// GENERATE MAP
+// HEX DRAWING
 // ============================================================
 
-function generateEurope() {
-
-    for (const tile of tiles) {
-
-        const p =
-            hexToWorld(
-                tile.col,
-                tile.row
-            );
-
-        const x = p.x;
-        const y = p.y;
-
-
-        // ----------------------------------------------------
-        // LAND MASS
-        // ----------------------------------------------------
-
-        let land = false;
-
-
-        // Mainland Europe
-        if (
-            x > 250 &&
-            x < 1500 &&
-            y > 150 &&
-            y < 850
-        ) {
-            land = true;
-        }
-
-
-        // Iberia
-        if (
-            x > 120 &&
-            x < 500 &&
-            y > 500 &&
-            y < 820
-        ) {
-            land = true;
-        }
-
-
-        // Scandinavia
-        if (
-            x > 500 &&
-            x < 1050 &&
-            y > 0 &&
-            y < 350
-        ) {
-            land = true;
-        }
-
-
-        // Italy
-        if (
-            x > 600 &&
-            x < 900 &&
-            y > 650 &&
-            y < 1000
-        ) {
-            land = true;
-        }
-
-
-        // Balkans
-        if (
-            x > 850 &&
-            x < 1400 &&
-            y > 700 &&
-            y < 950
-        ) {
-            land = true;
-        }
-
-
-        // Eastern Europe / Russia
-        if (
-            x > 1150 &&
-            x < 2100 &&
-            y > 100 &&
-            y < 700
-        ) {
-            land = true;
-        }
-
-
-        // ----------------------------------------------------
-        // OCEAN
-        // ----------------------------------------------------
-
-        if (!land) {
-
-            tile.owner = "ocean";
-
-            continue;
-        }
-
-
-        // ----------------------------------------------------
-        // COUNTRIES
-        // ----------------------------------------------------
-
-        if (
-            x > 170 &&
-            x < 260 &&
-            y > 520 &&
-            y < 760
-        ) {
-            tile.owner = "portugal";
-            continue;
-        }
-
-
-        if (
-            x > 230 &&
-            x < 500 &&
-            y > 520 &&
-            y < 780
-        ) {
-            tile.owner = "spain";
-            continue;
-        }
-
-
-        if (
-            x > 400 &&
-            x < 570 &&
-            y > 100 &&
-            y < 400
-        ) {
-            tile.owner = "britain";
-            continue;
-        }
-
-
-        if (
-            x > 420 &&
-            x < 750 &&
-            y > 350 &&
-            y < 620
-        ) {
-            tile.owner = "france";
-            continue;
-        }
-
-
-        if (
-            x > 650 &&
-            x < 780 &&
-            y > 270 &&
-            y < 390
-        ) {
-            tile.owner = "netherlands";
-            continue;
-        }
-
-
-        if (
-            x > 700 &&
-            x < 850 &&
-            y > 100 &&
-            y < 270
-        ) {
-            tile.owner = "denmark";
-            continue;
-        }
-
-
-        if (
-            x > 800 &&
-            x < 1100 &&
-            y > 300 &&
-            y < 470
-        ) {
-            tile.owner = "prussia";
-            continue;
-        }
-
-
-        if (
-            x > 760 &&
-            x < 900 &&
-            y > 440 &&
-            y < 530
-        ) {
-            tile.owner = "saxony";
-            continue;
-        }
-
-
-        if (
-            x > 650 &&
-            x < 850 &&
-            y > 500 &&
-            y < 650
-        ) {
-            tile.owner = "bavaria";
-            continue;
-        }
-
-
-        if (
-            x > 540 &&
-            x < 680 &&
-            y > 570 &&
-            y < 690
-        ) {
-            tile.owner = "switzerland";
-            continue;
-        }
-
-
-        if (
-            x > 820 &&
-            x < 1120 &&
-            y > 500 &&
-            y < 700
-        ) {
-            tile.owner = "austria";
-            continue;
-        }
-
-
-        if (
-            x > 620 &&
-            x < 880 &&
-            y > 650 &&
-            y < 900
-        ) {
-            tile.owner = "italy";
-            continue;
-        }
-
-
-        if (
-            x > 800 &&
-            x < 1000 &&
-            y > 20 &&
-            y < 300
-        ) {
-            tile.owner = "sweden";
-            continue;
-        }
-
-
-        if (
-            x > 1080 &&
-            x < 2050 &&
-            y > 150 &&
-            y < 650
-        ) {
-            tile.owner = "russia";
-            continue;
-        }
-
-
-        if (
-            x > 950 &&
-            x < 1450 &&
-            y > 700 &&
-            y < 950
-        ) {
-            tile.owner = "ottoman";
-            continue;
-        }
-
-
-        tile.owner = "austria";
-    }
-}
-
-
-// ============================================================
-// DRAW HEX
-// ============================================================
-
-function drawHex(
+function drawHexOnContext(
+    context,
     x,
     y,
     size,
-    fillColor,
-    borderColor,
-    borderWidth
+    color
 ) {
 
-    ctx.beginPath();
+    context.beginPath();
+
 
     for (let i = 0; i < 6; i++) {
 
         const angle =
             Math.PI / 180 *
             (60 * i - 30);
+
 
         const px =
             x +
@@ -504,29 +254,111 @@ function drawHex(
             size *
             Math.sin(angle);
 
+
         if (i === 0) {
-            ctx.moveTo(px, py);
-        }
-        else {
-            ctx.lineTo(px, py);
+
+            context.moveTo(
+                px,
+                py
+            );
+
+        } else {
+
+            context.lineTo(
+                px,
+                py
+            );
+
         }
     }
 
-    ctx.closePath();
 
-    ctx.fillStyle = fillColor;
-    ctx.fill();
+    context.closePath();
 
-    ctx.strokeStyle = borderColor;
-    ctx.lineWidth = borderWidth;
 
-    ctx.stroke();
+    context.fillStyle =
+        color;
+
+    context.fill();
+
+
+    context.strokeStyle =
+        "#30302d";
+
+    context.lineWidth =
+        0.7;
+
+    context.stroke();
+}
+
+
+// ============================================================
+// BUILD MAP CACHE
+// ============================================================
+//
+// This is the expensive operation.
+//
+// It only runs when the map changes.
+//
+// Camera movement does NOT rebuild the map.
+//
+
+function rebuildMapCanvas() {
+
+    mapCanvas.width =
+        MAP_WIDTH;
+
+    mapCanvas.height =
+        MAP_HEIGHT;
+
+
+    mapCtx.clearRect(
+        0,
+        0,
+        mapCanvas.width,
+        mapCanvas.height
+    );
+
+
+    for (const tile of tiles) {
+
+        const world =
+            hexToWorld(
+                tile.col,
+                tile.row
+            );
+
+
+        const country =
+            countries[
+                tile.owner
+            ];
+
+
+        drawHexOnContext(
+
+            mapCtx,
+
+            world.x,
+            world.y,
+
+            HEX_SIZE,
+
+            country.color
+
+        );
+    }
 }
 
 
 // ============================================================
 // DRAW MAP
 // ============================================================
+//
+// Extremely cheap.
+//
+// We simply move and scale the cached image.
+//
 
 function draw() {
 
@@ -538,51 +370,29 @@ function draw() {
     );
 
 
-    // --------------------------------------------
-    // MAP BACKGROUND
-    // --------------------------------------------
+    ctx.save();
 
-    ctx.fillStyle = "#4f8194";
 
-    ctx.fillRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
+    ctx.scale(
+        camera.zoom,
+        camera.zoom
     );
 
 
-    // --------------------------------------------
-    // HEXES
-    // --------------------------------------------
-
-    for (const tile of tiles) {
-
-        const world =
-            hexToWorld(
-                tile.col,
-                tile.row
-            );
-
-        const screen =
-            worldToScreen(
-                world.x,
-                world.y
-            );
-
-        const country =
-            countries[tile.owner];
+    ctx.translate(
+        -camera.x,
+        -camera.y
+    );
 
 
-        drawHex(
-            screen.x,
-            screen.y,
-            HEX_SIZE * camera.zoom,
-            country.color,
-            "#30302d",
-            0.7
-        );
-    }
+    ctx.drawImage(
+        mapCanvas,
+        0,
+        0
+    );
+
+
+    ctx.restore();
 }
 
 
@@ -601,16 +411,21 @@ function clampCamera() {
         camera.zoom;
 
 
-    // --------------------------------------------
-    // Horizontal
-    // --------------------------------------------
-
     const maxX =
         Math.max(
             0,
             MAP_WIDTH -
             visibleWidth
         );
+
+
+    const maxY =
+        Math.max(
+            0,
+            MAP_HEIGHT -
+            visibleHeight
+        );
+
 
     camera.x =
         Math.max(
@@ -621,17 +436,6 @@ function clampCamera() {
             )
         );
 
-
-    // --------------------------------------------
-    // Vertical
-    // --------------------------------------------
-
-    const maxY =
-        Math.max(
-            0,
-            MAP_HEIGHT -
-            visibleHeight
-        );
 
     camera.y =
         Math.max(
@@ -656,10 +460,12 @@ function resizeCanvas() {
     canvas.height =
         window.innerHeight;
 
+
     clampCamera();
 
     draw();
 }
+
 
 window.addEventListener(
     "resize",
@@ -678,7 +484,8 @@ function getTileAt(
 
     const approxCol =
         Math.round(
-            worldX / HEX_WIDTH
+            worldX /
+            HEX_WIDTH
         );
 
     const approxRow =
@@ -694,7 +501,6 @@ function getTileAt(
         HEX_SIZE;
 
 
-    // Only inspect nearby hexes
     for (
         let row =
             approxRow - 2;
@@ -733,13 +539,15 @@ function getTileAt(
 
 
             const dx =
-                worldX - p.x;
+                worldX -
+                p.x;
 
             const dy =
-                worldY - p.y;
+                worldY -
+                p.y;
 
 
-            const d =
+            const distance =
                 Math.sqrt(
                     dx * dx +
                     dy * dy
@@ -747,17 +555,18 @@ function getTileAt(
 
 
             if (
-                d <
+                distance <
                 closestDistance
             ) {
-
-                closestDistance = d;
 
                 closest =
                     tiles[
                         row * COLS +
                         col
                     ];
+
+                closestDistance =
+                    distance;
             }
         }
     }
@@ -768,8 +577,11 @@ function getTileAt(
 
 
 // ============================================================
-// CLICK
+// TILE CLICK
 // ============================================================
+
+let wasDragging = false;
+
 
 canvas.addEventListener(
     "click",
@@ -813,7 +625,9 @@ canvas.addEventListener(
 
 
         const country =
-            countries[tile.owner];
+            countries[
+                tile.owner
+            ];
 
 
         territoryName.textContent =
@@ -829,18 +643,37 @@ canvas.addEventListener(
 // ============================================================
 // PAN
 // ============================================================
+//
+// Left/right mouse behavior on public map:
+//
+// Left drag = pan
+//
+// (If you prefer right drag, we can change this.)
+
+let dragging = false;
+
+let lastX = 0;
+let lastY = 0;
+
 
 canvas.addEventListener(
     "mousedown",
     (event) => {
 
-        isDragging = true;
+        if (event.button !== 0) {
+            return;
+        }
+
+
+        dragging = true;
+
         wasDragging = false;
 
-        lastMouseX =
+
+        lastX =
             event.clientX;
 
-        lastMouseY =
+        lastY =
             event.clientY;
     }
 );
@@ -850,18 +683,18 @@ canvas.addEventListener(
     "mousemove",
     (event) => {
 
-        if (!isDragging) {
+        if (!dragging) {
             return;
         }
 
 
         const dx =
             event.clientX -
-            lastMouseX;
+            lastX;
 
         const dy =
             event.clientY -
-            lastMouseY;
+            lastY;
 
 
         if (
@@ -885,10 +718,10 @@ canvas.addEventListener(
         clampCamera();
 
 
-        lastMouseX =
+        lastX =
             event.clientX;
 
-        lastMouseY =
+        lastY =
             event.clientY;
 
 
@@ -897,20 +730,11 @@ canvas.addEventListener(
 );
 
 
-canvas.addEventListener(
+window.addEventListener(
     "mouseup",
     () => {
 
-        isDragging = false;
-    }
-);
-
-
-canvas.addEventListener(
-    "mouseleave",
-    () => {
-
-        isDragging = false;
+        dragging = false;
     }
 );
 
@@ -939,6 +763,9 @@ canvas.addEventListener(
             rect.top;
 
 
+        // World position underneath mouse
+        // before zooming.
+
         const before =
             screenToWorld(
                 mouseX,
@@ -946,12 +773,13 @@ canvas.addEventListener(
             );
 
 
-        if (event.deltaY < 0) {
+        if (
+            event.deltaY < 0
+        ) {
 
             camera.zoom *= 1.1;
 
-        }
-        else {
+        } else {
 
             camera.zoom *= 0.9;
         }
@@ -967,12 +795,18 @@ canvas.addEventListener(
             );
 
 
+        // World position underneath mouse
+        // after zooming.
+
         const after =
             screenToWorld(
                 mouseX,
                 mouseY
             );
 
+
+        // Compensate so the mouse
+        // stays over the same tile.
 
         camera.x +=
             before.x -
@@ -991,17 +825,92 @@ canvas.addEventListener(
 
 
 // ============================================================
+// LOAD MAP
+// ============================================================
+
+async function loadMap() {
+
+    try {
+
+        const response =
+            await fetch(
+                "data/map.json"
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Could not load map.json"
+            );
+        }
+
+
+        const data =
+            await response.json();
+
+
+        for (
+            const savedTile
+            of data.tiles
+        ) {
+
+            const index =
+                savedTile.row *
+                COLS +
+                savedTile.col;
+
+
+            const tile =
+                tiles[index];
+
+
+            if (!tile) {
+                continue;
+            }
+
+
+            if (
+                countries[
+                    savedTile.owner
+                ]
+            ) {
+
+                tile.owner =
+                    savedTile.owner;
+
+            }
+        }
+
+
+        rebuildMapCanvas();
+
+        draw();
+
+    }
+    catch (error) {
+
+        console.error(
+            "Failed to load map:",
+            error
+        );
+
+
+        rebuildMapCanvas();
+
+        draw();
+    }
+}
+
+
+// ============================================================
 // START
 // ============================================================
 
 createTiles();
 
-generateEurope();
-
-
-// Start at top-left of the world
-camera.x = 0;
-camera.y = 0;
-camera.zoom = MIN_ZOOM;
+rebuildMapCanvas();
 
 resizeCanvas();
+
+loadMap();
