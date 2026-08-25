@@ -1,28 +1,20 @@
-const canvas =
-    document.getElementById("map");
+const canvas = document.getElementById("map");
+const ctx = canvas.getContext("2d");
 
-const ctx =
-    canvas.getContext("2d");
+const mapCanvas = document.createElement("canvas");
+const mapCtx = mapCanvas.getContext("2d");
 
 const countrySelect =
-    document.getElementById(
-        "country-select"
-    );
+    document.getElementById("country-select");
 
 const saveButton =
-    document.getElementById(
-        "save-button"
-    );
+    document.getElementById("save-button");
 
 const downloadButton =
-    document.getElementById(
-        "download-button"
-    );
+    document.getElementById("download-button");
 
 const status =
-    document.getElementById(
-        "status"
-    );
+    document.getElementById("status");
 
 
 // ============================================================
@@ -50,7 +42,6 @@ let camera = {
     y: 0,
     zoom: 0.55
 };
-
 
 const MIN_ZOOM = 0.55;
 const MAX_ZOOM = 3.0;
@@ -152,17 +143,11 @@ const tiles = [];
 
 function createTiles() {
 
-    for (
-        let row = 0;
-        row < ROWS;
-        row++
-    ) {
+    tiles.length = 0;
 
-        for (
-            let col = 0;
-            col < COLS;
-            col++
-        ) {
+    for (let row = 0; row < ROWS; row++) {
+
+        for (let col = 0; col < COLS; col++) {
 
             tiles.push({
                 col: col,
@@ -171,7 +156,6 @@ function createTiles() {
             });
 
         }
-
     }
 }
 
@@ -180,39 +164,27 @@ function createTiles() {
 // HEX POSITION
 // ============================================================
 
-function hexToWorld(
-    col,
-    row
-) {
+function hexToWorld(col, row) {
 
     return {
-
         x:
-            col *
-            HEX_WIDTH +
+            col * HEX_WIDTH +
             (row % 2) *
-            HEX_WIDTH /
-            2,
+            HEX_WIDTH / 2,
 
         y:
-            row *
-            HEX_VERTICAL_DISTANCE
-
+            row * HEX_VERTICAL_DISTANCE
     };
 }
 
 
 // ============================================================
-// CAMERA
+// WORLD → SCREEN
 // ============================================================
 
-function worldToScreen(
-    x,
-    y
-) {
+function worldToScreen(x, y) {
 
     return {
-
         x:
             (x - camera.x) *
             camera.zoom,
@@ -220,58 +192,47 @@ function worldToScreen(
         y:
             (y - camera.y) *
             camera.zoom
-
     };
 }
 
 
-function screenToWorld(
-    x,
-    y
-) {
+// ============================================================
+// SCREEN → WORLD
+// ============================================================
+
+function screenToWorld(x, y) {
 
     return {
-
         x:
-            x /
-            camera.zoom +
+            x / camera.zoom +
             camera.x,
 
         y:
-            y /
-            camera.zoom +
+            y / camera.zoom +
             camera.y
-
     };
 }
 
 
 // ============================================================
-// DRAW HEX
+// HEX DRAWING
 // ============================================================
 
-function drawHex(
+function drawHexOnContext(
+    context,
     x,
     y,
     size,
-    color,
-    border = "#30302d"
+    color
 ) {
 
-    ctx.beginPath();
+    context.beginPath();
 
-
-    for (
-        let i = 0;
-        i < 6;
-        i++
-    ) {
+    for (let i = 0; i < 6; i++) {
 
         const angle =
-            Math.PI /
-            180 *
+            Math.PI / 180 *
             (60 * i - 30);
-
 
         const px =
             x +
@@ -283,57 +244,67 @@ function drawHex(
             size *
             Math.sin(angle);
 
-
         if (i === 0) {
 
-            ctx.moveTo(
+            context.moveTo(
+                px,
+                py
+            );
+
+        } else {
+
+            context.lineTo(
                 px,
                 py
             );
 
         }
-        else {
-
-            ctx.lineTo(
-                px,
-                py
-            );
-
-        }
-
     }
 
+    context.closePath();
 
-    ctx.closePath();
-
-
-    ctx.fillStyle =
+    context.fillStyle =
         color;
 
-    ctx.fill();
+    context.fill();
 
+    context.strokeStyle =
+        "#30302d";
 
-    ctx.strokeStyle =
-        border;
-
-    ctx.lineWidth =
+    context.lineWidth =
         0.7;
 
-    ctx.stroke();
+    context.stroke();
 }
 
 
 // ============================================================
-// DRAW MAP
+// BUILD MAP CACHE
 // ============================================================
+//
+// This is the expensive operation.
+//
+// We only do it when the map itself changes,
+// NOT when the camera moves.
+//
 
-function draw() {
+function rebuildMapCanvas() {
 
-    ctx.clearRect(
+    mapCanvas.width =
+        COLS * HEX_WIDTH +
+        HEX_WIDTH;
+
+    mapCanvas.height =
+        ROWS *
+        HEX_VERTICAL_DISTANCE +
+        HEX_SIZE * 2;
+
+
+    mapCtx.clearRect(
         0,
         0,
-        canvas.width,
-        canvas.height
+        mapCanvas.width,
+        mapCanvas.height
     );
 
 
@@ -345,33 +316,65 @@ function draw() {
                 tile.row
             );
 
-
-        const screen =
-            worldToScreen(
-                world.x,
-                world.y
-            );
-
-
         const country =
             countries[
                 tile.owner
             ];
 
 
-        drawHex(
-
-            screen.x,
-            screen.y,
-
-            HEX_SIZE *
-            camera.zoom,
-
+        drawHexOnContext(
+            mapCtx,
+            world.x,
+            world.y,
+            HEX_SIZE,
             country.color
-
         );
-
     }
+}
+
+
+// ============================================================
+// DRAW SCREEN
+// ============================================================
+//
+// This is now extremely cheap.
+//
+// We are simply moving/scaling the cached map image.
+//
+
+function draw() {
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    ctx.save();
+
+
+    ctx.scale(
+        camera.zoom,
+        camera.zoom
+    );
+
+
+    ctx.translate(
+        -camera.x,
+        -camera.y
+    );
+
+
+    ctx.drawImage(
+        mapCanvas,
+        0,
+        0
+    );
+
+
+    ctx.restore();
 }
 
 
@@ -462,15 +465,13 @@ function getTileAt(
 
 
             const dx =
-                worldX -
-                p.x;
+                worldX - p.x;
 
             const dy =
-                worldY -
-                p.y;
+                worldY - p.y;
 
 
-            const d =
+            const distance =
                 Math.sqrt(
                     dx * dx +
                     dy * dy
@@ -478,24 +479,20 @@ function getTileAt(
 
 
             if (
-                d <
+                distance <
                 closestDistance
             ) {
 
                 closest =
                     tiles[
-                        row *
-                        COLS +
+                        row * COLS +
                         col
                     ];
 
                 closestDistance =
-                    d;
-
+                    distance;
             }
-
         }
-
     }
 
 
@@ -509,46 +506,58 @@ function getTileAt(
 
 let painting = false;
 
-
-function paintTile(
-    tile
-) {
+function paintTile(tile) {
 
     if (!tile) {
         return;
     }
 
 
-    tile.owner =
+    const newOwner =
         countrySelect.value;
+
+
+    // Don't rebuild the map if
+    // this tile already has the color.
+
+    if (
+        tile.owner ===
+        newOwner
+    ) {
+        return;
+    }
+
+
+    tile.owner =
+        newOwner;
 
 
     status.textContent =
         "Unsaved changes";
 
 
+    rebuildMapCanvas();
+
     draw();
 }
 
+
+// ------------------------------------------------------------
+// Left mouse button = paint
+// ------------------------------------------------------------
 
 canvas.addEventListener(
     "mousedown",
     (event) => {
 
-        if (
-            event.button !== 0
-        ) {
+        if (event.button !== 0) {
             return;
         }
 
 
         painting = true;
 
-
-        paintFromMouse(
-            event
-        );
-
+        paintFromMouse(event);
     }
 );
 
@@ -562,10 +571,7 @@ canvas.addEventListener(
         }
 
 
-        paintFromMouse(
-            event
-        );
-
+        paintFromMouse(event);
     }
 );
 
@@ -575,14 +581,11 @@ window.addEventListener(
     () => {
 
         painting = false;
-
     }
 );
 
 
-function paintFromMouse(
-    event
-) {
+function paintFromMouse(event) {
 
     const rect =
         canvas.getBoundingClientRect();
@@ -611,14 +614,12 @@ function paintFromMouse(
         );
 
 
-    paintTile(
-        tile
-    );
+    paintTile(tile);
 }
 
 
 // ============================================================
-// CAMERA DRAG
+// CAMERA DRAGGING
 // ============================================================
 //
 // Right mouse button = pan
@@ -634,20 +635,19 @@ canvas.addEventListener(
     "mousedown",
     (event) => {
 
-        if (
-            event.button === 2
-        ) {
-
-            dragging = true;
-
-            lastX =
-                event.clientX;
-
-            lastY =
-                event.clientY;
-
+        if (event.button !== 2) {
+            return;
         }
 
+
+        dragging = true;
+
+
+        lastX =
+            event.clientX;
+
+        lastY =
+            event.clientY;
     }
 );
 
@@ -679,6 +679,9 @@ canvas.addEventListener(
             camera.zoom;
 
 
+        clampCamera();
+
+
         lastX =
             event.clientX;
 
@@ -687,7 +690,6 @@ canvas.addEventListener(
 
 
         draw();
-
     }
 );
 
@@ -697,7 +699,6 @@ window.addEventListener(
     () => {
 
         dragging = false;
-
     }
 );
 
@@ -707,9 +708,73 @@ canvas.addEventListener(
     (event) => {
 
         event.preventDefault();
-
     }
 );
+
+
+// ============================================================
+// MAP SIZE
+// ============================================================
+
+const MAP_WIDTH =
+    COLS * HEX_WIDTH +
+    HEX_WIDTH;
+
+const MAP_HEIGHT =
+    ROWS *
+    HEX_VERTICAL_DISTANCE +
+    HEX_SIZE;
+
+
+// ============================================================
+// CAMERA LIMITS
+// ============================================================
+
+function clampCamera() {
+
+    const visibleWidth =
+        canvas.width /
+        camera.zoom;
+
+    const visibleHeight =
+        canvas.height /
+        camera.zoom;
+
+
+    const maxX =
+        Math.max(
+            0,
+            MAP_WIDTH -
+            visibleWidth
+        );
+
+    const maxY =
+        Math.max(
+            0,
+            MAP_HEIGHT -
+            visibleHeight
+        );
+
+
+    camera.x =
+        Math.max(
+            0,
+            Math.min(
+                camera.x,
+                maxX
+            )
+        );
+
+
+    camera.y =
+        Math.max(
+            0,
+            Math.min(
+                camera.y,
+                maxY
+            )
+        );
+}
 
 
 // ============================================================
@@ -736,6 +801,9 @@ canvas.addEventListener(
             rect.top;
 
 
+        // Remember the world position
+        // underneath the mouse.
+
         const before =
             screenToWorld(
                 mouseX,
@@ -743,17 +811,13 @@ canvas.addEventListener(
             );
 
 
-        if (
-            event.deltaY < 0
-        ) {
+        if (event.deltaY < 0) {
 
             camera.zoom *= 1.1;
 
-        }
-        else {
+        } else {
 
             camera.zoom *= 0.9;
-
         }
 
 
@@ -766,6 +830,9 @@ canvas.addEventListener(
                 )
             );
 
+
+        // Keep the same world point
+        // underneath the mouse.
 
         const after =
             screenToWorld(
@@ -783,14 +850,15 @@ canvas.addEventListener(
             after.y;
 
 
-        draw();
+        clampCamera();
 
+        draw();
     }
 );
 
 
 // ============================================================
-// EXPORT JSON
+// EXPORT MAP
 // ============================================================
 
 function createMapData() {
@@ -808,7 +876,6 @@ function createMapData() {
                 owner: tile.owner
             })
         )
-
     };
 }
 
@@ -845,20 +912,20 @@ downloadButton.addEventListener(
             );
 
 
-        const a =
+        const link =
             document.createElement(
                 "a"
             );
 
 
-        a.href =
+        link.href =
             url;
 
-        a.download =
+        link.download =
             "map.json";
 
 
-        a.click();
+        link.click();
 
 
         URL.revokeObjectURL(
@@ -868,13 +935,12 @@ downloadButton.addEventListener(
 
         status.textContent =
             "Map downloaded.";
-
     }
 );
 
 
 // ============================================================
-// LOAD EXISTING MAP
+// LOAD SAVED MAP
 // ============================================================
 
 async function loadMap() {
@@ -888,6 +954,7 @@ async function loadMap() {
 
 
         if (!response.ok) {
+
             throw new Error(
                 "Map not found"
             );
@@ -903,39 +970,49 @@ async function loadMap() {
             of data.tiles
         ) {
 
+            const index =
+                savedTile.row *
+                COLS +
+                savedTile.col;
+
+
             const tile =
-                tiles[
-                    savedTile.row *
-                    COLS +
-                    savedTile.col
-                ];
+                tiles[index];
 
 
-            if (tile) {
-
-                tile.owner =
-                    savedTile.owner;
-
+            if (!tile) {
+                continue;
             }
 
+
+            tile.owner =
+                savedTile.owner;
         }
+
+
+        rebuildMapCanvas();
+
+        draw();
 
 
         status.textContent =
             "Map loaded.";
 
-        draw();
-
     }
     catch (error) {
 
         console.log(
-            "No saved map yet."
+            "No saved map found."
         );
+
+
+        rebuildMapCanvas();
+
+        draw();
+
 
         status.textContent =
             "New map.";
-
     }
 }
 
@@ -945,6 +1022,8 @@ async function loadMap() {
 // ============================================================
 
 createTiles();
+
+rebuildMapCanvas();
 
 resizeCanvas();
 
