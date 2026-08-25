@@ -5,521 +5,485 @@ const territoryName = document.getElementById("territory-name");
 const territoryOwner = document.getElementById("territory-owner");
 
 
-// ==================================================
-// MAP SETTINGS
-// ==================================================
+// ============================================================
+// MAP SIZE
+// ============================================================
 
-const MAP_WIDTH = 1800;
-const MAP_HEIGHT = 1100;
+const COLS = 100;
+const ROWS = 60;
+
+const HEX_SIZE = 14;
+
+const HEX_WIDTH = Math.sqrt(3) * HEX_SIZE;
+const HEX_HEIGHT = HEX_SIZE * 2;
+
+
+// ============================================================
+// CAMERA
+// ============================================================
 
 let camera = {
     x: 0,
     y: 0,
-    zoom: 0.7
+    zoom: 1.0
 };
 
-let selectedTerritory = null;
-
 let isDragging = false;
+
 let lastMouseX = 0;
 let lastMouseY = 0;
 
+let wasDragging = false;
 
-// ==================================================
-// TERRITORIES
-// ==================================================
-//
-// Coordinates are in our own map-space.
-// They are intentionally simplified rather than
-// attempting to reproduce every historical border.
-//
 
-const territories = [
+// ============================================================
+// TILE DATA
+// ============================================================
 
-    // ----------------------------------------------
-    // WESTERN EUROPE
-    // ----------------------------------------------
+const tiles = [];
 
-    {
+
+// ============================================================
+// COUNTRIES
+// ============================================================
+
+const countries = {
+
+    ocean: {
+        name: "Ocean",
+        color: "#6f9eaf"
+    },
+
+    france: {
         name: "France",
-        owner: "France",
-        color: "#4f78b8",
-
-        points: [
-            [260, 400],
-            [380, 300],
-            [540, 310],
-            [650, 390],
-            [620, 540],
-            [560, 690],
-            [430, 700],
-            [300, 620],
-            [240, 500]
-        ]
+        color: "#4d72ad"
     },
 
-    {
+    spain: {
         name: "Spain",
-        owner: "Spain",
-        color: "#c98c4a",
-
-        points: [
-            [120, 650],
-            [300, 620],
-            [430, 700],
-            [390, 830],
-            [250, 860],
-            [120, 790]
-        ]
+        color: "#c18a45"
     },
 
-    {
+    portugal: {
         name: "Portugal",
-        owner: "Portugal",
-        color: "#71965a",
-
-        points: [
-            [80, 670],
-            [120, 650],
-            [120, 790],
-            [80, 760]
-        ]
+        color: "#6c9660"
     },
 
-    {
+    britain: {
         name: "Great Britain",
-        owner: "Great Britain",
-        color: "#a65b5b",
-
-        points: [
-            [250, 150],
-            [300, 100],
-            [350, 120],
-            [360, 220],
-            [330, 330],
-            [270, 340],
-            [230, 250]
-        ]
+        color: "#a85858"
     },
 
-    {
-        name: "Ireland",
-        owner: "Ireland",
-        color: "#6f925d",
-
-        points: [
-            [190, 180],
-            [220, 140],
-            [240, 210],
-            [225, 290],
-            [180, 270]
-        ]
-    },
-
-    {
+    netherlands: {
         name: "Batavian Republic",
-        owner: "Batavian Republic",
-        color: "#a97d91",
-
-        points: [
-            [570, 270],
-            [650, 260],
-            [690, 330],
-            [620, 360],
-            [570, 330]
-        ]
+        color: "#9b7182"
     },
 
-
-    // ----------------------------------------------
-    // GERMAN STATES
-    // ----------------------------------------------
-
-    {
-        name: "Hanover",
-        owner: "Hanover",
-        color: "#c7a95a",
-
-        points: [
-            [690, 270],
-            [790, 260],
-            [820, 350],
-            [750, 390],
-            [680, 340]
-        ]
-    },
-
-    {
+    prussia: {
         name: "Prussia",
-        owner: "Prussia",
-        color: "#7d8fa8",
-
-        points: [
-            [790, 200],
-            [1030, 170],
-            [1130, 250],
-            [1080, 350],
-            [900, 350],
-            [820, 300]
-        ]
+        color: "#667c99"
     },
 
-    {
-        name: "Saxony",
-        owner: "Saxony",
-        color: "#a88458",
-
-        points: [
-            [800, 350],
-            [900, 350],
-            [940, 430],
-            [850, 460],
-            [790, 420]
-        ]
-    },
-
-    {
-        name: "Bavaria",
-        owner: "Bavaria",
-        color: "#6f8d68",
-
-        points: [
-            [700, 470],
-            [800, 450],
-            [870, 500],
-            [830, 590],
-            [700, 600],
-            [650, 530]
-        ]
-    },
-
-    {
-        name: "Württemberg",
-        owner: "Württemberg",
-        color: "#9b745e",
-
-        points: [
-            [610, 500],
-            [700, 470],
-            [720, 540],
-            [670, 590],
-            [610, 560]
-        ]
-    },
-
-    {
-        name: "Baden",
-        owner: "Baden",
-        color: "#b59b55",
-
-        points: [
-            [560, 480],
-            [610, 500],
-            [610, 560],
-            [570, 600],
-            [540, 540]
-        ]
-    },
-
-    {
-        name: "Hesse",
-        owner: "Hesse",
-        color: "#967d9d",
-
-        points: [
-            [610, 380],
-            [700, 370],
-            [720, 470],
-            [650, 480],
-            [600, 430]
-        ]
-    },
-
-
-    // ----------------------------------------------
-    // SWITZERLAND
-    // ----------------------------------------------
-
-    {
-        name: "Switzerland",
-        owner: "Switzerland",
-        color: "#a75b5b",
-
-        points: [
-            [500, 520],
-            [560, 480],
-            [610, 560],
-            [570, 620],
-            [500, 590]
-        ]
-    },
-
-
-    // ----------------------------------------------
-    // AUSTRIA / CENTRAL EUROPE
-    // ----------------------------------------------
-
-    {
+    austria: {
         name: "Austria",
-        owner: "Habsburg Monarchy",
-        color: "#c4a84d",
-
-        points: [
-            [850, 500],
-            [1000, 440],
-            [1110, 500],
-            [1160, 600],
-            [1060, 680],
-            [900, 650],
-            [830, 590]
-        ]
+        color: "#c5a74e"
     },
 
-    {
-        name: "Hungary",
-        owner: "Habsburg Monarchy",
-        color: "#d0b45c",
-
-        points: [
-            [1060, 680],
-            [1160, 600],
-            [1290, 650],
-            [1280, 770],
-            [1160, 820],
-            [1050, 760]
-        ]
+    russia: {
+        name: "Russian Empire",
+        color: "#71975e"
     },
 
-
-    // ----------------------------------------------
-    // ITALY
-    // ----------------------------------------------
-
-    {
-        name: "Kingdom of Italy",
-        owner: "France",
-        color: "#7196a0",
-
-        points: [
-            [650, 620],
-            [760, 610],
-            [800, 680],
-            [760, 760],
-            [690, 740],
-            [620, 670]
-        ]
-    },
-
-    {
-        name: "Piedmont",
-        owner: "France",
-        color: "#789b65",
-
-        points: [
-            [500, 620],
-            [600, 600],
-            [650, 650],
-            [620, 700],
-            [540, 690]
-        ]
-    },
-
-    {
-        name: "Tuscany",
-        owner: "Tuscany",
-        color: "#b38b52",
-
-        points: [
-            [650, 740],
-            [760, 760],
-            [780, 820],
-            [690, 850],
-            [630, 800]
-        ]
-    },
-
-    {
-        name: "Papal States",
-        owner: "Papal States",
-        color: "#8f7195",
-
-        points: [
-            [780, 760],
-            [850, 740],
-            [900, 810],
-            [850, 870],
-            [780, 820]
-        ]
-    },
-
-    {
-        name: "Kingdom of Naples",
-        owner: "Naples",
-        color: "#b47b52",
-
-        points: [
-            [850, 870],
-            [900, 810],
-            [960, 850],
-            [940, 980],
-            [880, 1010],
-            [840, 940]
-        ]
-    },
-
-    {
-        name: "Sardinia",
-        owner: "Sardinia",
-        color: "#7c9164",
-
-        points: [
-            [520, 790],
-            [560, 760],
-            [580, 850],
-            [540, 900],
-            [510, 850]
-        ]
-    },
-
-
-    // ----------------------------------------------
-    // SCANDINAVIA
-    // ----------------------------------------------
-
-    {
-        name: "Denmark-Norway",
-        owner: "Denmark-Norway",
-        color: "#9b5f68",
-
-        points: [
-            [720, 70],
-            [800, 50],
-            [850, 100],
-            [820, 180],
-            [750, 180],
-            [700, 120]
-        ]
-    },
-
-    {
+    sweden: {
         name: "Sweden",
-        owner: "Sweden",
-        color: "#c6a44f",
-
-        points: [
-            [850, 30],
-            [940, 40],
-            [970, 170],
-            [900, 270],
-            [850, 180]
-        ]
+        color: "#c6a84d"
     },
 
-
-    // ----------------------------------------------
-    // EASTERN EUROPE
-    // ----------------------------------------------
-
-    {
-        name: "Russia",
-        owner: "Russian Empire",
-        color: "#7ca06a",
-
-        points: [
-            [1030, 80],
-            [1450, 70],
-            [1600, 220],
-            [1500, 430],
-            [1350, 500],
-            [1200, 400],
-            [1130, 250],
-            [1030, 170]
-        ]
+    denmark: {
+        name: "Denmark-Norway",
+        color: "#a45e68"
     },
 
-    {
-        name: "Polish Lands",
-        owner: "Russian Empire",
-        color: "#8baa76",
-
-        points: [
-            [1030, 350],
-            [1130, 350],
-            [1200, 400],
-            [1160, 500],
-            [1050, 520],
-            [980, 450]
-        ]
+    italy: {
+        name: "Kingdom of Italy",
+        color: "#6d949c"
     },
 
-    {
-        name: "Moldavia",
-        owner: "Ottoman Empire",
-        color: "#9fbd55",
-
-        points: [
-            [1160, 500],
-            [1230, 470],
-            [1290, 540],
-            [1260, 630],
-            [1180, 620]
-        ]
-    },
-
-    {
-        name: "Wallachia",
-        owner: "Ottoman Empire",
-        color: "#a5c55a",
-
-        points: [
-            [1050, 650],
-            [1180, 620],
-            [1200, 700],
-            [1120, 750],
-            [1050, 730]
-        ]
-    },
-
-
-    // ----------------------------------------------
-    // BALKANS / OTTOMAN EMPIRE
-    // ----------------------------------------------
-
-    {
+    ottoman: {
         name: "Ottoman Empire",
-        owner: "Ottoman Empire",
-        color: "#a8c857",
-
-        points: [
-            [1160, 760],
-            [1280, 700],
-            [1450, 720],
-            [1550, 820],
-            [1500, 960],
-            [1250, 980],
-            [1160, 900]
-        ]
+        color: "#9bb955"
     },
 
-    {
-        name: "Montenegro",
-        owner: "Montenegro",
-        color: "#687d63",
+    switzerland: {
+        name: "Switzerland",
+        color: "#9d5959"
+    },
 
-        points: [
-            [1080, 780],
-            [1130, 760],
-            [1160, 820],
-            [1120, 860],
-            [1080, 830]
-        ]
+    bavaria: {
+        name: "Bavaria",
+        color: "#718c69"
+    },
+
+    saxony: {
+        name: "Saxony",
+        color: "#aa8355"
     }
-];
+};
 
 
-// ==================================================
-// CANVAS RESIZE
-// ==================================================
+// ============================================================
+// CREATE TILES
+// ============================================================
+
+function createTiles() {
+
+    for (let row = 0; row < ROWS; row++) {
+
+        for (let col = 0; col < COLS; col++) {
+
+            tiles.push({
+                col: col,
+                row: row,
+
+                owner: "ocean"
+            });
+        }
+    }
+}
+
+
+// ============================================================
+// HEX POSITION
+// ============================================================
+
+function hexToWorld(col, row) {
+
+    const x =
+        col * HEX_WIDTH +
+        (row % 2) * (HEX_WIDTH / 2);
+
+    const y =
+        row * HEX_SIZE * 1.5;
+
+    return {
+        x: x,
+        y: y
+    };
+}
+
+
+// ============================================================
+// DISTANCE FROM POINT
+// ============================================================
+
+function distance(x1, y1, x2, y2) {
+
+    const dx = x1 - x2;
+    const dy = y1 - y2;
+
+    return Math.sqrt(
+        dx * dx +
+        dy * dy
+    );
+}
+
+
+// ============================================================
+// MAKE COUNTRY SHAPE
+// ============================================================
+//
+// This uses simple mathematical shapes to create the initial
+// political map. Later we can replace this with actual
+// historical GIS boundaries.
+//
+
+function generateEurope() {
+
+    for (const tile of tiles) {
+
+        const p = hexToWorld(
+            tile.col,
+            tile.row
+        );
+
+        const x = p.x;
+        const y = p.y;
+
+
+        // --------------------------------------------
+        // LAND MASS
+        // --------------------------------------------
+
+        let land = false;
+
+
+        // Main European landmass
+        if (
+            x > 250 &&
+            x < 1350 &&
+            y > 180 &&
+            y < 780
+        ) {
+            land = true;
+        }
+
+
+        // Iberian peninsula
+        if (
+            x > 150 &&
+            x < 480 &&
+            y > 500 &&
+            y < 760
+        ) {
+            land = true;
+        }
+
+
+        // Italy
+        if (
+            x > 600 &&
+            x < 850 &&
+            y > 600 &&
+            y < 950
+        ) {
+            land = true;
+        }
+
+
+        // Scandinavia
+        if (
+            x > 600 &&
+            x < 1000 &&
+            y > 0 &&
+            y < 330
+        ) {
+            land = true;
+        }
+
+
+        // Eastern Europe / Russia
+        if (
+            x > 1000 &&
+            x < 1700 &&
+            y > 100 &&
+            y < 650
+        ) {
+            land = true;
+        }
+
+
+        // Balkans
+        if (
+            x > 850 &&
+            x < 1300 &&
+            y > 650 &&
+            y < 900
+        ) {
+            land = true;
+        }
+
+
+        if (!land) {
+            tile.owner = "ocean";
+            continue;
+        }
+
+
+        // --------------------------------------------
+        // COUNTRY ASSIGNMENT
+        // --------------------------------------------
+
+
+        // Portugal
+        if (
+            x > 180 &&
+            x < 260 &&
+            y > 540 &&
+            y < 720
+        ) {
+            tile.owner = "portugal";
+            continue;
+        }
+
+
+        // Spain
+        if (
+            x > 230 &&
+            x < 500 &&
+            y > 520 &&
+            y < 750
+        ) {
+            tile.owner = "spain";
+            continue;
+        }
+
+
+        // Great Britain
+        if (
+            x > 430 &&
+            x < 560 &&
+            y > 130 &&
+            y < 400
+        ) {
+            tile.owner = "britain";
+            continue;
+        }
+
+
+        // France
+        if (
+            x > 420 &&
+            x < 720 &&
+            y > 360 &&
+            y < 610
+        ) {
+            tile.owner = "france";
+            continue;
+        }
+
+
+        // Netherlands
+        if (
+            x > 650 &&
+            x < 760 &&
+            y > 270 &&
+            y < 380
+        ) {
+            tile.owner = "netherlands";
+            continue;
+        }
+
+
+        // Denmark
+        if (
+            x > 700 &&
+            x < 850 &&
+            y > 100 &&
+            y < 260
+        ) {
+            tile.owner = "denmark";
+            continue;
+        }
+
+
+        // Prussia
+        if (
+            x > 800 &&
+            x < 1080 &&
+            y > 300 &&
+            y < 470
+        ) {
+            tile.owner = "prussia";
+            continue;
+        }
+
+
+        // Saxony
+        if (
+            x > 760 &&
+            x < 900 &&
+            y > 440 &&
+            y < 520
+        ) {
+            tile.owner = "saxony";
+            continue;
+        }
+
+
+        // Bavaria
+        if (
+            x > 650 &&
+            x < 850 &&
+            y > 500 &&
+            y < 650
+        ) {
+            tile.owner = "bavaria";
+            continue;
+        }
+
+
+        // Switzerland
+        if (
+            x > 540 &&
+            x < 670 &&
+            y > 570 &&
+            y < 680
+        ) {
+            tile.owner = "switzerland";
+            continue;
+        }
+
+
+        // Austria
+        if (
+            x > 820 &&
+            x < 1100 &&
+            y > 500 &&
+            y < 700
+        ) {
+            tile.owner = "austria";
+            continue;
+        }
+
+
+        // Italy
+        if (
+            x > 620 &&
+            x < 850 &&
+            y > 650 &&
+            y < 880
+        ) {
+            tile.owner = "italy";
+            continue;
+        }
+
+
+        // Sweden
+        if (
+            x > 800 &&
+            x < 980 &&
+            y > 20 &&
+            y < 280
+        ) {
+            tile.owner = "sweden";
+            continue;
+        }
+
+
+        // Russia
+        if (
+            x > 1080 &&
+            x < 1650 &&
+            y > 150 &&
+            y < 600
+        ) {
+            tile.owner = "russia";
+            continue;
+        }
+
+
+        // Ottoman Empire
+        if (
+            x > 950 &&
+            x < 1400 &&
+            y > 700 &&
+            y < 900
+        ) {
+            tile.owner = "ottoman";
+            continue;
+        }
+
+
+        // Remaining land
+        // becomes Austria by default
+        tile.owner = "austria";
+    }
+}
+
+
+// ============================================================
+// RESIZE
+// ============================================================
 
 function resizeCanvas() {
 
@@ -529,12 +493,15 @@ function resizeCanvas() {
     draw();
 }
 
-window.addEventListener("resize", resizeCanvas);
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
 
 
-// ==================================================
-// CAMERA TRANSFORM
-// ==================================================
+// ============================================================
+// WORLD → SCREEN
+// ============================================================
 
 function worldToScreen(x, y) {
 
@@ -545,6 +512,10 @@ function worldToScreen(x, y) {
 }
 
 
+// ============================================================
+// SCREEN → WORLD
+// ============================================================
+
 function screenToWorld(x, y) {
 
     return {
@@ -554,56 +525,59 @@ function screenToWorld(x, y) {
 }
 
 
-// ==================================================
-// DRAW TERRITORY
-// ==================================================
+// ============================================================
+// DRAW HEX
+// ============================================================
 
-function drawTerritory(territory) {
+function drawHex(
+    x,
+    y,
+    size,
+    fillColor,
+    borderColor
+) {
 
     ctx.beginPath();
 
-    const first = worldToScreen(
-        territory.points[0][0],
-        territory.points[0][1]
-    );
+    for (let i = 0; i < 6; i++) {
 
-    ctx.moveTo(first.x, first.y);
+        const angle =
+            Math.PI / 180 *
+            (60 * i - 30);
 
-    for (let i = 1; i < territory.points.length; i++) {
+        const px =
+            x +
+            size *
+            Math.cos(angle);
 
-        const point = worldToScreen(
-            territory.points[i][0],
-            territory.points[i][1]
-        );
+        const py =
+            y +
+            size *
+            Math.sin(angle);
 
-        ctx.lineTo(point.x, point.y);
+        if (i === 0) {
+            ctx.moveTo(px, py);
+        }
+        else {
+            ctx.lineTo(px, py);
+        }
     }
 
     ctx.closePath();
 
-    ctx.fillStyle = territory.color;
+    ctx.fillStyle = fillColor;
     ctx.fill();
 
-    ctx.strokeStyle = "#302d29";
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = borderColor;
+    ctx.lineWidth = 0.7;
 
     ctx.stroke();
-
-
-    // Selected territory
-    if (territory === selectedTerritory) {
-
-        ctx.strokeStyle = "#ffffff";
-        ctx.lineWidth = 5;
-
-        ctx.stroke();
-    }
 }
 
 
-// ==================================================
-// DRAW
-// ==================================================
+// ============================================================
+// DRAW MAP
+// ============================================================
 
 function draw() {
 
@@ -615,8 +589,11 @@ function draw() {
     );
 
 
-    // Sea
-    ctx.fillStyle = "#b9ccd2";
+    // --------------------------------------------
+    // OCEAN
+    // --------------------------------------------
+
+    ctx.fillStyle = "#6f9eaf";
 
     ctx.fillRect(
         0,
@@ -626,249 +603,334 @@ function draw() {
     );
 
 
-    // Territories
-    for (const territory of territories) {
+    // --------------------------------------------
+    // HEX TILES
+    // --------------------------------------------
 
-        drawTerritory(territory);
-    }
-}
+    for (const tile of tiles) {
 
-
-// ==================================================
-// TERRITORY HIT DETECTION
-// ==================================================
-
-function pointInsideTerritory(x, y, points) {
-
-    let inside = false;
-
-    for (
-        let i = 0, j = points.length - 1;
-        i < points.length;
-        j = i++
-    ) {
-
-        const xi = points[i][0];
-        const yi = points[i][1];
-
-        const xj = points[j][0];
-        const yj = points[j][1];
-
-        const intersect =
-            ((yi > y) !== (yj > y)) &&
-            (
-                x <
-                (xj - xi) *
-                (y - yi) /
-                (yj - yi) +
-                xi
+        const world =
+            hexToWorld(
+                tile.col,
+                tile.row
             );
 
-        if (intersect) {
+        const screen =
+            worldToScreen(
+                world.x,
+                world.y
+            );
 
-            inside = !inside;
-        }
+
+        const country =
+            countries[tile.owner];
+
+
+        drawHex(
+            screen.x,
+            screen.y,
+            HEX_SIZE * camera.zoom,
+            country.color,
+            "#30302d"
+        );
     }
-
-    return inside;
 }
 
 
-function getTerritoryAt(x, y) {
+// ============================================================
+// FIND TILE
+// ============================================================
 
-    // Reverse order so later territories appear on top
-    for (let i = territories.length - 1; i >= 0; i--) {
+function getTileAt(
+    worldX,
+    worldY
+) {
+
+    let closest = null;
+
+    let closestDistance = Infinity;
+
+
+    for (const tile of tiles) {
+
+        const p =
+            hexToWorld(
+                tile.col,
+                tile.row
+            );
+
+        const d =
+            distance(
+                worldX,
+                worldY,
+                p.x,
+                p.y
+            );
 
         if (
-            pointInsideTerritory(
-                x,
-                y,
-                territories[i].points
-            )
+            d <
+            HEX_SIZE &&
+            d <
+            closestDistance
         ) {
 
-            return territories[i];
+            closest = tile;
+            closestDistance = d;
         }
     }
 
-    return null;
+
+    return closest;
 }
 
 
-// ==================================================
-// MOUSE CLICK
-// ==================================================
+// ============================================================
+// CLICK
+// ============================================================
 
-canvas.addEventListener("click", (event) => {
+canvas.addEventListener(
+    "click",
+    (event) => {
 
-    if (isDragging) {
-        return;
-    }
+        if (wasDragging) {
+            return;
+        }
 
-    const rect = canvas.getBoundingClientRect();
+        const rect =
+            canvas.getBoundingClientRect();
 
-    const screenX =
-        event.clientX - rect.left;
 
-    const screenY =
-        event.clientY - rect.top;
+        const screenX =
+            event.clientX -
+            rect.left;
 
-    const world =
-        screenToWorld(
-            screenX,
-            screenY
-        );
+        const screenY =
+            event.clientY -
+            rect.top;
 
-    const territory =
-        getTerritoryAt(
-            world.x,
-            world.y
-        );
 
-    if (territory) {
+        const world =
+            screenToWorld(
+                screenX,
+                screenY
+            );
 
-        selectedTerritory = territory;
+
+        const tile =
+            getTileAt(
+                world.x,
+                world.y
+            );
+
+
+        if (!tile) {
+            return;
+        }
+
+
+        const country =
+            countries[tile.owner];
+
 
         territoryName.textContent =
-            territory.name;
+            country.name;
+
 
         territoryOwner.textContent =
-            "Owner: " + territory.owner;
+            `Hex: ${tile.col}, ${tile.row}`;
+
+
+        // Temporary selection effect
+        const p =
+            hexToWorld(
+                tile.col,
+                tile.row
+            );
+
+        const screen =
+            worldToScreen(
+                p.x,
+                p.y
+            );
+
+
+        drawHex(
+            screen.x,
+            screen.y,
+            HEX_SIZE *
+            camera.zoom,
+            country.color,
+            "#ffffff"
+        );
+    }
+);
+
+
+// ============================================================
+// PAN
+// ============================================================
+
+canvas.addEventListener(
+    "mousedown",
+    (event) => {
+
+        isDragging = true;
+        wasDragging = false;
+
+        lastMouseX =
+            event.clientX;
+
+        lastMouseY =
+            event.clientY;
+    }
+);
+
+
+canvas.addEventListener(
+    "mousemove",
+    (event) => {
+
+        if (!isDragging) {
+            return;
+        }
+
+
+        const dx =
+            event.clientX -
+            lastMouseX;
+
+        const dy =
+            event.clientY -
+            lastMouseY;
+
+
+        if (
+            Math.abs(dx) > 2 ||
+            Math.abs(dy) > 2
+        ) {
+            wasDragging = true;
+        }
+
+
+        camera.x -=
+            dx / camera.zoom;
+
+        camera.y -=
+            dy / camera.zoom;
+
+
+        lastMouseX =
+            event.clientX;
+
+        lastMouseY =
+            event.clientY;
+
 
         draw();
     }
-});
+);
 
 
-// ==================================================
-// PAN
-// ==================================================
+canvas.addEventListener(
+    "mouseup",
+    () => {
 
-canvas.addEventListener("mousedown", (event) => {
-
-    isDragging = false;
-
-    lastMouseX = event.clientX;
-    lastMouseY = event.clientY;
-
-    canvas.dataset.mouseDown = "true";
-});
-
-
-canvas.addEventListener("mousemove", (event) => {
-
-    if (canvas.dataset.mouseDown !== "true") {
-        return;
+        isDragging = false;
     }
+);
 
-    const dx =
-        event.clientX - lastMouseX;
 
-    const dy =
-        event.clientY - lastMouseY;
+canvas.addEventListener(
+    "mouseleave",
+    () => {
 
-    if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
-        isDragging = true;
+        isDragging = false;
     }
-
-    camera.x -= dx / camera.zoom;
-    camera.y -= dy / camera.zoom;
-
-    lastMouseX = event.clientX;
-    lastMouseY = event.clientY;
-
-    draw();
-});
+);
 
 
-canvas.addEventListener("mouseup", () => {
-
-    canvas.dataset.mouseDown = "false";
-});
-
-
-canvas.addEventListener("mouseleave", () => {
-
-    canvas.dataset.mouseDown = "false";
-});
-
-
-// ==================================================
+// ============================================================
 // ZOOM
-// ==================================================
+// ============================================================
 
-canvas.addEventListener("wheel", (event) => {
+canvas.addEventListener(
+    "wheel",
+    (event) => {
 
-    event.preventDefault();
-
-    const rect =
-        canvas.getBoundingClientRect();
-
-    const mouseX =
-        event.clientX - rect.left;
-
-    const mouseY =
-        event.clientY - rect.top;
+        event.preventDefault();
 
 
-    // Position under cursor before zoom
-    const worldBefore =
-        screenToWorld(
-            mouseX,
-            mouseY
-        );
+        const rect =
+            canvas.getBoundingClientRect();
 
 
-    const zoomFactor =
-        event.deltaY < 0
-            ? 1.1
-            : 0.9;
+        const mouseX =
+            event.clientX -
+            rect.left;
+
+        const mouseY =
+            event.clientY -
+            rect.top;
 
 
-    camera.zoom *= zoomFactor;
+        const before =
+            screenToWorld(
+                mouseX,
+                mouseY
+            );
 
 
-    // Clamp zoom
-    camera.zoom =
-        Math.max(
-            0.35,
-            Math.min(
-                2.5,
-                camera.zoom
-            )
-        );
+        if (event.deltaY < 0) {
+            camera.zoom *= 1.1;
+        }
+        else {
+            camera.zoom *= 0.9;
+        }
 
 
-    // Keep cursor over same world position
-    const worldAfter =
-        screenToWorld(
-            mouseX,
-            mouseY
-        );
-
-    camera.x +=
-        worldBefore.x -
-        worldAfter.x;
-
-    camera.y +=
-        worldBefore.y -
-        worldAfter.y;
-
-    draw();
-});
+        camera.zoom =
+            Math.max(
+                0.35,
+                Math.min(
+                    3.0,
+                    camera.zoom
+                )
+            );
 
 
-// ==================================================
-// INITIAL CAMERA
-// ==================================================
-
-camera.x = 0;
-camera.y = 0;
-camera.zoom = 0.7;
+        const after =
+            screenToWorld(
+                mouseX,
+                mouseY
+            );
 
 
-// ==================================================
+        camera.x +=
+            before.x -
+            after.x;
+
+        camera.y +=
+            before.y -
+            after.y;
+
+
+        draw();
+    }
+);
+
+
+// ============================================================
 // START
-// ==================================================
+// ============================================================
+
+createTiles();
+
+generateEurope();
+
+
+// Start looking roughly at Europe
+camera.x = 150;
+camera.y = 50;
+camera.zoom = 0.8;
 
 resizeCanvas();
