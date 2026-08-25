@@ -62,3 +62,62 @@ body {
 
     color: #c9c0aa;
 }
+
+#editor-panel {
+    position: absolute;
+
+    top: 20px;
+    left: 20px;
+
+    width: 260px;
+
+    padding: 20px;
+
+    background: rgba(35, 31, 26, 0.96);
+
+    color: #eee8d8;
+
+    border: 1px solid #766d5b;
+
+    box-shadow:
+        0 4px 15px
+        rgba(0, 0, 0, 0.35);
+}
+
+#editor-panel h2 {
+    margin-top: 0;
+}
+
+.editor-section {
+    margin-top: 15px;
+}
+
+#country-select {
+    width: 100%;
+
+    margin-top: 8px;
+
+    padding: 8px;
+}
+
+#editor-panel button {
+    width: 100%;
+
+    margin-top: 8px;
+
+    padding: 10px;
+
+    border: none;
+
+    cursor: pointer;
+}
+
+#editor-panel button:hover {
+    background: #ddd;
+}
+
+#status {
+    color: #bfb6a2;
+
+    font-size: 13px;
+}
