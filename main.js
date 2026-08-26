@@ -833,9 +833,7 @@ async function loadMap() {
     try {
 
         const response =
-            await fetch(
-                "data/map.json"
-            );
+            await fetch("data/map.json");
 
 
         if (!response.ok) {
@@ -850,44 +848,170 @@ async function loadMap() {
             await response.json();
 
 
-        for (
-            const savedTile
-            of data.tiles
-        ) {
+        // ----------------------------------------------------
+        // FORMAT 1:
+        //
+        // {
+        //     "tiles": [
+        //         {
+        //             "col": 0,
+        //             "row": 0,
+        //             "owner": "france"
+        //         }
+        //     ]
+        // }
+        // ----------------------------------------------------
 
-            const index =
-                savedTile.row *
-                COLS +
-                savedTile.col;
+        if (Array.isArray(data.tiles)) {
+
+            for (const savedTile of data.tiles) {
+
+                const col = Number(savedTile.col);
+                const row = Number(savedTile.row);
+                const owner = savedTile.owner;
 
 
-            const tile =
-                tiles[index];
+                if (
+                    !Number.isInteger(col) ||
+                    !Number.isInteger(row)
+                ) {
+                    continue;
+                }
 
 
-            if (!tile) {
-                continue;
-            }
+                if (
+                    col < 0 ||
+                    col >= COLS ||
+                    row < 0 ||
+                    row >= ROWS
+                ) {
+                    continue;
+                }
 
 
-            if (
-                countries[
-                    savedTile.owner
-                ]
-            ) {
+                if (!countries[owner]) {
+                    continue;
+                }
 
-                tile.owner =
-                    savedTile.owner;
 
+                const index =
+                    row * COLS + col;
+
+
+                tiles[index].owner =
+                    owner;
             }
         }
 
+
+        // ----------------------------------------------------
+        // FORMAT 2:
+        //
+        // {
+        //     "owners": [
+        //         "ocean",
+        //         "ocean",
+        //         "france",
+        //         ...
+        //     ]
+        // }
+        //
+        // One owner per tile, row-major order.
+        // ----------------------------------------------------
+
+        else if (Array.isArray(data.owners)) {
+
+            for (
+                let i = 0;
+                i < data.owners.length &&
+                i < tiles.length;
+                i++
+            ) {
+
+                const owner =
+                    data.owners[i];
+
+
+                if (countries[owner]) {
+
+                    tiles[i].owner =
+                        owner;
+                }
+            }
+        }
+
+
+        // ----------------------------------------------------
+        // FORMAT 3:
+        //
+        // {
+        //     "map": [
+        //         ["ocean", "ocean", "france", ...],
+        //         ["ocean", "france", "france", ...]
+        //     ]
+        // }
+        //
+        // 2D row/column ownership array.
+        // ----------------------------------------------------
+
+        else if (Array.isArray(data.map)) {
+
+            for (
+                let row = 0;
+                row < data.map.length &&
+                row < ROWS;
+                row++
+            ) {
+
+                const mapRow =
+                    data.map[row];
+
+
+                if (!Array.isArray(mapRow)) {
+                    continue;
+                }
+
+
+                for (
+                    let col = 0;
+                    col < mapRow.length &&
+                    col < COLS;
+                    col++
+                ) {
+
+                    const owner =
+                        mapRow[col];
+
+
+                    if (!countries[owner]) {
+                        continue;
+                    }
+
+
+                    tiles[
+                        row * COLS + col
+                    ].owner = owner;
+                }
+            }
+        }
+
+
+        // ----------------------------------------------------
+        // REBUILD
+        // ----------------------------------------------------
 
         rebuildMapCanvas();
 
         draw();
 
+
+        console.log(
+            "Map loaded successfully."
+        );
+
     }
+
+
     catch (error) {
 
         console.error(
