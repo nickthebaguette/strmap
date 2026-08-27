@@ -1,4 +1,3 @@
-```javascript
 const canvas = document.getElementById("map");
 const ctx = canvas.getContext("2d");
 
@@ -999,4 +998,3 @@ async function loadMap() {
 // ============================================================
 
 loadMap();
-```
