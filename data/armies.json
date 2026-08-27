@@ -1,3 +1,31 @@
 {
-    "armies": []
+  "armies": [
+    {
+      "id": 1,
+      "name": "Army of the North",
+      "country": "france",
+      "strength": 100000,
+      "icon": "icons/armies/army.png",
+      "col": 31,
+      "row": 41
+    },
+    {
+      "id": 2,
+      "name": "Army of the North",
+      "country": "france",
+      "strength": 100000,
+      "icon": "icons/armies/army.png",
+      "col": 34,
+      "row": 54
+    },
+    {
+      "id": 3,
+      "name": "Army of the North",
+      "country": "france",
+      "strength": 100000,
+      "icon": "icons/armies/army.png",
+      "col": 26,
+      "row": 55
+    }
+  ]
 }
