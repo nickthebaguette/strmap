@@ -30,6 +30,16 @@ const HEX_SIZE = 14;
 
 const CACHE_SCALE = 3;
 
+// ============================================================
+// FRAME
+// ============================================================
+
+const FRAME_OVERHANG = HEX_SIZE * 0.5;
+
+const FRAME_WIDTH = 6;
+
+const FRAME_COLOR = "#252522";
+
 
 // ============================================================
 // HEX GEOMETRY
@@ -552,77 +562,70 @@ function draw() {
     );
 
 
-    // ========================================================
-    // MAP
-    // ========================================================
+    // --------------------------------------------------------
+    // Frame background
+    // --------------------------------------------------------
+
+    ctx.fillStyle =
+        FRAME_COLOR;
+
+    ctx.fillRect(
+
+        -FRAME_OVERHANG,
+
+        -FRAME_OVERHANG,
+
+        MAP_WIDTH +
+        FRAME_OVERHANG * 2,
+
+        MAP_HEIGHT +
+        FRAME_OVERHANG * 2
+
+    );
+
+
+    // --------------------------------------------------------
+    // Map
+    // --------------------------------------------------------
 
     ctx.drawImage(
-
         mapCanvas,
-
         0,
-        0,
-
-        mapCanvas.width,
-        mapCanvas.height,
-
-        0,
-        0,
-
-        MAP_WIDTH,
-        MAP_HEIGHT
-
+        0
     );
 
 
-    // ========================================================
-    // PICTURE FRAME
-    // ========================================================
-
-    // Outer dark frame.
+    // --------------------------------------------------------
+    // Frame overlay
+    // --------------------------------------------------------
+    //
+    // A thicker border slightly overlaps the edge hexes.
+    //
 
     ctx.strokeStyle =
-        "#252525";
+        FRAME_COLOR;
 
     ctx.lineWidth =
-        6 / camera.zoom;
-
+        FRAME_WIDTH /
+        camera.zoom;
 
     ctx.strokeRect(
 
-        0,
-        0,
+        -FRAME_OVERHANG,
 
-        MAP_WIDTH,
-        MAP_HEIGHT
+        -FRAME_OVERHANG,
 
-    );
+        MAP_WIDTH +
+        FRAME_OVERHANG * 2,
 
-
-    // Inner lighter frame.
-
-    ctx.strokeStyle =
-        "#77736a";
-
-    ctx.lineWidth =
-        2 / camera.zoom;
-
-
-    ctx.strokeRect(
-
-        3 / camera.zoom,
-        3 / camera.zoom,
-
-        MAP_WIDTH -
-        6 / camera.zoom,
-
-        MAP_HEIGHT -
-        6 / camera.zoom
+        MAP_HEIGHT +
+        FRAME_OVERHANG * 2
 
     );
 
 
     ctx.restore();
+
 }
 
 
@@ -672,55 +675,53 @@ function getMinimumZoom() {
 
 function clampCamera() {
 
-    const minimumZoom =
-        Math.max(
-            MIN_ZOOM,
-            getMinimumZoom()
-        );
-
-
-    // Make sure zoom cannot go below
-    // the map-covering minimum.
-
-    if (
-        camera.zoom <
-        minimumZoom
-    ) {
-
-        camera.zoom =
-            minimumZoom;
-    }
-
-
     const visibleWidth =
         canvas.width /
         camera.zoom;
-
 
     const visibleHeight =
         canvas.height /
         camera.zoom;
 
 
+    const frameWidth =
+        MAP_WIDTH +
+        FRAME_OVERHANG * 2;
+
+    const frameHeight =
+        MAP_HEIGHT +
+        FRAME_OVERHANG * 2;
+
+
+    const minX =
+        -FRAME_OVERHANG;
+
+
+    const minY =
+        -FRAME_OVERHANG;
+
+
     const maxX =
         Math.max(
-            0,
-            MAP_WIDTH -
-            visibleWidth
+            minX,
+            frameWidth -
+            visibleWidth -
+            FRAME_OVERHANG
         );
 
 
     const maxY =
         Math.max(
-            0,
-            MAP_HEIGHT -
-            visibleHeight
+            minY,
+            frameHeight -
+            visibleHeight -
+            FRAME_OVERHANG
         );
 
 
     camera.x =
         Math.max(
-            0,
+            minX,
             Math.min(
                 camera.x,
                 maxX
@@ -730,14 +731,14 @@ function clampCamera() {
 
     camera.y =
         Math.max(
-            0,
+            minY,
             Math.min(
                 camera.y,
                 maxY
             )
         );
-}
 
+}
 
 // ============================================================
 // RESIZE
