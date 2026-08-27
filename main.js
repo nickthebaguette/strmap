@@ -34,11 +34,6 @@ const HEX_VERTICAL_DISTANCE =
 // ============================================================
 // FRAME
 // ============================================================
-//
-// The frame extends half a hex beyond the map.
-//
-// This is deliberately larger than before.
-//
 
 const FRAME_OVERHANG =
     HEX_SIZE * 0.5;
@@ -237,6 +232,27 @@ function createTiles() {
     }
 
 }
+
+
+// ============================================================
+// CITIES
+// ============================================================
+
+const cities = [];
+
+
+const cityImage =
+    new Image();
+
+cityImage.src =
+    "icons/cities/city.png";
+
+
+// ============================================================
+// ARMIES
+// ============================================================
+
+const armies = [];
 
 
 // ============================================================
@@ -472,10 +488,6 @@ function rebuildMapCanvas() {
 // ============================================================
 // CALCULATE MINIMUM ZOOM
 // ============================================================
-//
-// Prevents the user from zooming out far enough that
-// the entire framed map becomes smaller than the viewport.
-//
 
 function updateMinimumZoom() {
 
@@ -506,13 +518,104 @@ function updateMinimumZoom() {
         );
 
 
-    // Don't allow MIN_ZOOM to exceed MAX_ZOOM.
-
     MIN_ZOOM =
         Math.min(
             MIN_ZOOM,
             MAX_ZOOM
         );
+
+}
+
+
+// ============================================================
+// DRAW CITIES
+// ============================================================
+
+function drawCities() {
+
+    const size = 22;
+
+
+    for (
+        const city of cities
+    ) {
+
+        const world =
+            hexToWorld(
+                city.col,
+                city.row
+            );
+
+
+        if (
+            cityImage.complete &&
+            cityImage.naturalWidth > 0
+        ) {
+
+            ctx.drawImage(
+
+                cityImage,
+
+                world.x - size / 2,
+
+                world.y - size / 2,
+
+                size,
+
+                size
+
+            );
+
+        }
+
+    }
+
+}
+
+
+// ============================================================
+// DRAW ARMIES
+// ============================================================
+
+function drawArmies() {
+
+    const size = 22;
+
+
+    for (
+        const army of armies
+    ) {
+
+        const world =
+            hexToWorld(
+                army.col,
+                army.row
+            );
+
+
+        if (
+            army.iconImage &&
+            army.iconImage.complete &&
+            army.iconImage.naturalWidth > 0
+        ) {
+
+            ctx.drawImage(
+
+                army.iconImage,
+
+                world.x - size / 2,
+
+                world.y - size / 2,
+
+                size,
+
+                size
+
+            );
+
+        }
+
+    }
 
 }
 
@@ -591,6 +694,20 @@ function draw() {
         -FRAME_OVERHANG
 
     );
+
+
+    // ========================================================
+    // CITIES
+    // ========================================================
+
+    drawCities();
+
+
+    // ========================================================
+    // ARMIES
+    // ========================================================
+
+    drawArmies();
 
 
     // ========================================================
@@ -906,6 +1023,138 @@ function getTileAt(
 
 
 // ============================================================
+// FIND CITY
+// ============================================================
+
+function getCityAt(
+    worldX,
+    worldY
+) {
+
+    const clickRadius =
+        12;
+
+
+    for (
+        let i = cities.length - 1;
+
+        i >= 0;
+
+        i--
+    ) {
+
+        const city =
+            cities[i];
+
+
+        const world =
+            hexToWorld(
+                city.col,
+                city.row
+            );
+
+
+        const dx =
+            worldX -
+            world.x;
+
+
+        const dy =
+            worldY -
+            world.y;
+
+
+        const distance =
+            Math.sqrt(
+                dx * dx +
+                dy * dy
+            );
+
+
+        if (
+            distance <=
+            clickRadius
+        ) {
+
+            return city;
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+// ============================================================
+// FIND ARMY
+// ============================================================
+
+function getArmyAt(
+    worldX,
+    worldY
+) {
+
+    const clickRadius =
+        12;
+
+
+    for (
+        let i = armies.length - 1;
+
+        i >= 0;
+
+        i--
+    ) {
+
+        const army =
+            armies[i];
+
+
+        const world =
+            hexToWorld(
+                army.col,
+                army.row
+            );
+
+
+        const dx =
+            worldX -
+            world.x;
+
+
+        const dy =
+            worldY -
+            world.y;
+
+
+        const distance =
+            Math.sqrt(
+                dx * dx +
+                dy * dy
+            );
+
+
+        if (
+            distance <=
+            clickRadius
+        ) {
+
+            return army;
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+// ============================================================
 // TILE CLICK
 // ============================================================
 
@@ -946,6 +1195,90 @@ canvas.addEventListener(
             );
 
 
+        // ====================================================
+        // CHECK ARMY
+        // ====================================================
+
+        const army =
+            getArmyAt(
+                world.x,
+                world.y
+            );
+
+
+        if (army) {
+
+            const country =
+                countries[
+                    army.country
+                ];
+
+
+            if (territoryName) {
+
+                territoryName.textContent =
+                    army.name;
+
+            }
+
+
+            if (territoryOwner) {
+
+                territoryOwner.textContent =
+                    `${country ? country.name : army.country} • ${army.strength} troops`;
+
+            }
+
+
+            return;
+
+        }
+
+
+        // ====================================================
+        // CHECK CITY
+        // ====================================================
+
+        const city =
+            getCityAt(
+                world.x,
+                world.y
+            );
+
+
+        if (city) {
+
+            const country =
+                countries[
+                    city.country
+                ];
+
+
+            if (territoryName) {
+
+                territoryName.textContent =
+                    city.name;
+
+            }
+
+
+            if (territoryOwner) {
+
+                territoryOwner.textContent =
+                    `${country ? country.name : city.country} • City`;
+
+            }
+
+
+            return;
+
+        }
+
+
+        // ====================================================
+        // NORMAL TERRITORY
+        // ====================================================
+
         const tile =
             getTileAt(
                 world.x,
@@ -973,12 +1306,20 @@ canvas.addEventListener(
         }
 
 
-        territoryName.textContent =
-            country.name;
+        if (territoryName) {
+
+            territoryName.textContent =
+                country.name;
+
+        }
 
 
-        territoryOwner.textContent =
-            `Tile: ${tile.col}, ${tile.row}`;
+        if (territoryOwner) {
+
+            territoryOwner.textContent =
+                `Tile: ${tile.col}, ${tile.row}`;
+
+        }
 
     }
 );
@@ -1505,6 +1846,281 @@ async function loadMap() {
 
 
 // ============================================================
+// LOAD CITIES
+// ============================================================
+
+async function loadCities() {
+
+    try {
+
+        const response =
+            await fetch(
+                "data/cities.json"
+            );
+
+
+        if (!response.ok) {
+
+            console.log(
+                "No cities.json found."
+            );
+
+            return;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !Array.isArray(
+                data.cities
+            )
+        ) {
+
+            console.log(
+                "cities.json contains no cities array."
+            );
+
+            return;
+
+        }
+
+
+        cities.length = 0;
+
+
+        for (
+            const cityData
+            of data.cities
+        ) {
+
+            const col =
+                Number(
+                    cityData.col
+                );
+
+
+            const row =
+                Number(
+                    cityData.row
+                );
+
+
+            if (
+                !Number.isInteger(col) ||
+                !Number.isInteger(row)
+            ) {
+
+                continue;
+
+            }
+
+
+            cities.push({
+
+                id:
+                    Number(
+                        cityData.id
+                    ),
+
+                name:
+                    cityData.name ||
+                    "Unnamed City",
+
+                country:
+                    cityData.country ||
+                    "ocean",
+
+                col:
+                    col,
+
+                row:
+                    row
+
+            });
+
+        }
+
+
+        draw();
+
+
+        console.log(
+            `Loaded ${cities.length} cities.`
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Failed to load cities:",
+            error
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// LOAD ARMIES
+// ============================================================
+
+async function loadArmies() {
+
+    try {
+
+        const response =
+            await fetch(
+                "data/armies.json"
+            );
+
+
+        if (!response.ok) {
+
+            console.log(
+                "No armies.json found."
+            );
+
+            return;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !Array.isArray(
+                data.armies
+            )
+        ) {
+
+            console.log(
+                "armies.json contains no armies array."
+            );
+
+            return;
+
+        }
+
+
+        armies.length = 0;
+
+
+        for (
+            const armyData
+            of data.armies
+        ) {
+
+            const col =
+                Number(
+                    armyData.col
+                );
+
+
+            const row =
+                Number(
+                    armyData.row
+                );
+
+
+            if (
+                !Number.isInteger(col) ||
+                !Number.isInteger(row)
+            ) {
+
+                continue;
+
+            }
+
+
+            const army = {
+
+                id:
+                    Number(
+                        armyData.id
+                    ),
+
+                name:
+                    armyData.name ||
+                    "Unnamed Army",
+
+                country:
+                    armyData.country ||
+                    "ocean",
+
+                strength:
+                    Number(
+                        armyData.strength
+                    ) || 0,
+
+                icon:
+                    armyData.icon ||
+                    "icons/armies/army.png",
+
+                col:
+                    col,
+
+                row:
+                    row
+
+            };
+
+
+            // Load army icon.
+
+            army.iconImage =
+                new Image();
+
+            army.iconImage.src =
+                army.icon;
+
+
+            // Redraw once image loads.
+
+            army.iconImage.onload =
+                () => {
+
+                    draw();
+
+                };
+
+
+            armies.push(
+                army
+            );
+
+        }
+
+
+        draw();
+
+
+        console.log(
+            `Loaded ${armies.length} armies.`
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Failed to load armies:",
+            error
+        );
+
+    }
+
+}
+
+
+// ============================================================
 // START
 // ============================================================
 
@@ -1516,4 +2132,13 @@ rebuildMapCanvas();
 
 resizeCanvas();
 
+
+// ============================================================
+// LOAD ALL DATA
+// ============================================================
+
 loadMap();
+
+loadCities();
+
+loadArmies();
