@@ -26,6 +26,10 @@ import {
 } from "./armies.js";
 
 
+// ============================================================
+// MAP CANVAS
+// ============================================================
+
 export const mapCanvas =
     document.createElement("canvas");
 
@@ -34,15 +38,68 @@ export const mapCtx =
 
 
 // ============================================================
-// HEX
+// TEXTURES
 // ============================================================
 
-function drawHexOnContext(
+const parchmentTexture =
+    new Image();
+
+const waterTexture =
+    new Image();
+
+
+parchmentTexture.src =
+    "assets/textures/parchment.png";
+
+waterTexture.src =
+    "assets/textures/water.png";
+
+
+let texturesLoaded = false;
+
+
+// Wait until both textures are available.
+
+Promise.all([
+
+    new Promise(resolve => {
+
+        parchmentTexture.onload =
+            resolve;
+
+        parchmentTexture.onerror =
+            resolve;
+
+    }),
+
+    new Promise(resolve => {
+
+        waterTexture.onload =
+            resolve;
+
+        waterTexture.onerror =
+            resolve;
+
+    })
+
+]).then(() => {
+
+    texturesLoaded = true;
+
+    rebuildMapCanvas();
+
+});
+
+
+// ============================================================
+// HEX PATH
+// ============================================================
+
+function createHexPath(
     context,
     x,
     y,
-    size,
-    color
+    size
 ) {
 
     context.beginPath();
@@ -64,13 +121,16 @@ function drawHexOnContext(
             size *
             Math.cos(angle);
 
+
         const py =
             y +
             size *
             Math.sin(angle);
 
 
-        if (i === 0) {
+        if (
+            i === 0
+        ) {
 
             context.moveTo(
                 px,
@@ -93,10 +153,144 @@ function drawHexOnContext(
 
     context.closePath();
 
+}
+
+
+// ============================================================
+// DRAW HEX
+// ============================================================
+
+function drawHexOnContext(
+    context,
+    x,
+    y,
+    size,
+    color,
+    texture
+) {
+
+    // --------------------------------------------------------
+    // HEX PATH
+    // --------------------------------------------------------
+
+    createHexPath(
+        context,
+        x,
+        y,
+        size
+    );
+
+
+    // --------------------------------------------------------
+    // TEXTURE
+    // --------------------------------------------------------
+
+    if (
+        texture &&
+        texture.complete &&
+        texture.naturalWidth > 0
+    ) {
+
+        context.save();
+
+
+        // Use the hex as a clipping mask.
+
+        context.clip();
+
+
+        // ----------------------------------------------------
+        // Draw texture using world coordinates.
+        //
+        // This keeps the texture continuous across
+        // neighboring hexes.
+        // ----------------------------------------------------
+
+        const pattern =
+            context.createPattern(
+                texture,
+                "repeat"
+            );
+
+
+        if (pattern) {
+
+            context.fillStyle =
+                pattern;
+
+
+            context.fillRect(
+
+                -x,
+
+                -y,
+
+                MAP_WIDTH +
+                100,
+
+                MAP_HEIGHT +
+                100
+
+            );
+
+        }
+
+
+        context.restore();
+
+    }
+
+    else {
+
+        // Fallback if texture hasn't loaded.
+
+        context.fillStyle =
+            color;
+
+        context.fill();
+
+    }
+
+
+    // --------------------------------------------------------
+    // COUNTRY COLOUR OVERLAY
+    // --------------------------------------------------------
+
+    createHexPath(
+        context,
+        x,
+        y,
+        size
+    );
+
+
+    context.save();
+
+
+    context.globalAlpha =
+        0.45;
+
+
     context.fillStyle =
         color;
 
     context.fill();
+
+
+    context.restore();
+
+
+    // --------------------------------------------------------
+    // HEX OUTLINE
+    // --------------------------------------------------------
+
+    createHexPath(
+        context,
+        x,
+        y,
+        size
+    );
+
 
     context.strokeStyle =
         "#30302d";
@@ -145,6 +339,10 @@ export function rebuildMapCanvas() {
     );
 
 
+    // --------------------------------------------------------
+    // MAP TILES
+    // --------------------------------------------------------
+
     for (
         const tile of tiles
     ) {
@@ -169,18 +367,50 @@ export function rebuildMapCanvas() {
         }
 
 
-        drawHexOnContext(
+        // Ocean uses water texture.
 
-            mapCtx,
+        if (
+            tile.owner ===
+            "ocean"
+        ) {
 
-            world.x,
-            world.y,
+            drawHexOnContext(
 
-            14,
+                mapCtx,
 
-            country.color
+                world.x,
+                world.y,
 
-        );
+                14,
+
+                country.color,
+
+                waterTexture
+
+            );
+
+        }
+
+        // Everything else uses parchment.
+
+        else {
+
+            drawHexOnContext(
+
+                mapCtx,
+
+                world.x,
+                world.y,
+
+                14,
+
+                country.color,
+
+                parchmentTexture
+
+            );
+
+        }
 
     }
 
@@ -210,6 +440,10 @@ export function draw(
     ctx.save();
 
 
+    // ========================================================
+    // CAMERA
+    // ========================================================
+
     ctx.translate(
 
         -camera.x *
@@ -227,7 +461,9 @@ export function draw(
     );
 
 
+    // ========================================================
     // FRAME
+    // ========================================================
 
     ctx.fillStyle =
         FRAME_COLOR;
@@ -248,7 +484,9 @@ export function draw(
     );
 
 
+    // ========================================================
     // MAP
+    // ========================================================
 
     ctx.drawImage(
 
@@ -261,14 +499,18 @@ export function draw(
     );
 
 
+    // ========================================================
     // ENTITIES
+    // ========================================================
 
     drawCities(ctx);
 
     drawArmies(ctx);
 
 
-    // BORDER
+    // ========================================================
+    // FRAME BORDER
+    // ========================================================
 
     ctx.strokeStyle =
         FRAME_COLOR;
