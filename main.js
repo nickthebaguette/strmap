@@ -1,3 +1,4 @@
+```javascript
 const canvas = document.getElementById("map");
 const ctx = canvas.getContext("2d");
 
@@ -15,8 +16,11 @@ const territoryOwner =
 // MAP
 // ============================================================
 
-const COLS = 150;
-const ROWS = 90;
+// These are now loaded from map.json.
+// Defaults are only used if the JSON is missing them.
+
+let COLS = 150;
+let ROWS = 90;
 
 const HEX_SIZE = 14;
 
@@ -26,13 +30,8 @@ const HEX_WIDTH =
 const HEX_VERTICAL_DISTANCE =
     HEX_SIZE * 1.5;
 
-const MAP_WIDTH =
-    COLS * HEX_WIDTH +
-    HEX_WIDTH;
-
-const MAP_HEIGHT =
-    ROWS * HEX_VERTICAL_DISTANCE +
-    HEX_SIZE;
+let MAP_WIDTH = 0;
+let MAP_HEIGHT = 0;
 
 
 // ============================================================
@@ -143,6 +142,7 @@ const countries = {
 
 const tiles = [];
 
+
 function createTiles() {
 
     tiles.length = 0;
@@ -159,6 +159,22 @@ function createTiles() {
 
         }
     }
+}
+
+
+// ============================================================
+// MAP DIMENSIONS
+// ============================================================
+
+function updateMapDimensions() {
+
+    MAP_WIDTH =
+        COLS * HEX_WIDTH +
+        HEX_WIDTH;
+
+    MAP_HEIGHT =
+        ROWS * HEX_VERTICAL_DISTANCE +
+        HEX_SIZE;
 }
 
 
@@ -236,13 +252,11 @@ function drawHexOnContext(
 
     context.beginPath();
 
-
     for (let i = 0; i < 6; i++) {
 
         const angle =
             Math.PI / 180 *
             (60 * i - 30);
-
 
         const px =
             x +
@@ -253,7 +267,6 @@ function drawHexOnContext(
             y +
             size *
             Math.sin(angle);
-
 
         if (i === 0) {
 
@@ -272,15 +285,12 @@ function drawHexOnContext(
         }
     }
 
-
     context.closePath();
-
 
     context.fillStyle =
         color;
 
     context.fill();
-
 
     context.strokeStyle =
         "#30302d";
@@ -297,7 +307,6 @@ function drawHexOnContext(
 // ============================================================
 //
 // This is the expensive operation.
-//
 // It only runs when the map changes.
 //
 // Camera movement does NOT rebuild the map.
@@ -311,14 +320,12 @@ function rebuildMapCanvas() {
     mapCanvas.height =
         MAP_HEIGHT;
 
-
     mapCtx.clearRect(
         0,
         0,
         mapCanvas.width,
         mapCanvas.height
     );
-
 
     for (const tile of tiles) {
 
@@ -328,12 +335,18 @@ function rebuildMapCanvas() {
                 tile.row
             );
 
-
         const country =
             countries[
                 tile.owner
             ];
 
+        // Safety fallback if the JSON contains
+        // an owner that doesn't exist in countries.
+
+        const color =
+            country
+                ? country.color
+                : countries.ocean.color;
 
         drawHexOnContext(
 
@@ -344,7 +357,7 @@ function rebuildMapCanvas() {
 
             HEX_SIZE,
 
-            country.color
+            color
 
         );
     }
@@ -369,28 +382,23 @@ function draw() {
         canvas.height
     );
 
-
     ctx.save();
-
 
     ctx.scale(
         camera.zoom,
         camera.zoom
     );
 
-
     ctx.translate(
         -camera.x,
         -camera.y
     );
-
 
     ctx.drawImage(
         mapCanvas,
         0,
         0
     );
-
 
     ctx.restore();
 }
@@ -410,7 +418,6 @@ function clampCamera() {
         canvas.height /
         camera.zoom;
 
-
     const maxX =
         Math.max(
             0,
@@ -418,14 +425,12 @@ function clampCamera() {
             visibleWidth
         );
 
-
     const maxY =
         Math.max(
             0,
             MAP_HEIGHT -
             visibleHeight
         );
-
 
     camera.x =
         Math.max(
@@ -435,7 +440,6 @@ function clampCamera() {
                 maxX
             )
         );
-
 
     camera.y =
         Math.max(
@@ -459,7 +463,6 @@ function resizeCanvas() {
 
     canvas.height =
         window.innerHeight;
-
 
     clampCamera();
 
@@ -494,12 +497,10 @@ function getTileAt(
             HEX_VERTICAL_DISTANCE
         );
 
-
     let closest = null;
 
     let closestDistance =
         HEX_SIZE;
-
 
     for (
         let row =
@@ -530,13 +531,11 @@ function getTileAt(
                 continue;
             }
 
-
             const p =
                 hexToWorld(
                     col,
                     row
                 );
-
 
             const dx =
                 worldX -
@@ -546,13 +545,11 @@ function getTileAt(
                 worldY -
                 p.y;
 
-
             const distance =
                 Math.sqrt(
                     dx * dx +
                     dy * dy
                 );
-
 
             if (
                 distance <
@@ -570,7 +567,6 @@ function getTileAt(
             }
         }
     }
-
 
     return closest;
 }
@@ -591,10 +587,8 @@ canvas.addEventListener(
             return;
         }
 
-
         const rect =
             canvas.getBoundingClientRect();
-
 
         const screenX =
             event.clientX -
@@ -604,13 +598,11 @@ canvas.addEventListener(
             event.clientY -
             rect.top;
 
-
         const world =
             screenToWorld(
                 screenX,
                 screenY
             );
-
 
         const tile =
             getTileAt(
@@ -618,21 +610,21 @@ canvas.addEventListener(
                 world.y
             );
 
-
         if (!tile) {
             return;
         }
-
 
         const country =
             countries[
                 tile.owner
             ];
 
+        if (!country) {
+            return;
+        }
 
         territoryName.textContent =
             country.name;
-
 
         territoryOwner.textContent =
             `Tile: ${tile.col}, ${tile.row}`;
@@ -644,11 +636,8 @@ canvas.addEventListener(
 // PAN
 // ============================================================
 //
-// Left/right mouse behavior on public map:
-//
 // Left drag = pan
 //
-// (If you prefer right drag, we can change this.)
 
 let dragging = false;
 
@@ -664,11 +653,9 @@ canvas.addEventListener(
             return;
         }
 
-
         dragging = true;
 
         wasDragging = false;
-
 
         lastX =
             event.clientX;
@@ -687,7 +674,6 @@ canvas.addEventListener(
             return;
         }
 
-
         const dx =
             event.clientX -
             lastX;
@@ -695,7 +681,6 @@ canvas.addEventListener(
         const dy =
             event.clientY -
             lastY;
-
 
         if (
             Math.abs(dx) > 2 ||
@@ -705,7 +690,6 @@ canvas.addEventListener(
             wasDragging = true;
         }
 
-
         camera.x -=
             dx /
             camera.zoom;
@@ -714,16 +698,13 @@ canvas.addEventListener(
             dy /
             camera.zoom;
 
-
         clampCamera();
-
 
         lastX =
             event.clientX;
 
         lastY =
             event.clientY;
-
 
         draw();
     }
@@ -735,6 +716,7 @@ window.addEventListener(
     () => {
 
         dragging = false;
+
     }
 );
 
@@ -749,10 +731,8 @@ canvas.addEventListener(
 
         event.preventDefault();
 
-
         const rect =
             canvas.getBoundingClientRect();
-
 
         const mouseX =
             event.clientX -
@@ -761,7 +741,6 @@ canvas.addEventListener(
         const mouseY =
             event.clientY -
             rect.top;
-
 
         // World position underneath mouse
         // before zooming.
@@ -772,7 +751,6 @@ canvas.addEventListener(
                 mouseY
             );
 
-
         if (
             event.deltaY < 0
         ) {
@@ -782,8 +760,8 @@ canvas.addEventListener(
         } else {
 
             camera.zoom *= 0.9;
-        }
 
+        }
 
         camera.zoom =
             Math.max(
@@ -794,7 +772,6 @@ canvas.addEventListener(
                 )
             );
 
-
         // World position underneath mouse
         // after zooming.
 
@@ -804,9 +781,7 @@ canvas.addEventListener(
                 mouseY
             );
 
-
-        // Compensate so the mouse
-        // stays over the same tile.
+        // Keep the mouse over the same map position.
 
         camera.x +=
             before.x -
@@ -816,10 +791,10 @@ canvas.addEventListener(
             before.y -
             after.y;
 
-
         clampCamera();
 
         draw();
+
     }
 );
 
@@ -832,9 +807,14 @@ async function loadMap() {
 
     try {
 
-        const response =
-            await fetch("data/map.json");
+        // Cache-busting prevents GitHub Pages/browser
+        // caching from giving us an old map.json.
 
+        const response =
+            await fetch(
+                "data/map.json?version=" +
+                Date.now()
+            );
 
         if (!response.ok) {
 
@@ -843,170 +823,149 @@ async function loadMap() {
             );
         }
 
-
         const data =
             await response.json();
 
 
         // ----------------------------------------------------
-        // FORMAT 1:
-        //
-        // {
-        //     "tiles": [
-        //         {
-        //             "col": 0,
-        //             "row": 0,
-        //             "owner": "france"
-        //         }
-        //     ]
-        // }
+        // READ GRID SIZE FROM JSON
         // ----------------------------------------------------
 
-        if (Array.isArray(data.tiles)) {
+        if (
+            Number.isInteger(data.cols) &&
+            Number.isInteger(data.rows)
+        ) {
 
-            for (const savedTile of data.tiles) {
+            COLS =
+                data.cols;
 
-                const col = Number(savedTile.col);
-                const row = Number(savedTile.row);
-                const owner = savedTile.owner;
+            ROWS =
+                data.rows;
 
+        } else {
 
-                if (
-                    !Number.isInteger(col) ||
-                    !Number.isInteger(row)
-                ) {
-                    continue;
-                }
+            console.warn(
+                "map.json has no valid cols/rows. Using defaults."
+            );
 
-
-                if (
-                    col < 0 ||
-                    col >= COLS ||
-                    row < 0 ||
-                    row >= ROWS
-                ) {
-                    continue;
-                }
-
-
-                if (!countries[owner]) {
-                    continue;
-                }
-
-
-                const index =
-                    row * COLS + col;
-
-
-                tiles[index].owner =
-                    owner;
-            }
         }
 
 
         // ----------------------------------------------------
-        // FORMAT 2:
-        //
-        // {
-        //     "owners": [
-        //         "ocean",
-        //         "ocean",
-        //         "france",
-        //         ...
-        //     ]
-        // }
-        //
-        // One owner per tile, row-major order.
+        // UPDATE MAP SIZE
         // ----------------------------------------------------
 
-        else if (Array.isArray(data.owners)) {
+        updateMapDimensions();
 
-            for (
-                let i = 0;
-                i < data.owners.length &&
-                i < tiles.length;
-                i++
+
+        // ----------------------------------------------------
+        // CREATE EMPTY GRID
+        // ----------------------------------------------------
+
+        createTiles();
+
+
+        // ----------------------------------------------------
+        // LOAD OWNERSHIP
+        // ----------------------------------------------------
+
+        if (!Array.isArray(data.tiles)) {
+
+            throw new Error(
+                "map.json does not contain a 'tiles' array."
+            );
+        }
+
+
+        let loadedTiles = 0;
+
+
+        for (
+            const savedTile
+            of data.tiles
+        ) {
+
+            const col =
+                Number(
+                    savedTile.col
+                );
+
+            const row =
+                Number(
+                    savedTile.row
+                );
+
+            const owner =
+                savedTile.owner;
+
+
+            if (
+                !Number.isInteger(col) ||
+                !Number.isInteger(row)
             ) {
 
-                const owner =
-                    data.owners[i];
+                continue;
 
-
-                if (countries[owner]) {
-
-                    tiles[i].owner =
-                        owner;
-                }
             }
-        }
 
 
-        // ----------------------------------------------------
-        // FORMAT 3:
-        //
-        // {
-        //     "map": [
-        //         ["ocean", "ocean", "france", ...],
-        //         ["ocean", "france", "france", ...]
-        //     ]
-        // }
-        //
-        // 2D row/column ownership array.
-        // ----------------------------------------------------
-
-        else if (Array.isArray(data.map)) {
-
-            for (
-                let row = 0;
-                row < data.map.length &&
-                row < ROWS;
-                row++
+            if (
+                col < 0 ||
+                col >= COLS ||
+                row < 0 ||
+                row >= ROWS
             ) {
 
-                const mapRow =
-                    data.map[row];
+                continue;
 
-
-                if (!Array.isArray(mapRow)) {
-                    continue;
-                }
-
-
-                for (
-                    let col = 0;
-                    col < mapRow.length &&
-                    col < COLS;
-                    col++
-                ) {
-
-                    const owner =
-                        mapRow[col];
-
-
-                    if (!countries[owner]) {
-                        continue;
-                    }
-
-
-                    tiles[
-                        row * COLS + col
-                    ].owner = owner;
-                }
             }
+
+
+            if (
+                !countries[owner]
+            ) {
+
+                console.warn(
+                    "Unknown country:",
+                    owner
+                );
+
+                continue;
+            }
+
+
+            const index =
+                row * COLS +
+                col;
+
+
+            tiles[index].owner =
+                owner;
+
+
+            loadedTiles++;
+
         }
 
 
         // ----------------------------------------------------
-        // REBUILD
+        // BUILD MAP
         // ----------------------------------------------------
 
         rebuildMapCanvas();
+
+
+        clampCamera();
 
         draw();
 
 
         console.log(
-            "Map loaded successfully."
+            `Map loaded: ${COLS} × ${ROWS}`
+        );
+
+        console.log(
+            `Ownership tiles loaded: ${loadedTiles}`
         );
 
     }
@@ -1020,9 +979,17 @@ async function loadMap() {
         );
 
 
+        // Still create a usable default map
+        // if loading fails.
+
+        updateMapDimensions();
+
+        createTiles();
+
         rebuildMapCanvas();
 
-        draw();
+        resizeCanvas();
+
     }
 }
 
@@ -1031,10 +998,5 @@ async function loadMap() {
 // START
 // ============================================================
 
-createTiles();
-
-rebuildMapCanvas();
-
-resizeCanvas();
-
 loadMap();
+```
