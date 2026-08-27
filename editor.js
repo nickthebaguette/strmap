@@ -21,10 +21,6 @@ const downloadButton =
 const statusText =
     document.getElementById("status");
 
-
-// Optional editor mode controls.
-// The script supports either a select or buttons.
-
 const editorModeSelect =
     document.getElementById("editor-mode");
 
@@ -285,8 +281,10 @@ function createTiles() {
 
 const cities = [];
 
+let nextCityId = 1;
 
-// City format:
+
+// City:
 //
 // {
 //     id: 1,
@@ -303,8 +301,10 @@ const cities = [];
 
 const armies = [];
 
+let nextArmyId = 1;
 
-// Army format:
+
+// Army:
 //
 // {
 //     id: 1,
@@ -315,10 +315,6 @@ const armies = [];
 //     col: 20,
 //     row: 25
 // }
-
-
-let nextCityId = 1;
-let nextArmyId = 1;
 
 
 // ============================================================
@@ -469,6 +465,7 @@ function rebuildMapCanvas() {
 
     mapCtx.save();
 
+
     mapCtx.translate(
         FRAME_OVERHANG,
         FRAME_OVERHANG
@@ -578,7 +575,7 @@ function draw() {
     ctx.save();
 
 
-    // Exact camera transform from main.js.
+    // EXACT same camera transform as main.js.
 
     ctx.translate(
 
@@ -656,6 +653,7 @@ function draw() {
     ctx.strokeStyle =
         FRAME_COLOR;
 
+
     ctx.lineWidth =
         FRAME_WIDTH /
         camera.zoom;
@@ -682,7 +680,7 @@ function draw() {
 
 
 // ============================================================
-// DRAW CITIES
+// CITY ICON
 // ============================================================
 
 const cityImage =
@@ -691,6 +689,10 @@ const cityImage =
 cityImage.src =
     "icons/cities/city.png";
 
+
+// ============================================================
+// DRAW CITIES
+// ============================================================
 
 function drawCities() {
 
@@ -1098,14 +1100,13 @@ function setEditorMode(
         mode;
 
 
-    // Hide all editors.
-
     if (countryEditor) {
 
         countryEditor.style.display =
             "none";
 
     }
+
 
     if (cityEditor) {
 
@@ -1114,6 +1115,7 @@ function setEditorMode(
 
     }
 
+
     if (armyEditor) {
 
         armyEditor.style.display =
@@ -1121,8 +1123,6 @@ function setEditorMode(
 
     }
 
-
-    // Show selected editor.
 
     if (
         mode === "country" &&
@@ -1208,7 +1208,7 @@ function createCity(tile) {
             : tile.owner;
 
 
-    // Remove existing city on this tile.
+    // Remove existing city on this hex.
 
     for (
         let i = cities.length - 1;
@@ -1233,19 +1233,29 @@ function createCity(tile) {
     }
 
 
-    cities.push({
+    const city = {
 
-        id: nextCityId++,
+        id:
+            nextCityId++,
 
-        name: name,
+        name:
+            name,
 
-        country: country,
+        country:
+            country,
 
-        col: tile.col,
+        col:
+            tile.col,
 
-        row: tile.row
+        row:
+            tile.row
 
-    });
+    };
+
+
+    cities.push(
+        city
+    );
 
 
     statusText.textContent =
@@ -1306,19 +1316,26 @@ function createArmy(tile) {
 
     const army = {
 
-        id: nextArmyId++,
+        id:
+            nextArmyId++,
 
-        name: name,
+        name:
+            name,
 
-        country: country,
+        country:
+            country,
 
-        strength: strength,
+        strength:
+            strength,
 
-        icon: icon,
+        icon:
+            icon,
 
-        col: tile.col,
+        col:
+            tile.col,
 
-        row: tile.row
+        row:
+            tile.row
 
     };
 
@@ -1328,6 +1345,14 @@ function createArmy(tile) {
 
     army.iconImage.src =
         icon;
+
+
+    army.iconImage.onload =
+        () => {
+
+            draw();
+
+        };
 
 
     armies.push(
@@ -1401,26 +1426,21 @@ function paintCountry(tile) {
 // LEFT CLICK EDITING
 // ============================================================
 //
-// IMPORTANT:
+// LEFT CLICK = EDIT
 //
-// LEFT CLICK DOES NOT PAN.
+// RIGHT CLICK = PAN
 //
-// It edits the selected thing.
-//
-// This is the part that was broken before.
+// This intentionally matches the working editor behavior.
 //
 
 let mouseDownX = 0;
 let mouseDownY = 0;
-
 let mouseMoved = false;
 
 
 canvas.addEventListener(
     "mousedown",
     (event) => {
-
-        // Only left button is used for editing.
 
         if (
             event.button !== 0
@@ -1493,8 +1513,6 @@ canvas.addEventListener(
         }
 
 
-        // Don't edit when the user was dragging.
-
         if (
             mouseMoved
         ) {
@@ -1538,9 +1556,9 @@ canvas.addEventListener(
         }
 
 
-        // ====================================================
+        // ----------------------------------------------------
         // COUNTRY
-        // ====================================================
+        // ----------------------------------------------------
 
         if (
             editorMode ===
@@ -1556,9 +1574,9 @@ canvas.addEventListener(
         }
 
 
-        // ====================================================
+        // ----------------------------------------------------
         // CITY
-        // ====================================================
+        // ----------------------------------------------------
 
         if (
             editorMode ===
@@ -1574,9 +1592,9 @@ canvas.addEventListener(
         }
 
 
-        // ====================================================
+        // ----------------------------------------------------
         // ARMY
-        // ====================================================
+        // ----------------------------------------------------
 
         if (
             editorMode ===
@@ -1794,19 +1812,24 @@ function createMapJSON() {
 
     return {
 
-        cols: COLS,
+        cols:
+            COLS,
 
-        rows: ROWS,
+        rows:
+            ROWS,
 
         tiles:
             tiles.map(
                 tile => ({
 
-                    col: tile.col,
+                    col:
+                        tile.col,
 
-                    row: tile.row,
+                    row:
+                        tile.row,
 
-                    owner: tile.owner
+                    owner:
+                        tile.owner
 
                 })
             )
@@ -1828,15 +1851,20 @@ function createCitiesJSON() {
             cities.map(
                 city => ({
 
-                    id: city.id,
+                    id:
+                        city.id,
 
-                    name: city.name,
+                    name:
+                        city.name,
 
-                    country: city.country,
+                    country:
+                        city.country,
 
-                    col: city.col,
+                    col:
+                        city.col,
 
-                    row: city.row
+                    row:
+                        city.row
 
                 })
             )
@@ -1858,19 +1886,26 @@ function createArmiesJSON() {
             armies.map(
                 army => ({
 
-                    id: army.id,
+                    id:
+                        army.id,
 
-                    name: army.name,
+                    name:
+                        army.name,
 
-                    country: army.country,
+                    country:
+                        army.country,
 
-                    strength: army.strength,
+                    strength:
+                        army.strength,
 
-                    icon: army.icon,
+                    icon:
+                        army.icon,
 
-                    col: army.col,
+                    col:
+                        army.col,
 
-                    row: army.row
+                    row:
+                        army.row
 
                 })
             )
@@ -1986,6 +2021,14 @@ function saveMap() {
 // ============================================================
 // DOWNLOAD
 // ============================================================
+//
+// One click downloads THREE independent files:
+//
+//     map.json
+//     cities.json
+//     armies.json
+//
+// ============================================================
 
 function downloadMap() {
 
@@ -2063,6 +2106,10 @@ async function loadMap() {
         const data =
             await response.json();
 
+
+        // ====================================================
+        // GRID SIZE
+        // ====================================================
 
         if (
             Number.isInteger(
@@ -2157,7 +2204,8 @@ async function loadMap() {
 
 
                 tiles[
-                    row * COLS + col
+                    row * COLS +
+                    col
                 ].owner =
                     savedTile.owner;
 
@@ -2198,6 +2246,7 @@ async function loadMap() {
     catch (error) {
 
         console.error(
+            "Failed to load map:",
             error
         );
 
@@ -2235,6 +2284,10 @@ async function loadCities() {
 
         if (!response.ok) {
 
+            console.log(
+                "No cities.json found."
+            );
+
             return;
 
         }
@@ -2259,16 +2312,36 @@ async function loadCities() {
 
 
         for (
-            const city of data.cities
+            const city
+            of data.cities
         ) {
 
+            const col =
+                Number(
+                    city.col
+                );
+
+            const row =
+                Number(
+                    city.row
+                );
+
+
             if (
-                !Number.isInteger(
-                    Number(city.col)
-                ) ||
-                !Number.isInteger(
-                    Number(city.row)
-                )
+                !Number.isInteger(col) ||
+                !Number.isInteger(row)
+            ) {
+
+                continue;
+
+            }
+
+
+            if (
+                col < 0 ||
+                col >= COLS ||
+                row < 0 ||
+                row >= ROWS
             ) {
 
                 continue;
@@ -2282,16 +2355,18 @@ async function loadCities() {
                     Number(city.id),
 
                 name:
-                    city.name || "Unnamed City",
+                    city.name ||
+                    "Unnamed City",
 
                 country:
-                    city.country || "ocean",
+                    city.country ||
+                    "ocean",
 
                 col:
-                    Number(city.col),
+                    col,
 
                 row:
-                    Number(city.row)
+                    row
 
             });
 
@@ -2305,7 +2380,8 @@ async function loadCities() {
             nextCityId =
                 Math.max(
                     ...cities.map(
-                        c => c.id
+                        city =>
+                            Number(city.id) || 0
                     )
                 ) + 1;
 
@@ -2343,6 +2419,10 @@ async function loadArmies() {
 
         if (!response.ok) {
 
+            console.log(
+                "No armies.json found."
+            );
+
             return;
 
         }
@@ -2371,13 +2451,32 @@ async function loadArmies() {
             of data.armies
         ) {
 
+            const col =
+                Number(
+                    armyData.col
+                );
+
+            const row =
+                Number(
+                    armyData.row
+                );
+
+
             if (
-                !Number.isInteger(
-                    Number(armyData.col)
-                ) ||
-                !Number.isInteger(
-                    Number(armyData.row)
-                )
+                !Number.isInteger(col) ||
+                !Number.isInteger(row)
+            ) {
+
+                continue;
+
+            }
+
+
+            if (
+                col < 0 ||
+                col >= COLS ||
+                row < 0 ||
+                row >= ROWS
             ) {
 
                 continue;
@@ -2388,7 +2487,9 @@ async function loadArmies() {
             const army = {
 
                 id:
-                    Number(armyData.id),
+                    Number(
+                        armyData.id
+                    ),
 
                 name:
                     armyData.name ||
@@ -2408,14 +2509,10 @@ async function loadArmies() {
                     "icons/armies/army.png",
 
                 col:
-                    Number(
-                        armyData.col
-                    ),
+                    col,
 
                 row:
-                    Number(
-                        armyData.row
-                    )
+                    row
 
             };
 
@@ -2423,8 +2520,17 @@ async function loadArmies() {
             army.iconImage =
                 new Image();
 
+
             army.iconImage.src =
                 army.icon;
+
+
+            army.iconImage.onload =
+                () => {
+
+                    draw();
+
+                };
 
 
             armies.push(
@@ -2441,7 +2547,8 @@ async function loadArmies() {
             nextArmyId =
                 Math.max(
                     ...armies.map(
-                        a => a.id
+                        army =>
+                            Number(army.id) || 0
                     )
                 ) + 1;
 
