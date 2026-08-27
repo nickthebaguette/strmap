@@ -27,7 +27,7 @@ import {
 
 
 // ============================================================
-// MAP CANVAS
+// CANVAS
 // ============================================================
 
 export const mapCanvas =
@@ -40,6 +40,12 @@ export const mapCtx =
 // ============================================================
 // TEXTURES
 // ============================================================
+//
+// Keep visual assets inside the renderer.
+//
+// If a texture fails to load, the renderer simply falls
+// back to the normal country color.
+//
 
 const parchmentTexture =
     new Image();
@@ -48,6 +54,16 @@ const waterTexture =
     new Image();
 
 
+// Track whether each texture successfully loaded.
+
+let parchmentLoaded = false;
+let waterLoaded = false;
+
+
+// ------------------------------------------------------------
+// Texture paths
+// ------------------------------------------------------------
+
 parchmentTexture.src =
     "assets/textures/parchment.png";
 
@@ -55,44 +71,54 @@ waterTexture.src =
     "assets/textures/water.png";
 
 
-let texturesLoaded = false;
+// ------------------------------------------------------------
+// Texture loading
+// ------------------------------------------------------------
 
+parchmentTexture.onload = () => {
 
-// Wait until both textures are available.
-
-Promise.all([
-
-    new Promise(resolve => {
-
-        parchmentTexture.onload =
-            resolve;
-
-        parchmentTexture.onerror =
-            resolve;
-
-    }),
-
-    new Promise(resolve => {
-
-        waterTexture.onload =
-            resolve;
-
-        waterTexture.onerror =
-            resolve;
-
-    })
-
-]).then(() => {
-
-    texturesLoaded = true;
+    parchmentLoaded = true;
 
     rebuildMapCanvas();
 
-});
+};
+
+
+waterTexture.onload = () => {
+
+    waterLoaded = true;
+
+    rebuildMapCanvas();
+
+};
+
+
+// If an image fails to load, DON'T break the map.
+
+parchmentTexture.onerror = () => {
+
+    console.warn(
+        "Could not load parchment texture. Using flat colors."
+    );
+
+    parchmentLoaded = false;
+
+};
+
+
+waterTexture.onerror = () => {
+
+    console.warn(
+        "Could not load water texture. Using flat colors."
+    );
+
+    waterLoaded = false;
+
+};
 
 
 // ============================================================
-// HEX PATH
+// HEX
 // ============================================================
 
 function createHexPath(
@@ -170,7 +196,7 @@ function drawHexOnContext(
 ) {
 
     // --------------------------------------------------------
-    // HEX PATH
+    // Create hex shape
     // --------------------------------------------------------
 
     createHexPath(
@@ -182,29 +208,28 @@ function drawHexOnContext(
 
 
     // --------------------------------------------------------
-    // TEXTURE
+    // Base color
+    // --------------------------------------------------------
+    //
+    // This is ALWAYS drawn first.
+    //
+    // That means even if the texture is missing, the map
+    // remains visible.
+    //
+
+    context.fillStyle =
+        color;
+
+    context.fill();
+
+
+    // --------------------------------------------------------
+    // Texture
     // --------------------------------------------------------
 
     if (
-        texture &&
-        texture.complete &&
-        texture.naturalWidth > 0
+        texture
     ) {
-
-        context.save();
-
-
-        // Use the hex as a clipping mask.
-
-        context.clip();
-
-
-        // ----------------------------------------------------
-        // Draw texture using world coordinates.
-        //
-        // This keeps the texture continuous across
-        // neighboring hexes.
-        // ----------------------------------------------------
 
         const pattern =
             context.createPattern(
@@ -213,75 +238,40 @@ function drawHexOnContext(
             );
 
 
-        if (pattern) {
+        if (
+            pattern
+        ) {
+
+            // Recreate the hex path because fill()
+            // consumed the previous path.
+
+            createHexPath(
+                context,
+                x,
+                y,
+                size
+            );
+
+
+            context.save();
+
+            context.globalAlpha =
+                0.55;
 
             context.fillStyle =
                 pattern;
 
+            context.fill();
 
-            context.fillRect(
-
-                -x,
-
-                -y,
-
-                MAP_WIDTH +
-                100,
-
-                MAP_HEIGHT +
-                100
-
-            );
+            context.restore();
 
         }
 
-
-        context.restore();
-
-    }
-
-    else {
-
-        // Fallback if texture hasn't loaded.
-
-        context.fillStyle =
-            color;
-
-        context.fill();
-
     }
 
 
     // --------------------------------------------------------
-    // COUNTRY COLOUR OVERLAY
-    // --------------------------------------------------------
-
-    createHexPath(
-        context,
-        x,
-        y,
-        size
-    );
-
-
-    context.save();
-
-
-    context.globalAlpha =
-        0.45;
-
-
-    context.fillStyle =
-        color;
-
-    context.fill();
-
-
-    context.restore();
-
-
-    // --------------------------------------------------------
-    // HEX OUTLINE
+    // Border
     // --------------------------------------------------------
 
     createHexPath(
@@ -315,6 +305,7 @@ export function rebuildMapCanvas() {
             FRAME_OVERHANG * 2
         );
 
+
     mapCanvas.height =
         Math.ceil(
             MAP_HEIGHT +
@@ -339,9 +330,9 @@ export function rebuildMapCanvas() {
     );
 
 
-    // --------------------------------------------------------
-    // MAP TILES
-    // --------------------------------------------------------
+    // ========================================================
+    // DRAW TILES
+    // ========================================================
 
     for (
         const tile of tiles
@@ -360,57 +351,69 @@ export function rebuildMapCanvas() {
             ];
 
 
-        if (!country) {
+        if (
+            !country
+        ) {
 
             continue;
 
         }
 
 
-        // Ocean uses water texture.
+        // ----------------------------------------------------
+        // Choose texture
+        // ----------------------------------------------------
+
+        let texture = null;
+
 
         if (
-            tile.owner ===
-            "ocean"
+            tile.owner === "ocean"
         ) {
 
-            drawHexOnContext(
+            if (
+                waterLoaded
+            ) {
 
-                mapCtx,
+                texture =
+                    waterTexture;
 
-                world.x,
-                world.y,
-
-                14,
-
-                country.color,
-
-                waterTexture
-
-            );
+            }
 
         }
-
-        // Everything else uses parchment.
 
         else {
 
-            drawHexOnContext(
+            if (
+                parchmentLoaded
+            ) {
 
-                mapCtx,
+                texture =
+                    parchmentTexture;
 
-                world.x,
-                world.y,
-
-                14,
-
-                country.color,
-
-                parchmentTexture
-
-            );
+            }
 
         }
+
+
+        // ----------------------------------------------------
+        // Draw
+        // ----------------------------------------------------
+
+        drawHexOnContext(
+
+            mapCtx,
+
+            world.x,
+            world.y,
+
+            14,
+
+            country.color,
+
+            texture
+
+        );
 
     }
 
@@ -509,11 +512,12 @@ export function draw(
 
 
     // ========================================================
-    // FRAME BORDER
+    // BORDER
     // ========================================================
 
     ctx.strokeStyle =
         FRAME_COLOR;
+
 
     ctx.lineWidth =
         FRAME_WIDTH /
