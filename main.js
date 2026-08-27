@@ -12,48 +12,17 @@ const territoryOwner =
 
 
 // ============================================================
-// MAP CONFIGURATION
+// MAP
 // ============================================================
-//
-// Grid dimensions are read from map.json.
-//
-// HEX_SIZE controls the logical size of each hex.
-//
-// CACHE_SCALE renders the cached map at higher resolution,
-// making zooming look considerably sharper.
-//
 
-let COLS = 0;
-let ROWS = 0;
+// Default values.
+// These will be replaced by map.json if it contains
+// "cols" and "rows".
+
+let COLS = 100;
+let ROWS = 60;
 
 const HEX_SIZE = 14;
-
-const CACHE_SCALE = 3;
-
-// ============================================================
-// FRAME
-// ============================================================
-
-const FRAME_OVERHANG = HEX_SIZE * 0.5;
-
-const FRAME_WIDTH = 6;
-
-const FRAME_COLOR = "#252522";
-
-
-// ============================================================
-// HEX GEOMETRY
-// ============================================================
-//
-// Flat-top hexagons.
-//
-// Rows are staggered horizontally.
-//
-//   ⬡   ⬡   ⬡
-//     ⬡   ⬡   ⬡
-//   ⬡   ⬡   ⬡
-//
-
 
 const HEX_WIDTH =
     Math.sqrt(3) * HEX_SIZE;
@@ -62,10 +31,32 @@ const HEX_VERTICAL_DISTANCE =
     HEX_SIZE * 1.5;
 
 
-// Actual outer dimensions of the hex field.
+// These are recalculated after loading the map.
 
-let MAP_WIDTH = 0;
-let MAP_HEIGHT = 0;
+let MAP_WIDTH =
+    COLS * HEX_WIDTH +
+    HEX_WIDTH;
+
+let MAP_HEIGHT =
+    ROWS * HEX_VERTICAL_DISTANCE +
+    HEX_SIZE;
+
+
+// ============================================================
+// FRAME
+// ============================================================
+
+// The frame extends half a hex beyond the map.
+//
+// This helps cover the small gaps around the outer edge.
+
+const FRAME_OVERHANG =
+    HEX_SIZE * 0.5;
+
+const FRAME_WIDTH = 6;
+
+const FRAME_COLOR =
+    "#252522";
 
 
 // ============================================================
@@ -73,12 +64,16 @@ let MAP_HEIGHT = 0;
 // ============================================================
 
 let camera = {
+
     x: 0,
+
     y: 0,
+
     zoom: 0.55
+
 };
 
-const MIN_ZOOM = 0.1;
+const MIN_ZOOM = 0.55;
 const MAX_ZOOM = 3.0;
 
 
@@ -114,6 +109,11 @@ const countries = {
     },
 
     netherlands: {
+        name: "Batavian Republic",
+        color: "#9b7182"
+    },
+
+    batavia: {
         name: "Batavian Republic",
         color: "#9b7182"
     },
@@ -166,7 +166,18 @@ const countries = {
     saxony: {
         name: "Saxony",
         color: "#aa8355"
+    },
+
+    naples: {
+        name: "Naples",
+        color: "#8fae9b"
+    },
+
+    papal: {
+        name: "Papal States",
+        color: "#b89488"
     }
+
 };
 
 
@@ -201,62 +212,28 @@ function createTiles() {
                 owner: "ocean"
 
             });
+
         }
+
     }
+
 }
 
 
 // ============================================================
 // MAP DIMENSIONS
 // ============================================================
-//
-// These dimensions describe the ACTUAL outer boundary of
-// the hexagonal field.
-//
-// The boundary cuts through the outside hexes instead of
-// leaving empty space around them.
-//
 
-function calculateMapDimensions() {
-
-    if (
-        COLS <= 0 ||
-        ROWS <= 0
-    ) {
-        return;
-    }
-
-
-    // Width of one flat-top hex.
-
-    const hexWidth =
-        HEX_WIDTH;
-
-
-    // The final row may be horizontally offset.
-
-    const finalRowOffset =
-        (
-            (ROWS - 1) % 2
-        ) *
-        hexWidth / 2;
-
-
-    // Actual width of the hex field.
+function updateMapDimensions() {
 
     MAP_WIDTH =
-        COLS *
-        hexWidth +
-        hexWidth / 2 +
-        finalRowOffset;
-
-
-    // Actual height.
+        COLS * HEX_WIDTH +
+        HEX_WIDTH;
 
     MAP_HEIGHT =
-        (ROWS - 1) *
-        HEX_VERTICAL_DISTANCE +
-        HEX_SIZE * 2;
+        ROWS * HEX_VERTICAL_DISTANCE +
+        HEX_SIZE;
+
 }
 
 
@@ -272,19 +249,15 @@ function hexToWorld(
     return {
 
         x:
-            HEX_WIDTH / 2 +
             col * HEX_WIDTH +
-            (
-                row % 2
-            ) *
+            (row % 2) *
             HEX_WIDTH / 2,
 
         y:
-            HEX_SIZE +
-            row *
-            HEX_VERTICAL_DISTANCE
+            row * HEX_VERTICAL_DISTANCE
 
     };
+
 }
 
 
@@ -300,20 +273,15 @@ function worldToScreen(
     return {
 
         x:
-            (
-                x -
-                camera.x
-            ) *
+            (x - camera.x) *
             camera.zoom,
 
         y:
-            (
-                y -
-                camera.y
-            ) *
+            (y - camera.y) *
             camera.zoom
 
     };
+
 }
 
 
@@ -329,16 +297,15 @@ function screenToWorld(
     return {
 
         x:
-            x /
-            camera.zoom +
+            x / camera.zoom +
             camera.x,
 
         y:
-            y /
-            camera.zoom +
+            y / camera.zoom +
             camera.y
 
     };
+
 }
 
 
@@ -365,9 +332,7 @@ function drawHexOnContext(
 
         const angle =
             Math.PI / 180 *
-            (
-                60 * i - 30
-            );
+            (60 * i - 30);
 
 
         const px =
@@ -395,7 +360,9 @@ function drawHexOnContext(
                 px,
                 py
             );
+
         }
+
     }
 
 
@@ -415,40 +382,26 @@ function drawHexOnContext(
         0.7;
 
     context.stroke();
+
 }
 
 
 // ============================================================
 // BUILD MAP CACHE
 // ============================================================
-//
-// The map is rendered once into a high-resolution off-screen
-// canvas.
-//
-// Camera movement does NOT rebuild this.
-//
 
 function rebuildMapCanvas() {
 
-    if (
-        COLS <= 0 ||
-        ROWS <= 0
-    ) {
-        return;
-    }
-
-
     mapCanvas.width =
         Math.ceil(
-            MAP_WIDTH *
-            CACHE_SCALE
+            MAP_WIDTH +
+            FRAME_OVERHANG * 2
         );
-
 
     mapCanvas.height =
         Math.ceil(
-            MAP_HEIGHT *
-            CACHE_SCALE
+            MAP_HEIGHT +
+            FRAME_OVERHANG * 2
         );
 
 
@@ -460,34 +413,16 @@ function rebuildMapCanvas() {
     );
 
 
+    // The map itself still uses the original coordinate
+    // system. The cache simply has a little extra room
+    // around it for the frame.
+
     mapCtx.save();
 
 
-    // --------------------------------------------------------
-    // CLIP TO THE ACTUAL MAP BOUNDARY
-    // --------------------------------------------------------
-
-    mapCtx.beginPath();
-
-    mapCtx.rect(
-        0,
-        0,
-        MAP_WIDTH *
-        CACHE_SCALE,
-        MAP_HEIGHT *
-        CACHE_SCALE
-    );
-
-    mapCtx.clip();
-
-
-    // --------------------------------------------------------
-    // HIGH-RESOLUTION RENDERING
-    // --------------------------------------------------------
-
-    mapCtx.scale(
-        CACHE_SCALE,
-        CACHE_SCALE
+    mapCtx.translate(
+        FRAME_OVERHANG,
+        FRAME_OVERHANG
     );
 
 
@@ -508,10 +443,9 @@ function rebuildMapCanvas() {
             ];
 
 
-        const color =
-            country
-                ? country.color
-                : countries.ocean.color;
+        if (!country) {
+            continue;
+        }
 
 
         drawHexOnContext(
@@ -519,23 +453,34 @@ function rebuildMapCanvas() {
             mapCtx,
 
             world.x,
+
             world.y,
 
             HEX_SIZE,
 
-            color
+            country.color
 
         );
+
     }
 
 
     mapCtx.restore();
+
 }
 
 
 // ============================================================
-// DRAW MAP
+// DRAW
 // ============================================================
+//
+// IMPORTANT:
+//
+// The camera still uses the exact same world coordinate
+// system as before.
+//
+// The frame is purely visual.
+//
 
 function draw() {
 
@@ -550,24 +495,32 @@ function draw() {
     ctx.save();
 
 
+    // ========================================================
+    // CAMERA
+    // ========================================================
+
+    ctx.translate(
+        -camera.x *
+        camera.zoom,
+
+        -camera.y *
+        camera.zoom
+    );
+
+
     ctx.scale(
         camera.zoom,
         camera.zoom
     );
 
 
-    ctx.translate(
-        -camera.x,
-        -camera.y
-    );
-
-
-    // --------------------------------------------------------
-    // Frame background
-    // --------------------------------------------------------
+    // ========================================================
+    // FRAME
+    // ========================================================
 
     ctx.fillStyle =
         FRAME_COLOR;
+
 
     ctx.fillRect(
 
@@ -584,23 +537,29 @@ function draw() {
     );
 
 
-    // --------------------------------------------------------
-    // Map
-    // --------------------------------------------------------
+    // ========================================================
+    // MAP
+    // ========================================================
+
+    //
+    // The cache contains the map shifted by FRAME_OVERHANG,
+    // so compensate for that here.
+    //
 
     ctx.drawImage(
+
         mapCanvas,
-        0,
-        0
+
+        -FRAME_OVERHANG,
+
+        -FRAME_OVERHANG
+
     );
 
 
-    // --------------------------------------------------------
-    // Frame overlay
-    // --------------------------------------------------------
-    //
-    // A thicker border slightly overlaps the edge hexes.
-    //
+    // ========================================================
+    // FRAME BORDER
+    // ========================================================
 
     ctx.strokeStyle =
         FRAME_COLOR;
@@ -608,6 +567,7 @@ function draw() {
     ctx.lineWidth =
         FRAME_WIDTH /
         camera.zoom;
+
 
     ctx.strokeRect(
 
@@ -630,48 +590,14 @@ function draw() {
 
 
 // ============================================================
-// MINIMUM ZOOM
-// ============================================================
-//
-// Prevents the player from zooming out far enough to see
-// empty space around the map.
-//
-// The map must always completely cover the viewport.
-//
-
-function getMinimumZoom() {
-
-    if (
-        MAP_WIDTH <= 0 ||
-        MAP_HEIGHT <= 0 ||
-        canvas.width <= 0 ||
-        canvas.height <= 0
-    ) {
-
-        return 0.55;
-    }
-
-
-    const zoomX =
-        canvas.width /
-        MAP_WIDTH;
-
-
-    const zoomY =
-        canvas.height /
-        MAP_HEIGHT;
-
-
-    return Math.max(
-        zoomX,
-        zoomY
-    );
-}
-
-
-// ============================================================
 // CAMERA LIMITS
 // ============================================================
+//
+// Keep the original map limits.
+//
+// The frame is allowed to extend slightly beyond the map,
+// but it does not change the actual camera coordinate system.
+//
 
 function clampCamera() {
 
@@ -684,44 +610,25 @@ function clampCamera() {
         camera.zoom;
 
 
-    const frameWidth =
-        MAP_WIDTH +
-        FRAME_OVERHANG * 2;
-
-    const frameHeight =
-        MAP_HEIGHT +
-        FRAME_OVERHANG * 2;
-
-
-    const minX =
-        -FRAME_OVERHANG;
-
-
-    const minY =
-        -FRAME_OVERHANG;
-
-
     const maxX =
         Math.max(
-            minX,
-            frameWidth -
-            visibleWidth -
-            FRAME_OVERHANG
+            0,
+            MAP_WIDTH -
+            visibleWidth
         );
 
 
     const maxY =
         Math.max(
-            minY,
-            frameHeight -
-            visibleHeight -
-            FRAME_OVERHANG
+            0,
+            MAP_HEIGHT -
+            visibleHeight
         );
 
 
     camera.x =
         Math.max(
-            minX,
+            0,
             Math.min(
                 camera.x,
                 maxX
@@ -731,7 +638,7 @@ function clampCamera() {
 
     camera.y =
         Math.max(
-            minY,
+            0,
             Math.min(
                 camera.y,
                 maxY
@@ -739,6 +646,7 @@ function clampCamera() {
         );
 
 }
+
 
 // ============================================================
 // RESIZE
@@ -749,7 +657,6 @@ function resizeCanvas() {
     canvas.width =
         window.innerWidth;
 
-
     canvas.height =
         window.innerHeight;
 
@@ -757,6 +664,7 @@ function resizeCanvas() {
     clampCamera();
 
     draw();
+
 }
 
 
@@ -775,46 +683,29 @@ function getTileAt(
     worldY
 ) {
 
-    // Estimate row.
-
-    const approxRow =
-        Math.round(
-            (
-                worldY -
-                HEX_SIZE
-            ) /
-            HEX_VERTICAL_DISTANCE
-        );
-
-
-    // Account for staggered row.
-
-    const rowOffset =
-        (
-            approxRow % 2
-        ) *
-        HEX_WIDTH / 2;
-
+    // Approximate tile first.
 
     const approxCol =
         Math.round(
-            (
-                worldX -
-                HEX_WIDTH / 2 -
-                rowOffset
-            ) /
+            worldX /
             HEX_WIDTH
+        );
+
+
+    const approxRow =
+        Math.round(
+            worldY /
+            HEX_VERTICAL_DISTANCE
         );
 
 
     let closest = null;
 
-
     let closestDistance =
         HEX_SIZE;
 
 
-    // Search nearby hexes.
+    // Search nearby tiles.
 
     for (
         let row =
@@ -842,7 +733,9 @@ function getTileAt(
                 row < 0 ||
                 row >= ROWS
             ) {
+
                 continue;
+
             }
 
 
@@ -877,20 +770,22 @@ function getTileAt(
 
                 closest =
                     tiles[
-                        row *
-                        COLS +
+                        row * COLS +
                         col
                     ];
 
-
                 closestDistance =
                     distance;
+
             }
+
         }
+
     }
 
 
     return closest;
+
 }
 
 
@@ -905,10 +800,10 @@ canvas.addEventListener(
     "click",
     (event) => {
 
-        if (
-            wasDragging
-        ) {
+        if (wasDragging) {
+
             return;
+
         }
 
 
@@ -941,7 +836,9 @@ canvas.addEventListener(
 
 
         if (!tile) {
+
             return;
+
         }
 
 
@@ -952,7 +849,9 @@ canvas.addEventListener(
 
 
         if (!country) {
+
             return;
+
         }
 
 
@@ -962,6 +861,7 @@ canvas.addEventListener(
 
         territoryOwner.textContent =
             `Tile: ${tile.col}, ${tile.row}`;
+
     }
 );
 
@@ -970,7 +870,7 @@ canvas.addEventListener(
 // PAN
 // ============================================================
 //
-// Left mouse drag = pan.
+// Left drag = pan
 //
 
 let dragging = false;
@@ -986,7 +886,9 @@ canvas.addEventListener(
         if (
             event.button !== 0
         ) {
+
             return;
+
         }
 
 
@@ -1000,6 +902,7 @@ canvas.addEventListener(
 
         lastY =
             event.clientY;
+
     }
 );
 
@@ -1009,7 +912,9 @@ canvas.addEventListener(
     (event) => {
 
         if (!dragging) {
+
             return;
+
         }
 
 
@@ -1029,6 +934,7 @@ canvas.addEventListener(
         ) {
 
             wasDragging = true;
+
         }
 
 
@@ -1053,6 +959,7 @@ canvas.addEventListener(
 
 
         draw();
+
     }
 );
 
@@ -1062,6 +969,7 @@ window.addEventListener(
     () => {
 
         dragging = false;
+
     }
 );
 
@@ -1091,8 +999,7 @@ canvas.addEventListener(
             rect.top;
 
 
-        // World position underneath
-        // the mouse before zooming.
+        // World position before zoom.
 
         const before =
             screenToWorld(
@@ -1110,21 +1017,13 @@ canvas.addEventListener(
         } else {
 
             camera.zoom *= 0.9;
+
         }
-
-
-        // Apply minimum and maximum zoom.
-
-        const minimumZoom =
-            Math.max(
-                MIN_ZOOM,
-                getMinimumZoom()
-            );
 
 
         camera.zoom =
             Math.max(
-                minimumZoom,
+                MIN_ZOOM,
                 Math.min(
                     MAX_ZOOM,
                     camera.zoom
@@ -1132,8 +1031,7 @@ canvas.addEventListener(
             );
 
 
-        // World position underneath
-        // mouse after zooming.
+        // World position after zoom.
 
         const after =
             screenToWorld(
@@ -1142,8 +1040,7 @@ canvas.addEventListener(
             );
 
 
-        // Keep the same world position
-        // underneath the mouse.
+        // Keep the mouse over the same world position.
 
         camera.x +=
             before.x -
@@ -1158,6 +1055,7 @@ canvas.addEventListener(
         clampCamera();
 
         draw();
+
     }
 );
 
@@ -1181,6 +1079,7 @@ async function loadMap() {
             throw new Error(
                 "Could not load map.json"
             );
+
         }
 
 
@@ -1192,54 +1091,35 @@ async function loadMap() {
         // READ GRID SIZE
         // ====================================================
 
-        const loadedCols =
-            Number(data.cols);
-
-
-        const loadedRows =
-            Number(data.rows);
-
-
         if (
-            !Number.isInteger(
-                loadedCols
-            ) ||
-            loadedCols <= 0 ||
-            !Number.isInteger(
-                loadedRows
-            ) ||
-            loadedRows <= 0
+            Number.isInteger(
+                Number(data.cols)
+            )
         ) {
 
-            throw new Error(
-                "map.json does not contain valid cols/rows"
-            );
+            COLS =
+                Number(
+                    data.cols
+                );
+
         }
 
 
-        COLS =
-            loadedCols;
+        if (
+            Number.isInteger(
+                Number(data.rows)
+            )
+        ) {
+
+            ROWS =
+                Number(
+                    data.rows
+                );
+
+        }
 
 
-        ROWS =
-            loadedRows;
-
-
-        console.log(
-            `Map grid: ${COLS} × ${ROWS}`
-        );
-
-
-        // ====================================================
-        // CALCULATE DIMENSIONS
-        // ====================================================
-
-        calculateMapDimensions();
-
-
-        // ====================================================
-        // CREATE EMPTY GRID
-        // ====================================================
+        updateMapDimensions();
 
         createTiles();
 
@@ -1283,7 +1163,9 @@ async function loadMap() {
                         row
                     )
                 ) {
+
                     continue;
+
                 }
 
 
@@ -1293,26 +1175,31 @@ async function loadMap() {
                     row < 0 ||
                     row >= ROWS
                 ) {
+
                     continue;
+
                 }
 
 
                 if (
-                    !countries[owner]
+                    !countries[
+                        owner
+                    ]
                 ) {
+
                     continue;
+
                 }
 
 
-                const index =
-                    row *
-                    COLS +
-                    col;
-
-
-                tiles[index].owner =
+                tiles[
+                    row * COLS +
+                    col
+                ].owner =
                     owner;
+
             }
+
         }
 
 
@@ -1342,13 +1229,18 @@ async function loadMap() {
 
 
                 if (
-                    countries[owner]
+                    countries[
+                        owner
+                    ]
                 ) {
 
                     tiles[i].owner =
                         owner;
+
                 }
+
             }
+
         }
 
 
@@ -1382,7 +1274,9 @@ async function loadMap() {
                         mapRow
                     )
                 ) {
+
                     continue;
+
                 }
 
 
@@ -1402,49 +1296,54 @@ async function loadMap() {
 
 
                     if (
-                        !countries[owner]
+                        !countries[
+                            owner
+                        ]
                     ) {
+
                         continue;
+
                     }
 
 
                     tiles[
-                        row *
-                        COLS +
+                        row * COLS +
                         col
                     ].owner =
                         owner;
+
                 }
+
             }
+
         }
 
 
         // ====================================================
-        // BUILD MAP
+        // BUILD
         // ====================================================
 
         rebuildMapCanvas();
 
 
-        // Reset camera so the newly loaded map
-        // starts in a sensible position.
+        // Reset camera to a sensible starting position.
 
         camera.zoom =
-            Math.max(
-                MIN_ZOOM,
-                getMinimumZoom()
-            );
+            MIN_ZOOM;
 
 
         camera.x = 0;
+
         camera.y = 0;
 
 
-        resizeCanvas();
+        clampCamera();
+
+        draw();
 
 
         console.log(
-            "Map loaded successfully."
+            `Map loaded successfully: ${COLS} × ${ROWS}`
         );
 
     }
@@ -1457,16 +1356,30 @@ async function loadMap() {
             error
         );
 
+
+        updateMapDimensions();
+
+        createTiles();
+
+        rebuildMapCanvas();
+
+        resizeCanvas();
+
     }
+
 }
 
 
 // ============================================================
 // START
 // ============================================================
-//
-// map.json is loaded first because it determines
-// the grid dimensions.
-//
+
+createTiles();
+
+updateMapDimensions();
+
+rebuildMapCanvas();
+
+resizeCanvas();
 
 loadMap();
