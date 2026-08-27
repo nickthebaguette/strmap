@@ -75,8 +75,41 @@ let camera = {
     zoom: 0.55
 };
 
-const MIN_ZOOM = 0.55;
+const MIN_ZOOM = 0.1;
 const MAX_ZOOM = 3.0;
+
+function getMinimumZoom() {
+
+    if (
+        MAP_WIDTH <= 0 ||
+        MAP_HEIGHT <= 0 ||
+        canvas.width <= 0 ||
+        canvas.height <= 0
+    ) {
+        return 0.55;
+    }
+
+
+    // Zoom required for the map to completely
+    // cover the viewport.
+
+    const zoomX =
+        canvas.width /
+        MAP_WIDTH;
+
+    const zoomY =
+        canvas.height /
+        MAP_HEIGHT;
+
+
+    // We need whichever dimension requires
+    // the greater zoom.
+
+    return Math.max(
+        zoomX,
+        zoomY
+    );
+}
 
 
 // ============================================================
@@ -472,8 +505,9 @@ function draw() {
     );
 
 
-    // The cached canvas is 3× larger than its logical size,
-    // so tell drawImage to display it at its logical size.
+    // --------------------------------------------------------
+    // MAP
+    // --------------------------------------------------------
 
     ctx.drawImage(
         mapCanvas,
@@ -490,6 +524,40 @@ function draw() {
     );
 
 
+    // --------------------------------------------------------
+    // PICTURE FRAME
+    // --------------------------------------------------------
+
+    ctx.strokeStyle =
+        "#252525";
+
+    ctx.lineWidth =
+        6 / camera.zoom;
+
+    ctx.strokeRect(
+        0,
+        0,
+        MAP_WIDTH,
+        MAP_HEIGHT
+    );
+
+
+    ctx.strokeStyle =
+        "#77736a";
+
+    ctx.lineWidth =
+        2 / camera.zoom;
+
+    ctx.strokeRect(
+        3 / camera.zoom,
+        3 / camera.zoom,
+        MAP_WIDTH -
+        6 / camera.zoom,
+        MAP_HEIGHT -
+        6 / camera.zoom
+    );
+
+
     ctx.restore();
 }
 
@@ -499,6 +567,19 @@ function draw() {
 // ============================================================
 
 function clampCamera() {
+
+    const minimumZoom =
+    Math.max(
+        MIN_ZOOM,
+        getMinimumZoom()
+    );
+
+
+    if (camera.zoom < minimumZoom) {
+    
+        camera.zoom =
+            minimumZoom;
+    }
 
     const visibleWidth =
         canvas.width /
@@ -902,9 +983,16 @@ canvas.addEventListener(
         }
 
 
-        camera.zoom =
+        const minimumZoom =
             Math.max(
                 MIN_ZOOM,
+                getMinimumZoom()
+            );
+        
+        
+        camera.zoom =
+            Math.max(
+                minimumZoom,
                 Math.min(
                     MAX_ZOOM,
                     camera.zoom
@@ -1187,6 +1275,75 @@ async function loadMap() {
         );
 
     }
+}
+
+
+function drawMapFrame() {
+
+    if (
+        MAP_WIDTH <= 0 ||
+        MAP_HEIGHT <= 0
+    ) {
+        return;
+    }
+
+
+    ctx.save();
+
+
+    ctx.scale(
+        camera.zoom,
+        camera.zoom
+    );
+
+
+    ctx.translate(
+        -camera.x,
+        -camera.y
+    );
+
+
+    // --------------------------------------------------------
+    // OUTER FRAME
+    // --------------------------------------------------------
+
+    ctx.strokeStyle =
+        "#252525";
+
+    ctx.lineWidth =
+        6 / camera.zoom;
+
+
+    ctx.strokeRect(
+        0,
+        0,
+        MAP_WIDTH,
+        MAP_HEIGHT
+    );
+
+
+    // --------------------------------------------------------
+    // INNER FRAME
+    // --------------------------------------------------------
+
+    ctx.strokeStyle =
+        "#77736a";
+
+    ctx.lineWidth =
+        2 / camera.zoom;
+
+
+    ctx.strokeRect(
+        3 / camera.zoom,
+        3 / camera.zoom,
+        MAP_WIDTH -
+        6 / camera.zoom,
+        MAP_HEIGHT -
+        6 / camera.zoom
+    );
+
+
+    ctx.restore();
 }
 
 
