@@ -18,8 +18,8 @@ const territoryOwner =
 // These are now loaded from map.json.
 // Defaults are only used if the JSON is missing them.
 
-let COLS = 150;
-let ROWS = 90;
+let COLS = 87;
+let ROWS = 52;
 
 const HEX_SIZE = 14;
 
