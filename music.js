@@ -13,7 +13,7 @@ const MUSIC_FILE =
 // 300 = never start within the final 5 minutes.
 
 const MINIMUM_REMAINING_TIME =
-    300;
+    50;
 
 
 // Music volume.
