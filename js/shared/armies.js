@@ -1,22 +1,100 @@
 // ============================================================
-// ARMIES.JS
+// ARMIES
 // ============================================================
 
-import {
+const armies = [];
+
+
+// ============================================================
+// DRAW ARMIES
+// ============================================================
+
+function drawArmies(
+    ctx,
     hexToWorld
-} from "./map.js";
+) {
+
+    for (
+        const army of armies
+    ) {
+
+        const world =
+            hexToWorld(
+                army.col,
+                army.row
+            );
 
 
-export const armies = [];
+        const size = 22;
 
-let nextArmyId = 1;
+
+        if (
+            army.iconImage &&
+            army.iconImage.complete &&
+            army.iconImage.naturalWidth > 0
+        ) {
+
+            ctx.drawImage(
+
+                army.iconImage,
+
+                world.x - size / 2,
+
+                world.y - size / 2,
+
+                size,
+
+                size
+
+            );
+
+        } else {
+
+            ctx.beginPath();
+
+            ctx.arc(
+                world.x,
+                world.y,
+                5,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fillStyle =
+                "#ffffff";
+
+            ctx.fill();
+
+        }
+
+    }
+
+}
 
 
 // ============================================================
-// LOAD
+// FIND ARMY
 // ============================================================
 
-export async function loadArmies() {
+function getArmyAt(
+    col,
+    row
+) {
+
+    return armies.find(
+        army =>
+            army.col === col &&
+            army.row === row
+    );
+
+}
+
+
+// ============================================================
+// LOAD ARMIES
+// ============================================================
+
+async function loadArmies() {
 
     try {
 
@@ -28,6 +106,10 @@ export async function loadArmies() {
 
         if (!response.ok) {
 
+            console.log(
+                "No armies.json found."
+            );
+
             return;
 
         }
@@ -38,7 +120,9 @@ export async function loadArmies() {
 
 
         if (
-            !Array.isArray(data.armies)
+            !Array.isArray(
+                data.armies
+            )
         ) {
 
             return;
@@ -50,7 +134,8 @@ export async function loadArmies() {
 
 
         for (
-            const armyData of data.armies
+            const armyData
+            of data.armies
         ) {
 
             if (
@@ -70,7 +155,9 @@ export async function loadArmies() {
             const army = {
 
                 id:
-                    Number(armyData.id),
+                    Number(
+                        armyData.id
+                    ),
 
                 name:
                     armyData.name ||
@@ -109,23 +196,14 @@ export async function loadArmies() {
                 army.icon;
 
 
-            armies.push(army);
+            armies.push(
+                army
+            );
 
         }
 
 
-        if (
-            armies.length > 0
-        ) {
-
-            nextArmyId =
-                Math.max(
-                    ...armies.map(
-                        army => army.id
-                    )
-                ) + 1;
-
-        }
+        draw();
 
     }
 
@@ -136,151 +214,5 @@ export async function loadArmies() {
         );
 
     }
-
-}
-
-
-// ============================================================
-// ADD
-// ============================================================
-
-export function addArmy(
-    name,
-    country,
-    strength,
-    icon,
-    col,
-    row
-) {
-
-    const army = {
-
-        id: nextArmyId++,
-
-        name,
-
-        country,
-
-        strength,
-
-        icon,
-
-        col,
-
-        row
-
-    };
-
-
-    army.iconImage =
-        new Image();
-
-    army.iconImage.src =
-        icon;
-
-
-    armies.push(army);
-
-    return army;
-
-}
-
-
-// ============================================================
-// DRAW
-// ============================================================
-
-export function drawArmies(
-    ctx
-) {
-
-    for (
-        const army of armies
-    ) {
-
-        const world =
-            hexToWorld(
-                army.col,
-                army.row
-            );
-
-
-        const size = 22;
-
-
-        if (
-            army.iconImage &&
-            army.iconImage.complete &&
-            army.iconImage.naturalWidth > 0
-        ) {
-
-            ctx.drawImage(
-
-                army.iconImage,
-
-                world.x - size / 2,
-
-                world.y - size / 2,
-
-                size,
-
-                size
-
-            );
-
-        }
-
-        else {
-
-            ctx.beginPath();
-
-            ctx.arc(
-                world.x,
-                world.y,
-                5,
-                0,
-                Math.PI * 2
-            );
-
-            ctx.fillStyle =
-                "#ffffff";
-
-            ctx.fill();
-
-        }
-
-    }
-
-}
-
-
-// ============================================================
-// JSON
-// ============================================================
-
-export function createArmiesJSON() {
-
-    return {
-
-        armies:
-            armies.map(army => ({
-
-                id: army.id,
-
-                name: army.name,
-
-                country: army.country,
-
-                strength: army.strength,
-
-                icon: army.icon,
-
-                col: army.col,
-
-                row: army.row
-
-            }))
-
-    };
 
 }
