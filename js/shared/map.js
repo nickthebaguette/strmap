@@ -1,4 +1,3 @@
-```js
 // ============================================================
 // MAP.JS
 // Shared map/grid system
@@ -501,4 +500,3 @@ export function createMapJSON() {
     };
 
 }
-```
