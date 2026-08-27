@@ -2,57 +2,37 @@
 // BACKGROUND MUSIC
 // ============================================================
 
-const MUSIC_FILE =
-    "music/background.mp3";
+const MUSIC_FILE = "music/background.mp3";
 
+// Volume: 0.0 = silent, 1.0 = maximum
+const MUSIC_VOLUME = 0.25;
 
-// Minimum amount of music we want remaining
-// when we choose the random starting position.
-//
-// For example:
-// 300 = never start within the final 5 minutes.
-
-const MINIMUM_REMAINING_TIME =
-    50;
-
-
-// Music volume.
-
-const MUSIC_VOLUME =
-    0.25;
+// Don't randomly start in the final 5 minutes.
+const MINIMUM_REMAINING_TIME = 300;
 
 
 // ============================================================
 // AUDIO
 // ============================================================
 
-const backgroundMusic =
-    new Audio(
-        MUSIC_FILE
-    );
+const backgroundMusic = new Audio();
 
+backgroundMusic.src = MUSIC_FILE;
 
-backgroundMusic.volume =
-    MUSIC_VOLUME;
+backgroundMusic.preload = "auto";
 
-
-// When the track reaches the end,
-// start again from a new random position.
-
-backgroundMusic.addEventListener(
-    "ended",
-    () => {
-
-        chooseRandomStart();
-
-        startMusic();
-
-    }
-);
+backgroundMusic.volume = MUSIC_VOLUME;
 
 
 // ============================================================
-// RANDOM START POSITION
+// STATE
+// ============================================================
+
+let randomStartChosen = false;
+
+
+// ============================================================
+// CHOOSE RANDOM START
 // ============================================================
 
 function chooseRandomStart() {
@@ -66,13 +46,13 @@ function chooseRandomStart() {
         duration <= 0
     ) {
 
-        return;
+        console.log(
+            "Music duration not available yet."
+        );
 
+        return false;
     }
 
-
-    // Make sure we don't accidentally choose
-    // a position right near the end.
 
     const maximumStart =
         Math.max(
@@ -91,10 +71,19 @@ function chooseRandomStart() {
         randomPosition;
 
 
+    randomStartChosen = true;
+
+
     console.log(
-        `Music starting at ${Math.floor(randomPosition)}s / ${Math.floor(duration)}s`
+        "Music random start:",
+        Math.floor(randomPosition),
+        "seconds of",
+        Math.floor(duration),
+        "seconds"
     );
 
+
+    return true;
 }
 
 
@@ -102,30 +91,63 @@ function chooseRandomStart() {
 // START MUSIC
 // ============================================================
 
-function startMusic() {
+async function startMusic() {
 
-    backgroundMusic
-        .play()
-        .catch(() => {
+    console.log(
+        "Attempting to start music..."
+    );
 
-            console.log(
-                "Autoplay blocked. Waiting for user interaction."
-            );
 
-        });
+    // If we haven't selected a starting position yet,
+    // try to do so now.
+
+    if (!randomStartChosen) {
+
+        chooseRandomStart();
+
+    }
+
+
+    try {
+
+        await backgroundMusic.play();
+
+
+        console.log(
+            "Music is playing!"
+        );
+
+    }
+
+    catch (error) {
+
+        console.log(
+            "Browser blocked autoplay:",
+            error
+        );
+
+    }
 
 }
 
 
 // ============================================================
-// WAIT FOR AUDIO TO LOAD
+// AUDIO LOADED
 // ============================================================
 
 backgroundMusic.addEventListener(
     "loadedmetadata",
     () => {
 
+        console.log(
+            "Music metadata loaded."
+        );
+
+
         chooseRandomStart();
+
+
+        // Try autoplay.
 
         startMusic();
 
@@ -134,47 +156,146 @@ backgroundMusic.addEventListener(
 
 
 // ============================================================
-// USER INTERACTION FALLBACK
+// AUDIO CAN PLAY
 // ============================================================
 
-function enableMusicAfterInteraction() {
+backgroundMusic.addEventListener(
+    "canplay",
+    () => {
+
+        console.log(
+            "Music can play."
+        );
+
+    }
+);
+
+
+// ============================================================
+// AUDIO ERROR
+// ============================================================
+
+backgroundMusic.addEventListener(
+    "error",
+    () => {
+
+        console.error(
+            "Could not load music file:",
+            MUSIC_FILE,
+            backgroundMusic.error
+        );
+
+    }
+);
+
+
+// ============================================================
+// MUSIC ENDS
+// ============================================================
+//
+// When the long track reaches its end,
+// choose another random position rather than
+// restarting at 0:00.
+//
+
+backgroundMusic.addEventListener(
+    "ended",
+    () => {
+
+        console.log(
+            "Music ended. Choosing another random position."
+        );
+
+
+        randomStartChosen = false;
+
+
+        chooseRandomStart();
+
+
+        startMusic();
+
+    }
+);
+
+
+// ============================================================
+// USER INTERACTION
+// ============================================================
+//
+// Browsers generally allow audio after the user
+// interacts with the page.
+//
+
+function userInteracted() {
+
+    console.log(
+        "User interaction detected."
+    );
+
+
+    // At this point the audio element should be
+    // allowed to play.
+
+    if (!randomStartChosen) {
+
+        chooseRandomStart();
+
+    }
+
 
     startMusic();
 
 
+    // We only need this once.
+
     document.removeEventListener(
         "click",
-        enableMusicAfterInteraction
+        userInteracted
     );
-
 
     document.removeEventListener(
         "keydown",
-        enableMusicAfterInteraction
+        userInteracted
     );
-
 
     document.removeEventListener(
         "pointerdown",
-        enableMusicAfterInteraction
+        userInteracted
     );
 
 }
 
 
+// ============================================================
+// INTERACTION LISTENERS
+// ============================================================
+
 document.addEventListener(
     "click",
-    enableMusicAfterInteraction
+    userInteracted
 );
-
 
 document.addEventListener(
     "keydown",
-    enableMusicAfterInteraction
+    userInteracted
 );
-
 
 document.addEventListener(
     "pointerdown",
-    enableMusicAfterInteraction
+    userInteracted
+);
+
+
+// ============================================================
+// INITIALIZE
+// ============================================================
+
+console.log(
+    "Music system initialized."
+);
+
+console.log(
+    "Loading:",
+    MUSIC_FILE
 );
