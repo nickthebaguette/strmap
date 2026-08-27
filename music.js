@@ -2,7 +2,7 @@
 // BACKGROUND MUSIC
 // ============================================================
 
-const MUSIC_FILE = "music/background.mp3";
+const MUSIC_FILE = "theme.mp3";
 
 // Volume: 0.0 = silent, 1.0 = maximum
 const MUSIC_VOLUME = 0.25;
