@@ -12,13 +12,45 @@ const territoryOwner =
 
 
 // ============================================================
-// MAP
+// MAP CONFIGURATION
 // ============================================================
+//
+// Grid dimensions are loaded from map.json.
+//
+// HEX_SIZE controls the logical size of each hex.
+// Larger = physically larger hexes.
+//
+// CACHE_SCALE controls the resolution of the off-screen map.
+// 3 gives us a much sharper map when zooming in while
+// retaining the performance advantage of cached rendering.
+//
 
-const COLS = 87;
-const ROWS = 52;
+let COLS = 0;
+let ROWS = 0;
 
 const HEX_SIZE = 14;
+
+const CACHE_SCALE = 3;
+
+
+// ============================================================
+// HEX GEOMETRY
+// ============================================================
+//
+// These are FLAT-TOP hexagons.
+//
+// This is the same coordinate system used by the website
+// before the converter was introduced.
+//
+// Rows are staggered horizontally:
+//
+//   ⬡   ⬡   ⬡
+//     ⬡   ⬡   ⬡
+//   ⬡   ⬡   ⬡
+//
+// This is important because the converter must use the
+// exact same geometry.
+//
 
 const HEX_WIDTH =
     Math.sqrt(3) * HEX_SIZE;
@@ -26,13 +58,11 @@ const HEX_WIDTH =
 const HEX_VERTICAL_DISTANCE =
     HEX_SIZE * 1.5;
 
-const MAP_WIDTH =
-    COLS * HEX_WIDTH +
-    HEX_WIDTH;
 
-const MAP_HEIGHT =
-    ROWS * HEX_VERTICAL_DISTANCE +
-    HEX_SIZE;
+// These are calculated after the map dimensions are loaded.
+
+let MAP_WIDTH = 0;
+let MAP_HEIGHT = 0;
 
 
 // ============================================================
@@ -163,6 +193,35 @@ function createTiles() {
 
 
 // ============================================================
+// MAP DIMENSIONS
+// ============================================================
+
+function calculateMapDimensions() {
+
+    if (COLS <= 0 || ROWS <= 0) {
+        return;
+    }
+
+    // We add a HEX_SIZE-sized margin around the map.
+    //
+    // This also means the first hex is no longer centered
+    // directly on coordinate 0, which was one of the causes
+    // of the awkward camera behaviour.
+
+    MAP_WIDTH =
+        COLS * HEX_WIDTH +
+        HEX_WIDTH / 2 +
+        HEX_SIZE * 2;
+
+    MAP_HEIGHT =
+        (ROWS - 1) *
+        HEX_VERTICAL_DISTANCE +
+        HEX_SIZE * 2 +
+        HEX_SIZE * 2;
+}
+
+
+// ============================================================
 // HEX POSITION
 // ============================================================
 
@@ -171,11 +230,15 @@ function hexToWorld(col, row) {
     return {
 
         x:
+            HEX_SIZE +
+            HEX_WIDTH / 2 +
             col * HEX_WIDTH +
             (row % 2) *
             HEX_WIDTH / 2,
 
         y:
+            HEX_SIZE +
+            HEX_SIZE +
             row * HEX_VERTICAL_DISTANCE
 
     };
@@ -236,13 +299,11 @@ function drawHexOnContext(
 
     context.beginPath();
 
-
     for (let i = 0; i < 6; i++) {
 
         const angle =
             Math.PI / 180 *
             (60 * i - 30);
-
 
         const px =
             x +
@@ -253,7 +314,6 @@ function drawHexOnContext(
             y +
             size *
             Math.sin(angle);
-
 
         if (i === 0) {
 
@@ -268,19 +328,15 @@ function drawHexOnContext(
                 px,
                 py
             );
-
         }
     }
 
-
     context.closePath();
-
 
     context.fillStyle =
         color;
 
     context.fill();
-
 
     context.strokeStyle =
         "#30302d";
@@ -296,20 +352,36 @@ function drawHexOnContext(
 // BUILD MAP CACHE
 // ============================================================
 //
-// This is the expensive operation.
+// The cache is rendered at CACHE_SCALE resolution.
 //
-// It only runs when the map changes.
+// The logical map might be:
 //
-// Camera movement does NOT rebuild the map.
+//     1000 × 700
+//
+// But the actual off-screen canvas becomes:
+//
+//     3000 × 2100
+//
+// This makes it much sharper when the user zooms in.
 //
 
 function rebuildMapCanvas() {
 
+    if (COLS <= 0 || ROWS <= 0) {
+        return;
+    }
+
     mapCanvas.width =
-        MAP_WIDTH;
+        Math.ceil(
+            MAP_WIDTH *
+            CACHE_SCALE
+        );
 
     mapCanvas.height =
-        MAP_HEIGHT;
+        Math.ceil(
+            MAP_HEIGHT *
+            CACHE_SCALE
+        );
 
 
     mapCtx.clearRect(
@@ -317,6 +389,14 @@ function rebuildMapCanvas() {
         0,
         mapCanvas.width,
         mapCanvas.height
+    );
+
+
+    mapCtx.save();
+
+    mapCtx.scale(
+        CACHE_SCALE,
+        CACHE_SCALE
     );
 
 
@@ -335,6 +415,15 @@ function rebuildMapCanvas() {
             ];
 
 
+        // Safety fallback in case map.json
+        // contains an unknown owner.
+
+        const color =
+            country
+                ? country.color
+                : countries.ocean.color;
+
+
         drawHexOnContext(
 
             mapCtx,
@@ -344,21 +433,19 @@ function rebuildMapCanvas() {
 
             HEX_SIZE,
 
-            country.color
+            color
 
         );
     }
+
+
+    mapCtx.restore();
 }
 
 
 // ============================================================
 // DRAW MAP
 // ============================================================
-//
-// Extremely cheap.
-//
-// We simply move and scale the cached image.
-//
 
 function draw() {
 
@@ -385,10 +472,21 @@ function draw() {
     );
 
 
+    // The cached canvas is 3× larger than its logical size,
+    // so tell drawImage to display it at its logical size.
+
     ctx.drawImage(
         mapCanvas,
+
         0,
-        0
+        0,
+        mapCanvas.width,
+        mapCanvas.height,
+
+        0,
+        0,
+        MAP_WIDTH,
+        MAP_HEIGHT
     );
 
 
@@ -482,16 +580,37 @@ function getTileAt(
     worldY
 ) {
 
-    const approxCol =
-        Math.round(
-            worldX /
-            HEX_WIDTH
-        );
+    // Estimate the row first.
 
     const approxRow =
         Math.round(
-            worldY /
+            (
+                worldY -
+                HEX_SIZE -
+                HEX_SIZE
+            ) /
             HEX_VERTICAL_DISTANCE
+        );
+
+
+    // Estimate column taking the staggered row into account.
+
+    const rowOffset =
+        (
+            approxRow % 2
+        ) *
+        HEX_WIDTH / 2;
+
+
+    const approxCol =
+        Math.round(
+            (
+                worldX -
+                HEX_SIZE -
+                HEX_WIDTH / 2 -
+                rowOffset
+            ) /
+            HEX_WIDTH
         );
 
 
@@ -500,6 +619,8 @@ function getTileAt(
     let closestDistance =
         HEX_SIZE;
 
+
+    // Check nearby hexes.
 
     for (
         let row =
@@ -630,6 +751,11 @@ canvas.addEventListener(
             ];
 
 
+        if (!country) {
+            return;
+        }
+
+
         territoryName.textContent =
             country.name;
 
@@ -643,12 +769,6 @@ canvas.addEventListener(
 // ============================================================
 // PAN
 // ============================================================
-//
-// Left/right mouse behavior on public map:
-//
-// Left drag = pan
-//
-// (If you prefer right drag, we can change this.)
 
 let dragging = false;
 
@@ -763,9 +883,6 @@ canvas.addEventListener(
             rect.top;
 
 
-        // World position underneath mouse
-        // before zooming.
-
         const before =
             screenToWorld(
                 mouseX,
@@ -795,18 +912,12 @@ canvas.addEventListener(
             );
 
 
-        // World position underneath mouse
-        // after zooming.
-
         const after =
             screenToWorld(
                 mouseX,
                 mouseY
             );
 
-
-        // Compensate so the mouse
-        // stays over the same tile.
 
         camera.x +=
             before.x -
@@ -833,7 +944,9 @@ async function loadMap() {
     try {
 
         const response =
-            await fetch("data/map.json");
+            await fetch(
+                "data/map.json"
+            );
 
 
         if (!response.ok) {
@@ -849,26 +962,73 @@ async function loadMap() {
 
 
         // ----------------------------------------------------
-        // FORMAT 1:
-        //
-        // {
-        //     "tiles": [
-        //         {
-        //             "col": 0,
-        //             "row": 0,
-        //             "owner": "france"
-        //         }
-        //     ]
-        // }
+        // READ GRID SIZE
+        // ----------------------------------------------------
+
+        if (
+            !Number.isInteger(
+                Number(data.cols)
+            ) ||
+            !Number.isInteger(
+                Number(data.rows)
+            )
+        ) {
+
+            throw new Error(
+                "map.json does not contain valid cols/rows"
+            );
+        }
+
+
+        COLS =
+            Number(data.cols);
+
+        ROWS =
+            Number(data.rows);
+
+
+        console.log(
+            `Map grid: ${COLS} × ${ROWS}`
+        );
+
+
+        // ----------------------------------------------------
+        // CALCULATE MAP SIZE
+        // ----------------------------------------------------
+
+        calculateMapDimensions();
+
+
+        // ----------------------------------------------------
+        // CREATE EMPTY TILES
+        // ----------------------------------------------------
+
+        createTiles();
+
+
+        // ----------------------------------------------------
+        // LOAD TILES
         // ----------------------------------------------------
 
         if (Array.isArray(data.tiles)) {
 
-            for (const savedTile of data.tiles) {
+            for (
+                const savedTile
+                of data.tiles
+            ) {
 
-                const col = Number(savedTile.col);
-                const row = Number(savedTile.row);
-                const owner = savedTile.owner;
+                const col =
+                    Number(
+                        savedTile.col
+                    );
+
+                const row =
+                    Number(
+                        savedTile.row
+                    );
+
+                const owner =
+                    savedTile.owner;
 
 
                 if (
@@ -889,13 +1049,16 @@ async function loadMap() {
                 }
 
 
-                if (!countries[owner]) {
+                if (
+                    !countries[owner]
+                ) {
                     continue;
                 }
 
 
                 const index =
-                    row * COLS + col;
+                    row * COLS +
+                    col;
 
 
                 tiles[index].owner =
@@ -905,26 +1068,21 @@ async function loadMap() {
 
 
         // ----------------------------------------------------
-        // FORMAT 2:
-        //
-        // {
-        //     "owners": [
-        //         "ocean",
-        //         "ocean",
-        //         "france",
-        //         ...
-        //     ]
-        // }
-        //
-        // One owner per tile, row-major order.
+        // ALTERNATIVE FORMAT
         // ----------------------------------------------------
 
-        else if (Array.isArray(data.owners)) {
+        else if (
+            Array.isArray(data.owners)
+        ) {
 
             for (
                 let i = 0;
-                i < data.owners.length &&
-                i < tiles.length;
+
+                i <
+                data.owners.length &&
+                i <
+                tiles.length;
+
                 i++
             ) {
 
@@ -932,7 +1090,9 @@ async function loadMap() {
                     data.owners[i];
 
 
-                if (countries[owner]) {
+                if (
+                    countries[owner]
+                ) {
 
                     tiles[i].owner =
                         owner;
@@ -942,24 +1102,21 @@ async function loadMap() {
 
 
         // ----------------------------------------------------
-        // FORMAT 3:
-        //
-        // {
-        //     "map": [
-        //         ["ocean", "ocean", "france", ...],
-        //         ["ocean", "france", "france", ...]
-        //     ]
-        // }
-        //
-        // 2D row/column ownership array.
+        // ALTERNATIVE 2D FORMAT
         // ----------------------------------------------------
 
-        else if (Array.isArray(data.map)) {
+        else if (
+            Array.isArray(data.map)
+        ) {
 
             for (
                 let row = 0;
-                row < data.map.length &&
-                row < ROWS;
+
+                row <
+                data.map.length &&
+                row <
+                ROWS;
+
                 row++
             ) {
 
@@ -967,15 +1124,21 @@ async function loadMap() {
                     data.map[row];
 
 
-                if (!Array.isArray(mapRow)) {
+                if (
+                    !Array.isArray(mapRow)
+                ) {
                     continue;
                 }
 
 
                 for (
                     let col = 0;
-                    col < mapRow.length &&
-                    col < COLS;
+
+                    col <
+                    mapRow.length &&
+                    col <
+                    COLS;
+
                     col++
                 ) {
 
@@ -983,26 +1146,30 @@ async function loadMap() {
                         mapRow[col];
 
 
-                    if (!countries[owner]) {
+                    if (
+                        !countries[owner]
+                    ) {
                         continue;
                     }
 
 
                     tiles[
-                        row * COLS + col
-                    ].owner = owner;
+                        row * COLS +
+                        col
+                    ].owner =
+                        owner;
                 }
             }
         }
 
 
         // ----------------------------------------------------
-        // REBUILD
+        // BUILD MAP
         // ----------------------------------------------------
 
         rebuildMapCanvas();
 
-        draw();
+        resizeCanvas();
 
 
         console.log(
@@ -1019,10 +1186,6 @@ async function loadMap() {
             error
         );
 
-
-        rebuildMapCanvas();
-
-        draw();
     }
 }
 
@@ -1030,11 +1193,12 @@ async function loadMap() {
 // ============================================================
 // START
 // ============================================================
-
-createTiles();
-
-rebuildMapCanvas();
-
-resizeCanvas();
+//
+// IMPORTANT:
+// We DON'T create the tiles or build the map here anymore.
+//
+// map.json must be loaded first because it tells us
+// the grid dimensions.
+//
 
 loadMap();
