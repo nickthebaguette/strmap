@@ -30,7 +30,41 @@
         <h2>Map Editor</h2>
 
 
+        <!-- ================================================= -->
+        <!-- EDITOR MODE -->
+        <!-- ================================================= -->
+
         <div class="editor-section">
+
+            <strong>Editor Mode</strong>
+
+            <select id="editor-mode">
+
+                <option value="territory">
+                    Territory
+                </option>
+
+                <option value="city">
+                    City
+                </option>
+
+                <option value="army">
+                    Army
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- COUNTRY -->
+        <!-- ================================================= -->
+
+        <div
+            class="editor-section"
+            id="country-section"
+        >
 
             <strong>Country</strong>
 
@@ -103,7 +137,7 @@
                 <option value="naples">
                     Naples
                 </option>
-                
+
                 <option value="papal">
                     Papal States
                 </option>
@@ -112,6 +146,50 @@
 
         </div>
 
+
+        <!-- ================================================= -->
+        <!-- CITY SETTINGS -->
+        <!-- ================================================= -->
+
+        <div
+            class="editor-section"
+            id="city-section"
+            style="display: none;"
+        >
+
+            <strong>City</strong>
+
+            <p>
+                Click a hex to place a city.
+                Click an existing city to remove it.
+            </p>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- ARMY SETTINGS -->
+        <!-- ================================================= -->
+
+        <div
+            class="editor-section"
+            id="army-section"
+            style="display: none;"
+        >
+
+            <strong>Army</strong>
+
+            <p>
+                Click a hex to place an army.
+                Click an existing army to remove it.
+            </p>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- SAVE -->
+        <!-- ================================================= -->
 
         <div class="editor-section">
 
@@ -125,6 +203,10 @@
 
         </div>
 
+
+        <!-- ================================================= -->
+        <!-- STATUS -->
+        <!-- ================================================= -->
 
         <div class="editor-section">
 
