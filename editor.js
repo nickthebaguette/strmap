@@ -9,8 +9,11 @@ const mapCtx = mapCanvas.getContext("2d");
 // UI
 // ============================================================
 
-const editorMode =
-    document.getElementById("editor-mode");
+const territoryName =
+    document.getElementById("territory-name");
+
+const territoryOwner =
+    document.getElementById("territory-owner");
 
 const countrySelect =
     document.getElementById("country-select");
@@ -21,59 +24,8 @@ const saveButton =
 const downloadButton =
     document.getElementById("download-button");
 
-const downloadCitiesButton =
-    document.getElementById("download-cities-button");
-
-const downloadArmiesButton =
-    document.getElementById("download-armies-button");
-
 const statusText =
     document.getElementById("status");
-
-
-// City UI
-
-const cityEditor =
-    document.getElementById("city-editor");
-
-const territoryEditor =
-    document.getElementById("territory-editor");
-
-const armyEditor =
-    document.getElementById("army-editor");
-
-const cityName =
-    document.getElementById("city-name");
-
-const cityCountry =
-    document.getElementById("city-country");
-
-const placeCityButton =
-    document.getElementById("place-city-button");
-
-const deleteCityButton =
-    document.getElementById("delete-city-button");
-
-
-// Army UI
-
-const armyName =
-    document.getElementById("army-name");
-
-const armyCountry =
-    document.getElementById("army-country");
-
-const armyStrength =
-    document.getElementById("army-strength");
-
-const armyCommander =
-    document.getElementById("army-commander");
-
-const placeArmyButton =
-    document.getElementById("place-army-button");
-
-const deleteArmyButton =
-    document.getElementById("delete-army-button");
 
 
 // ============================================================
@@ -298,6 +250,18 @@ function createTiles() {
 // ============================================================
 // CITIES
 // ============================================================
+//
+// Cities are deliberately kept separate from map.json.
+//
+// A city is associated with a tile:
+//
+//     col
+//     row
+//
+// and has its own information.
+//
+// The editor will populate this later.
+//
 
 let cities = [];
 
@@ -305,15 +269,11 @@ let cities = [];
 // ============================================================
 // ARMIES
 // ============================================================
+//
+// Armies are also completely separate from map.json.
+//
 
 let armies = [];
-
-
-// ============================================================
-// SELECTED TILE
-// ============================================================
-
-let selectedTile = null;
 
 
 // ============================================================
@@ -335,6 +295,30 @@ function hexToWorld(
         y:
             row *
             HEX_VERTICAL_DISTANCE
+
+    };
+
+}
+
+
+// ============================================================
+// WORLD → SCREEN
+// ============================================================
+
+function worldToScreen(
+    x,
+    y
+) {
+
+    return {
+
+        x:
+            (x - camera.x) *
+            camera.zoom,
+
+        y:
+            (y - camera.y) *
+            camera.zoom
 
     };
 
@@ -496,7 +480,9 @@ function rebuildMapCanvas() {
 
 
         if (!country) {
+
             continue;
+
         }
 
 
@@ -565,130 +551,6 @@ function updateMinimumZoom() {
 
 
 // ============================================================
-// DRAW CITY ICON
-// ============================================================
-
-function drawCity(
-    city
-) {
-
-    const world =
-        hexToWorld(
-            city.col,
-            city.row
-        );
-
-
-    ctx.save();
-
-
-    ctx.translate(
-        world.x,
-        world.y
-    );
-
-
-    // Simple placeholder city marker.
-    // We can replace this with city.png later.
-
-    const size = 8;
-
-
-    ctx.fillStyle =
-        "#f1df9a";
-
-
-    ctx.strokeStyle =
-        "#252522";
-
-
-    ctx.lineWidth =
-        2;
-
-
-    ctx.beginPath();
-
-    ctx.arc(
-        0,
-        0,
-        size,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-    ctx.stroke();
-
-
-    ctx.restore();
-
-}
-
-
-// ============================================================
-// DRAW ARMY ICON
-// ============================================================
-
-function drawArmy(
-    army
-) {
-
-    const world =
-        hexToWorld(
-            army.col,
-            army.row
-        );
-
-
-    ctx.save();
-
-
-    ctx.translate(
-        world.x,
-        world.y
-    );
-
-
-    // Simple placeholder army marker.
-    // We will replace this with the actual army
-    // icon from icons/armies later.
-
-    const size = 9;
-
-
-    ctx.fillStyle =
-        "#e8e8e8";
-
-
-    ctx.strokeStyle =
-        "#252522";
-
-
-    ctx.lineWidth =
-        2;
-
-
-    ctx.beginPath();
-
-    ctx.rect(
-        -size,
-        -size,
-        size * 2,
-        size * 2
-    );
-
-    ctx.fill();
-
-    ctx.stroke();
-
-
-    ctx.restore();
-
-}
-
-
-// ============================================================
 // DRAW
 // ============================================================
 
@@ -704,6 +566,10 @@ function draw() {
 
     ctx.save();
 
+
+    // ========================================================
+    // CAMERA
+    // ========================================================
 
     ctx.translate(
 
@@ -758,32 +624,6 @@ function draw() {
         -FRAME_OVERHANG
 
     );
-
-
-    // ========================================================
-    // CITIES
-    // ========================================================
-
-    for (
-        const city of cities
-    ) {
-
-        drawCity(city);
-
-    }
-
-
-    // ========================================================
-    // ARMIES
-    // ========================================================
-
-    for (
-        const army of armies
-    ) {
-
-        drawArmy(army);
-
-    }
 
 
     // ========================================================
@@ -863,6 +703,10 @@ function clampCamera() {
         frameTop;
 
 
+    // ========================================================
+    // HORIZONTAL
+    // ========================================================
+
     if (
         visibleWidth >= frameWidth
     ) {
@@ -896,6 +740,10 @@ function clampCamera() {
 
     }
 
+
+    // ========================================================
+    // VERTICAL
+    // ========================================================
 
     if (
         visibleHeight >= frameHeight
@@ -1091,149 +939,6 @@ function getTileAt(
 
 
 // ============================================================
-// MODE SWITCHING
-// ============================================================
-
-function updateEditorMode() {
-
-    const mode =
-        editorMode.value;
-
-
-    territoryEditor.style.display =
-        mode === "territory"
-            ? "block"
-            : "none";
-
-
-    cityEditor.style.display =
-        mode === "city"
-            ? "block"
-            : "none";
-
-
-    armyEditor.style.display =
-        mode === "army"
-            ? "block"
-            : "none";
-
-
-    selectedTile = null;
-
-}
-
-
-editorMode.addEventListener(
-    "change",
-    updateEditorMode
-);
-
-
-// ============================================================
-// FIND CITY
-// ============================================================
-
-function getCityAtTile(
-    tile
-) {
-
-    return cities.find(
-        city =>
-            city.col === tile.col &&
-            city.row === tile.row
-    );
-
-}
-
-
-// ============================================================
-// FIND ARMY
-// ============================================================
-
-function getArmyAtTile(
-    tile
-) {
-
-    return armies.find(
-        army =>
-            army.col === tile.col &&
-            army.row === tile.row
-    );
-
-}
-
-
-// ============================================================
-// LOAD CITY INTO EDITOR
-// ============================================================
-
-function loadCityIntoEditor(
-    city
-) {
-
-    if (!city) {
-
-        cityName.value =
-            "";
-
-        return;
-
-    }
-
-
-    cityName.value =
-        city.name || "";
-
-
-    cityCountry.value =
-        city.country || "france";
-
-}
-
-
-// ============================================================
-// LOAD ARMY INTO EDITOR
-// ============================================================
-
-function loadArmyIntoEditor(
-    army
-) {
-
-    if (!army) {
-
-        armyName.value =
-            "";
-
-        armyStrength.value =
-            10000;
-
-        armyCommander.value =
-            "";
-
-        return;
-
-    }
-
-
-    armyName.value =
-        army.name || "";
-
-
-    armyCountry.value =
-        army.country || "france";
-
-
-    armyStrength.value =
-        army.strength ?? 10000;
-
-
-    armyCommander.value =
-        army.commander || "";
-
-}
-
-
-// ============================================================
 // TILE CLICK
 // ============================================================
 
@@ -1244,7 +949,9 @@ canvas.addEventListener(
     "click",
     (event) => {
 
-        if (wasDragging) {
+        if (
+            wasDragging
+        ) {
 
             return;
 
@@ -1286,386 +993,33 @@ canvas.addEventListener(
         }
 
 
-        selectedTile =
-            tile;
+        const country =
+            countries[
+                tile.owner
+            ];
 
 
-        const mode =
-            editorMode.value;
-
-
-        // ====================================================
-        // TERRITORY
-        // ====================================================
-
-        if (
-            mode === "territory"
-        ) {
-
-            tile.owner =
-                countrySelect.value;
-
-
-            statusText.textContent =
-                `Changed tile ${tile.col}, ${tile.row}`;
-
-
-            rebuildMapCanvas();
-
-            draw();
+        if (!country) {
 
             return;
 
         }
 
 
-        // ====================================================
-        // CITY
-        // ====================================================
+        if (territoryName) {
 
-        if (
-            mode === "city"
-        ) {
-
-            const city =
-                getCityAtTile(
-                    tile
-                );
-
-
-            loadCityIntoEditor(
-                city
-            );
-
-
-            statusText.textContent =
-                city
-                    ? `Editing ${city.name}`
-                    : `Ready to place city on ${tile.col}, ${tile.row}`;
-
-            return;
+            territoryName.textContent =
+                country.name;
 
         }
 
 
-        // ====================================================
-        // ARMY
-        // ====================================================
+        if (territoryOwner) {
 
-        if (
-            mode === "army"
-        ) {
-
-            const army =
-                getArmyAtTile(
-                    tile
-                );
-
-
-            loadArmyIntoEditor(
-                army
-            );
-
-
-            statusText.textContent =
-                army
-                    ? `Editing ${army.name}`
-                    : `Ready to place army on ${tile.col}, ${tile.row}`;
+            territoryOwner.textContent =
+                `Tile: ${tile.col}, ${tile.row}`;
 
         }
-
-    }
-);
-
-
-// ============================================================
-// PLACE CITY
-// ============================================================
-
-placeCityButton.addEventListener(
-    "click",
-    () => {
-
-        if (!selectedTile) {
-
-            statusText.textContent =
-                "Select a hex first.";
-
-            return;
-
-        }
-
-
-        const name =
-            cityName.value.trim();
-
-
-        if (!name) {
-
-            statusText.textContent =
-                "Enter a city name.";
-
-            return;
-
-        }
-
-
-        const existing =
-            getCityAtTile(
-                selectedTile
-            );
-
-
-        if (existing) {
-
-            existing.name =
-                name;
-
-            existing.country =
-                cityCountry.value;
-
-        } else {
-
-            cities.push({
-
-                col:
-                    selectedTile.col,
-
-                row:
-                    selectedTile.row,
-
-                name:
-                    name,
-
-                country:
-                    cityCountry.value
-
-            });
-
-        }
-
-
-        statusText.textContent =
-            `City "${name}" placed.`;
-
-
-        draw();
-
-    }
-);
-
-
-// ============================================================
-// DELETE CITY
-// ============================================================
-
-deleteCityButton.addEventListener(
-    "click",
-    () => {
-
-        if (!selectedTile) {
-
-            statusText.textContent =
-                "Select a city first.";
-
-            return;
-
-        }
-
-
-        const index =
-            cities.findIndex(
-                city =>
-                    city.col === selectedTile.col &&
-                    city.row === selectedTile.row
-            );
-
-
-        if (index === -1) {
-
-            statusText.textContent =
-                "No city on this tile.";
-
-            return;
-
-        }
-
-
-        const removed =
-            cities[index];
-
-
-        cities.splice(
-            index,
-            1
-        );
-
-
-        cityName.value =
-            "";
-
-
-        statusText.textContent =
-            `Deleted ${removed.name}.`;
-
-
-        draw();
-
-    }
-);
-
-
-// ============================================================
-// PLACE ARMY
-// ============================================================
-
-placeArmyButton.addEventListener(
-    "click",
-    () => {
-
-        if (!selectedTile) {
-
-            statusText.textContent =
-                "Select a hex first.";
-
-            return;
-
-        }
-
-
-        const name =
-            armyName.value.trim();
-
-
-        if (!name) {
-
-            statusText.textContent =
-                "Enter an army name.";
-
-            return;
-
-        }
-
-
-        const strength =
-            Number(
-                armyStrength.value
-            );
-
-
-        const existing =
-            getArmyAtTile(
-                selectedTile
-            );
-
-
-        if (existing) {
-
-            existing.name =
-                name;
-
-            existing.country =
-                armyCountry.value;
-
-            existing.strength =
-                strength;
-
-            existing.commander =
-                armyCommander.value.trim();
-
-        } else {
-
-            armies.push({
-
-                col:
-                    selectedTile.col,
-
-                row:
-                    selectedTile.row,
-
-                name:
-                    name,
-
-                country:
-                    armyCountry.value,
-
-                strength:
-                    strength,
-
-                commander:
-                    armyCommander.value.trim()
-
-            });
-
-        }
-
-
-        statusText.textContent =
-            `Army "${name}" placed.`;
-
-
-        draw();
-
-    }
-);
-
-
-// ============================================================
-// DELETE ARMY
-// ============================================================
-
-deleteArmyButton.addEventListener(
-    "click",
-    () => {
-
-        if (!selectedTile) {
-
-            statusText.textContent =
-                "Select an army first.";
-
-            return;
-
-        }
-
-
-        const index =
-            armies.findIndex(
-                army =>
-                    army.col === selectedTile.col &&
-                    army.row === selectedTile.row
-            );
-
-
-        if (index === -1) {
-
-            statusText.textContent =
-                "No army on this tile.";
-
-            return;
-
-        }
-
-
-        const removed =
-            armies[index];
-
-
-        armies.splice(
-            index,
-            1
-        );
-
-
-        loadArmyIntoEditor(
-            null
-        );
-
-
-        statusText.textContent =
-            `Deleted ${removed.name}.`;
-
-
-        draw();
 
     }
 );
@@ -1678,6 +1032,7 @@ deleteArmyButton.addEventListener(
 let dragging = false;
 
 let lastX = 0;
+
 let lastY = 0;
 
 
@@ -1714,7 +1069,9 @@ canvas.addEventListener(
     "mousemove",
     (event) => {
 
-        if (!dragging) {
+        if (
+            !dragging
+        ) {
 
             return;
 
@@ -1859,7 +1216,7 @@ canvas.addEventListener(
 
 
 // ============================================================
-// CREATE MAP JSON
+// MAP JSON
 // ============================================================
 
 function createMapJSON() {
@@ -1870,21 +1227,17 @@ function createMapJSON() {
 
         rows: ROWS,
 
-        tiles:
-            tiles.map(
-                tile => ({
+        tiles: tiles.map(
+            tile => ({
 
-                    col:
-                        tile.col,
+                col: tile.col,
 
-                    row:
-                        tile.row,
+                row: tile.row,
 
-                    owner:
-                        tile.owner
+                owner: tile.owner
 
-                })
-            )
+            })
+        )
 
     };
 
@@ -1892,83 +1245,38 @@ function createMapJSON() {
 
 
 // ============================================================
-// CREATE CITIES JSON
+// SAVE MAP
 // ============================================================
 
-function createCitiesJSON() {
+function saveMap() {
 
-    return {
+    const data =
+        createMapJSON();
 
-        cities:
-            cities.map(
-                city => ({
 
-                    col:
-                        city.col,
+    localStorage.setItem(
+        "strategy_map_editor",
+        JSON.stringify(
+            data
+        )
+    );
 
-                    row:
-                        city.row,
 
-                    name:
-                        city.name,
-
-                    country:
-                        city.country
-
-                })
-            )
-
-    };
+    statusText.textContent =
+        "Saved locally";
 
 }
 
 
 // ============================================================
-// CREATE ARMIES JSON
+// DOWNLOAD MAP
 // ============================================================
 
-function createArmiesJSON() {
+function downloadMap() {
 
-    return {
+    const data =
+        createMapJSON();
 
-        armies:
-            armies.map(
-                army => ({
-
-                    col:
-                        army.col,
-
-                    row:
-                        army.row,
-
-                    name:
-                        army.name,
-
-                    country:
-                        army.country,
-
-                    strength:
-                        army.strength,
-
-                    commander:
-                        army.commander
-
-                })
-            )
-
-    };
-
-}
-
-
-// ============================================================
-// DOWNLOAD FILE
-// ============================================================
-
-function downloadJSON(
-    data,
-    filename
-) {
 
     const blob =
         new Blob(
@@ -2003,7 +1311,7 @@ function downloadJSON(
 
 
     link.download =
-        filename;
+        "map.json";
 
 
     document.body.appendChild(
@@ -2023,95 +1331,9 @@ function downloadJSON(
         url
     );
 
-}
-
-
-// ============================================================
-// SAVE LOCALLY
-// ============================================================
-
-function saveMap() {
-
-    localStorage.setItem(
-        "strategy_map_editor",
-        JSON.stringify(
-            createMapJSON()
-        )
-    );
-
-
-    localStorage.setItem(
-        "strategy_cities_editor",
-        JSON.stringify(
-            createCitiesJSON()
-        )
-    );
-
-
-    localStorage.setItem(
-        "strategy_armies_editor",
-        JSON.stringify(
-            createArmiesJSON()
-        )
-    );
-
-
-    statusText.textContent =
-        "Saved map, cities and armies locally.";
-
-}
-
-
-// ============================================================
-// DOWNLOAD MAP
-// ============================================================
-
-function downloadMap() {
-
-    downloadJSON(
-        createMapJSON(),
-        "map.json"
-    );
-
 
     statusText.textContent =
         "Downloaded map.json";
-
-}
-
-
-// ============================================================
-// DOWNLOAD CITIES
-// ============================================================
-
-function downloadCities() {
-
-    downloadJSON(
-        createCitiesJSON(),
-        "cities.json"
-    );
-
-
-    statusText.textContent =
-        "Downloaded cities.json";
-
-}
-
-
-// ============================================================
-// DOWNLOAD ARMIES
-// ============================================================
-
-function downloadArmies() {
-
-    downloadJSON(
-        createArmiesJSON(),
-        "armies.json"
-    );
-
-
-    statusText.textContent =
-        "Downloaded armies.json";
 
 }
 
@@ -2140,54 +1362,6 @@ if (downloadButton) {
 }
 
 
-if (downloadCitiesButton) {
-
-    downloadCitiesButton.addEventListener(
-        "click",
-        downloadCities
-    );
-
-}
-
-
-if (downloadArmiesButton) {
-
-    downloadArmiesButton.addEventListener(
-        "click",
-        downloadArmies
-    );
-
-}
-
-
-// ============================================================
-// LOAD JSON
-// ============================================================
-
-async function loadJSON(
-    path
-) {
-
-    const response =
-        await fetch(
-            path
-        );
-
-
-    if (!response.ok) {
-
-        throw new Error(
-            `Could not load ${path}`
-        );
-
-    }
-
-
-    return await response.json();
-
-}
-
-
 // ============================================================
 // LOAD MAP
 // ============================================================
@@ -2196,10 +1370,23 @@ async function loadMap() {
 
     try {
 
-        const data =
-            await loadJSON(
+        const response =
+            await fetch(
                 "data/map.json"
             );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Could not load map.json"
+            );
+
+        }
+
+
+        const data =
+            await response.json();
 
 
         // ====================================================
@@ -2236,11 +1423,12 @@ async function loadMap() {
 
         updateMapDimensions();
 
+
         createTiles();
 
 
         // ====================================================
-        // TILES
+        // TILE DATA
         // ====================================================
 
         if (
@@ -2250,7 +1438,8 @@ async function loadMap() {
         ) {
 
             for (
-                const savedTile of data.tiles
+                const savedTile
+                of data.tiles
             ) {
 
                 const col =
@@ -2270,8 +1459,12 @@ async function loadMap() {
 
 
                 if (
-                    !Number.isInteger(col) ||
-                    !Number.isInteger(row)
+                    !Number.isInteger(
+                        col
+                    ) ||
+                    !Number.isInteger(
+                        row
+                    )
                 ) {
 
                     continue;
@@ -2292,7 +1485,9 @@ async function loadMap() {
 
 
                 if (
-                    !countries[owner]
+                    !countries[
+                        owner
+                    ]
                 ) {
 
                     continue;
@@ -2300,9 +1495,12 @@ async function loadMap() {
                 }
 
 
-                tiles[
-                    row * COLS + col
-                ].owner =
+                const index =
+                    row * COLS +
+                    col;
+
+
+                tiles[index].owner =
                     owner;
 
             }
@@ -2310,8 +1508,132 @@ async function loadMap() {
         }
 
 
+        // ====================================================
+        // OWNERS FORMAT
+        // ====================================================
+
+        else if (
+            Array.isArray(
+                data.owners
+            )
+        ) {
+
+            for (
+                let i = 0;
+
+                i <
+                data.owners.length &&
+                i <
+                tiles.length;
+
+                i++
+            ) {
+
+                const owner =
+                    data.owners[i];
+
+
+                if (
+                    countries[
+                        owner
+                    ]
+                ) {
+
+                    tiles[i].owner =
+                        owner;
+
+                }
+
+            }
+
+        }
+
+
+        // ====================================================
+        // 2D MAP FORMAT
+        // ====================================================
+
+        else if (
+            Array.isArray(
+                data.map
+            )
+        ) {
+
+            for (
+                let row = 0;
+
+                row <
+                data.map.length &&
+                row <
+                ROWS;
+
+                row++
+            ) {
+
+                const mapRow =
+                    data.map[row];
+
+
+                if (
+                    !Array.isArray(
+                        mapRow
+                    )
+                ) {
+
+                    continue;
+
+                }
+
+
+                for (
+                    let col = 0;
+
+                    col <
+                    mapRow.length &&
+                    col <
+                    COLS;
+
+                    col++
+                ) {
+
+                    const owner =
+                        mapRow[col];
+
+
+                    if (
+                        !countries[
+                            owner
+                        ]
+                    ) {
+
+                        continue;
+
+                    }
+
+
+                    tiles[
+                        row * COLS +
+                        col
+                    ].owner =
+                        owner;
+
+                }
+
+            }
+
+        }
+
+
+        // ====================================================
+        // BUILD
+        // ====================================================
+
         rebuildMapCanvas();
 
+
+        // ====================================================
+        // CAMERA
+        // ====================================================
 
         updateMinimumZoom();
 
@@ -2332,11 +1654,21 @@ async function loadMap() {
 
         clampCamera();
 
+
         draw();
 
 
-        statusText.textContent =
-            `Map loaded: ${COLS} × ${ROWS}`;
+        if (statusText) {
+
+            statusText.textContent =
+                `Loaded ${COLS} × ${ROWS} map`;
+
+        }
+
+
+        console.log(
+            `Editor map loaded successfully: ${COLS} × ${ROWS}`
+        );
 
     }
 
@@ -2348,6 +1680,12 @@ async function loadMap() {
         );
 
 
+        // IMPORTANT:
+        //
+        // Even if the separate map data fails,
+        // initialize a valid map instead of leaving
+        // the canvas in a broken state.
+
         updateMapDimensions();
 
         createTiles();
@@ -2357,8 +1695,12 @@ async function loadMap() {
         resizeCanvas();
 
 
-        statusText.textContent =
-            "Failed to load map.json";
+        if (statusText) {
+
+            statusText.textContent =
+                "Failed to load map.json";
+
+        }
 
     }
 
@@ -2368,21 +1710,45 @@ async function loadMap() {
 // ============================================================
 // LOAD CITIES
 // ============================================================
+//
+// This is intentionally independent from map loading.
+//
+// If the file doesn't exist yet, nothing breaks.
+//
 
 async function loadCities() {
 
     try {
 
-        const data =
-            await loadJSON(
+        const response =
+            await fetch(
                 "data/cities.json"
             );
 
 
+        if (!response.ok) {
+
+            throw new Error(
+                "cities.json not found"
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
         if (
-            Array.isArray(
-                data.cities
-            )
+            Array.isArray(data)
+        ) {
+
+            cities = data;
+
+        }
+
+        else if (
+            Array.isArray(data.cities)
         ) {
 
             cities =
@@ -2390,22 +1756,28 @@ async function loadCities() {
 
         }
 
+        else {
+
+            cities = [];
+
+        }
+
 
         console.log(
-            `Loaded ${cities.length} cities.`
+            `Loaded ${cities.length} cities`
         );
-
-        draw();
 
     }
 
     catch (error) {
 
-        console.warn(
-            "No cities.json found yet."
-        );
+        // No cities file yet is completely fine.
 
         cities = [];
+
+        console.log(
+            "No cities.json loaded yet."
+        );
 
     }
 
@@ -2415,21 +1787,43 @@ async function loadCities() {
 // ============================================================
 // LOAD ARMIES
 // ============================================================
+//
+// Same principle as cities.
+//
 
 async function loadArmies() {
 
     try {
 
-        const data =
-            await loadJSON(
+        const response =
+            await fetch(
                 "data/armies.json"
             );
 
 
+        if (!response.ok) {
+
+            throw new Error(
+                "armies.json not found"
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
         if (
-            Array.isArray(
-                data.armies
-            )
+            Array.isArray(data)
+        ) {
+
+            armies = data;
+
+        }
+
+        else if (
+            Array.isArray(data.armies)
         ) {
 
             armies =
@@ -2437,22 +1831,26 @@ async function loadArmies() {
 
         }
 
+        else {
+
+            armies = [];
+
+        }
+
 
         console.log(
-            `Loaded ${armies.length} armies.`
+            `Loaded ${armies.length} armies`
         );
-
-        draw();
 
     }
 
     catch (error) {
 
-        console.warn(
-            "No armies.json found yet."
-        );
-
         armies = [];
+
+        console.log(
+            "No armies.json loaded yet."
+        );
 
     }
 
@@ -2462,6 +1860,14 @@ async function loadArmies() {
 // ============================================================
 // START
 // ============================================================
+//
+// IMPORTANT:
+//
+// Map initialization happens first.
+// Cities and armies are loaded afterward.
+//
+// This prevents auxiliary data from breaking the map.
+//
 
 createTiles();
 
@@ -2471,8 +1877,15 @@ rebuildMapCanvas();
 
 resizeCanvas();
 
-loadMap();
 
-loadCities();
+loadMap().then(
+    async () => {
 
-loadArmies();
+        await loadCities();
+
+        await loadArmies();
+
+        draw();
+
+    }
+);
