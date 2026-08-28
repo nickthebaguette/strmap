@@ -12,95 +12,112 @@ export const countries = {
 
     france: {
         name: "France",
-        color: "#4d72ad"
+        color: "#abfcd0"
     },
 
     spain: {
         name: "Spain",
-        color: "#c18a45"
+        color: "#fbe868"
     },
 
     portugal: {
         name: "Portugal",
-        color: "#6c9660"
+        color: "#f18d8b"
     },
 
     britain: {
         name: "Great Britain",
-        color: "#a85858"
-    },
-
-    netherlands: {
-        name: "Batavian Republic",
-        color: "#9b7182"
+        color: "#e94263"
     },
 
     batavia: {
         name: "Batavian Republic",
-        color: "#9b7182"
+        color: "#fe9836"
+    },
+
+    // Kept as an alias in case older map data uses "netherlands".
+    netherlands: {
+        name: "Batavian Republic",
+        color: "#fe9836"
     },
 
     prussia: {
         name: "Prussia",
-        color: "#667c99"
+        color: "#000000"
     },
 
     austria: {
         name: "Austria",
-        color: "#c5a74e"
+        color: "#78faed"
     },
 
     russia: {
         name: "Russian Empire",
-        color: "#71975e"
+        color: "#dcc736"
     },
 
     sweden: {
         name: "Sweden",
-        color: "#c6a84d"
+        color: "#f18ebd"
     },
 
     denmark: {
         name: "Denmark-Norway",
-        color: "#a45e68"
+        color: "#f200d5"
     },
 
     italy: {
         name: "Kingdom of Italy",
-        color: "#6d949c"
+        color: "#fcba96"
     },
 
     ottoman: {
         name: "Ottoman Empire",
-        color: "#9bb955"
+        color: "#6e77ed"
     },
 
     switzerland: {
         name: "Switzerland",
-        color: "#9d5959"
+        color: "#f2f497"
     },
 
     bavaria: {
         name: "Bavaria",
-        color: "#718c69"
+        color: "#b2f197"
     },
 
     saxony: {
         name: "Saxony",
-        color: "#aa8355"
+        color: "#89f17b"
     },
 
     naples: {
         name: "Naples",
-        color: "#8fae9b"
+        color: "#a2ddab"
     },
 
     papal: {
         name: "Papal States",
-        color: "#b89488"
+        color: "#d09d91"
+    },
+
+    badenwurttemberg: {
+        name: "Baden-Württemberg",
+        color: "#486b58"
+    },
+
+    hre: {
+        name: "Holy Roman Empire",
+        color: "#0800f2"
+    },
+
+    sardinia: {
+        name: "Sardinia",
+        color: "#c5c6b1"
     }
 
 };
+
 
 
 // ============================================================
