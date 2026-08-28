@@ -1,6 +1,6 @@
 {
-  "cols": 150,
-  "rows": 90,
+  "cols": 100,
+  "rows": 60,
   "default": "plains",
   "tiles": {}
 }
