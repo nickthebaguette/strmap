@@ -6,6 +6,7 @@ import {
     tiles,
     countries,
     hexToWorld,
+    HEX_SIZE,
     MAP_WIDTH,
     MAP_HEIGHT,
     COLS,
@@ -720,9 +721,6 @@ function drawPoliticalBorders() {
     // SETTINGS
     // ========================================================
 
-    const HEX_SIZE_LOCAL =
-        14;
-
 
     // Country borders are two distinct lines.
 
@@ -777,7 +775,7 @@ function drawPoliticalBorders() {
             getHexCorners(
                 world.x,
                 world.y,
-                HEX_SIZE_LOCAL
+                HEX_SIZE
             );
 
 
