@@ -25,6 +25,10 @@ import {
     drawArmies
 } from "./armies.js";
 
+import {
+    getTerrain
+} from "./terrain.js";
+
 
 // ============================================================
 // CANVAS
