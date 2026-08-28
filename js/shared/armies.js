@@ -274,3 +274,49 @@ export async function loadArmies() {
     }
 
 }
+
+
+// ============================================================
+// CREATE ARMIES JSON
+// ============================================================
+//
+// Produces the structure used by data/armies.json.
+//
+// ============================================================
+
+export function createArmiesJSON() {
+
+    return {
+
+        armies:
+            armies.map(
+                army => ({
+
+                    id:
+                        army.id,
+
+                    name:
+                        army.name,
+
+                    country:
+                        army.country,
+
+                    strength:
+                        army.strength,
+
+                    icon:
+                        army.icon,
+
+                    col:
+                        army.col,
+
+                    row:
+                        army.row
+
+                })
+            )
+
+    };
+
+}
+
