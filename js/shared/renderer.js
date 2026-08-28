@@ -45,11 +45,23 @@ export const mapCtx =
 // TEXTURES
 // ============================================================
 //
-// Keep visual assets inside the renderer.
+// All visual textures are handled here.
 //
-// If a texture fails to load, the renderer simply falls
-// back to the normal country color.
+// Political color
+//      ↓
+// parchment / water
+//      ↓
+// terrain symbols
+//      ↓
+// hex border
 //
+// Terrain textures are transparent PNG overlays.
+// ============================================================
+
+
+// ------------------------------------------------------------
+// Base textures
+// ------------------------------------------------------------
 
 const parchmentTexture =
     new Image();
@@ -58,15 +70,64 @@ const waterTexture =
     new Image();
 
 
-// Track whether each texture successfully loaded.
-
-let parchmentLoaded = false;
-let waterLoaded = false;
-
-
 // ------------------------------------------------------------
-// Texture paths
+// Terrain textures
 // ------------------------------------------------------------
+
+const terrainTextures = {
+
+    plains:
+        new Image(),
+
+    forest:
+        new Image(),
+
+    hills:
+        new Image(),
+
+    mountains:
+        new Image(),
+
+    desert:
+        new Image(),
+
+    swamp:
+        new Image()
+
+};
+
+
+// ============================================================
+// TEXTURE LOADING STATE
+// ============================================================
+
+let parchmentLoaded =
+    false;
+
+let waterLoaded =
+    false;
+
+
+const terrainLoaded = {
+
+    plains: false,
+
+    forest: false,
+
+    hills: false,
+
+    mountains: false,
+
+    desert: false,
+
+    swamp: false
+
+};
+
+
+// ============================================================
+// TEXTURE PATHS
+// ============================================================
 
 parchmentTexture.src =
     "assets/textures/parchment.png";
@@ -75,54 +136,116 @@ waterTexture.src =
     "assets/textures/water.png";
 
 
-// ------------------------------------------------------------
-// Texture loading
-// ------------------------------------------------------------
+terrainTextures.plains.src =
+    "assets/textures/terrain/plains.png";
 
-parchmentTexture.onload = () => {
+terrainTextures.forest.src =
+    "assets/textures/terrain/forest.png";
 
-    parchmentLoaded = true;
+terrainTextures.hills.src =
+    "assets/textures/terrain/hills.png";
 
-    rebuildMapCanvas();
+terrainTextures.mountains.src =
+    "assets/textures/terrain/mountains.png";
 
-};
+terrainTextures.desert.src =
+    "assets/textures/terrain/desert.png";
 
-
-waterTexture.onload = () => {
-
-    waterLoaded = true;
-
-    rebuildMapCanvas();
-
-};
-
-
-// If an image fails to load, DON'T break the map.
-
-parchmentTexture.onerror = () => {
-
-    console.warn(
-        "Could not load parchment texture. Using flat colors."
-    );
-
-    parchmentLoaded = false;
-
-};
-
-
-waterTexture.onerror = () => {
-
-    console.warn(
-        "Could not load water texture. Using flat colors."
-    );
-
-    waterLoaded = false;
-
-};
+terrainTextures.swamp.src =
+    "assets/textures/terrain/swamp.png";
 
 
 // ============================================================
-// HEX
+// BASE TEXTURE EVENTS
+// ============================================================
+
+parchmentTexture.onload =
+    () => {
+
+        parchmentLoaded =
+            true;
+
+        rebuildMapCanvas();
+
+    };
+
+
+parchmentTexture.onerror =
+    () => {
+
+        console.warn(
+            "Could not load parchment texture. Using flat colors."
+        );
+
+        parchmentLoaded =
+            false;
+
+    };
+
+
+waterTexture.onload =
+    () => {
+
+        waterLoaded =
+            true;
+
+        rebuildMapCanvas();
+
+    };
+
+
+waterTexture.onerror =
+    () => {
+
+        console.warn(
+            "Could not load water texture. Using flat colors."
+        );
+
+        waterLoaded =
+            false;
+
+    };
+
+
+// ============================================================
+// TERRAIN TEXTURE EVENTS
+// ============================================================
+
+for (
+    const terrain
+    of Object.keys(
+        terrainTextures
+    )
+) {
+
+    terrainTextures[terrain].onload =
+        () => {
+
+            terrainLoaded[terrain] =
+                true;
+
+            rebuildMapCanvas();
+
+        };
+
+
+    terrainTextures[terrain].onerror =
+        () => {
+
+            console.warn(
+                `Could not load terrain texture: ${terrain}`
+            );
+
+            terrainLoaded[terrain] =
+                false;
+
+        };
+
+}
+
+
+// ============================================================
+// HEX PATH
 // ============================================================
 
 function createHexPath(
@@ -196,12 +319,13 @@ function drawHexOnContext(
     y,
     size,
     color,
-    texture
+    baseTexture,
+    terrainTexture
 ) {
 
-    // --------------------------------------------------------
-    // Create hex shape
-    // --------------------------------------------------------
+    // ========================================================
+    // BASE HEX
+    // ========================================================
 
     createHexPath(
         context,
@@ -211,33 +335,23 @@ function drawHexOnContext(
     );
 
 
-    // --------------------------------------------------------
-    // Base color
-    // --------------------------------------------------------
-    //
-    // This is ALWAYS drawn first.
-    //
-    // That means even if the texture is missing, the map
-    // remains visible.
-    //
-
     context.fillStyle =
         color;
 
     context.fill();
 
 
-    // --------------------------------------------------------
-    // Texture
-    // --------------------------------------------------------
+    // ========================================================
+    // BASE TEXTURE
+    // ========================================================
 
     if (
-        texture
+        baseTexture
     ) {
 
         const pattern =
             context.createPattern(
-                texture,
+                baseTexture,
                 "repeat"
             );
 
@@ -245,9 +359,6 @@ function drawHexOnContext(
         if (
             pattern
         ) {
-
-            // Recreate the hex path because fill()
-            // consumed the previous path.
 
             createHexPath(
                 context,
@@ -259,13 +370,17 @@ function drawHexOnContext(
 
             context.save();
 
+
             context.globalAlpha =
                 0.55;
+
 
             context.fillStyle =
                 pattern;
 
+
             context.fill();
+
 
             context.restore();
 
@@ -274,9 +389,62 @@ function drawHexOnContext(
     }
 
 
-    // --------------------------------------------------------
-    // Border
-    // --------------------------------------------------------
+    // ========================================================
+    // TERRAIN TEXTURE
+    // ========================================================
+    //
+    // Terrain is intentionally weaker than the parchment.
+    //
+    // The political color should remain dominant.
+    //
+
+    if (
+        terrainTexture
+    ) {
+
+        const pattern =
+            context.createPattern(
+                terrainTexture,
+                "repeat"
+            );
+
+
+        if (
+            pattern
+        ) {
+
+            createHexPath(
+                context,
+                x,
+                y,
+                size
+            );
+
+
+            context.save();
+
+
+            context.globalAlpha =
+                0.45;
+
+
+            context.fillStyle =
+                pattern;
+
+
+            context.fill();
+
+
+            context.restore();
+
+        }
+
+    }
+
+
+    // ========================================================
+    // HEX BORDER
+    // ========================================================
 
     createHexPath(
         context,
@@ -339,7 +507,8 @@ export function rebuildMapCanvas() {
     // ========================================================
 
     for (
-        const tile of tiles
+        const tile
+        of tiles
     ) {
 
         const world =
@@ -364,11 +533,24 @@ export function rebuildMapCanvas() {
         }
 
 
-        // ----------------------------------------------------
-        // Choose texture
-        // ----------------------------------------------------
+        // ====================================================
+        // DETERMINE TERRAIN
+        // ====================================================
 
-        let texture = null;
+        const terrain =
+            getTerrain(
+                tile.col,
+                tile.row,
+                tile
+            );
+
+
+        // ====================================================
+        // BASE TEXTURE
+        // ====================================================
+
+        let baseTexture =
+            null;
 
 
         if (
@@ -379,7 +561,7 @@ export function rebuildMapCanvas() {
                 waterLoaded
             ) {
 
-                texture =
+                baseTexture =
                     waterTexture;
 
             }
@@ -392,7 +574,7 @@ export function rebuildMapCanvas() {
                 parchmentLoaded
             ) {
 
-                texture =
+                baseTexture =
                     parchmentTexture;
 
             }
@@ -400,22 +582,49 @@ export function rebuildMapCanvas() {
         }
 
 
-        // ----------------------------------------------------
-        // Draw
-        // ----------------------------------------------------
+        // ====================================================
+        // TERRAIN TEXTURE
+        // ====================================================
+        //
+        // Water does not receive a terrain overlay.
+        //
+        // Ocean is already handled by waterTexture.
+        //
+
+        let terrainTexture =
+            null;
+
+
+        if (
+            terrain !== "water" &&
+            terrainLoaded[terrain]
+        ) {
+
+            terrainTexture =
+                terrainTextures[terrain];
+
+        }
+
+
+        // ====================================================
+        // DRAW
+        // ====================================================
 
         drawHexOnContext(
 
             mapCtx,
 
             world.x,
+
             world.y,
 
             14,
 
             country.color,
 
-            texture
+            baseTexture,
+
+            terrainTexture
 
         );
 
@@ -507,10 +716,15 @@ export function draw(
 
 
     // ========================================================
-    // ENTITIES
+    // CITIES
     // ========================================================
 
     drawCities(ctx);
+
+
+    // ========================================================
+    // ARMIES
+    // ========================================================
 
     drawArmies(ctx);
 
