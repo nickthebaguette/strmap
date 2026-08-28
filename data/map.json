@@ -14715,7 +14715,7 @@
     {
       "col": 42,
       "row": 29,
-      "owner": "hre"
+      "owner": "denmark"
     },
     {
       "col": 43,
@@ -15205,7 +15205,7 @@
     {
       "col": 40,
       "row": 30,
-      "owner": "hre"
+      "owner": "denmark"
     },
     {
       "col": 41,
@@ -15220,17 +15220,17 @@
     {
       "col": 43,
       "row": 30,
-      "owner": "hre"
+      "owner": "denmark"
     },
     {
       "col": 44,
       "row": 30,
-      "owner": "bavaria"
+      "owner": "hre"
     },
     {
       "col": 45,
       "row": 30,
-      "owner": "bavaria"
+      "owner": "hre"
     },
     {
       "col": 46,
@@ -15240,7 +15240,7 @@
     {
       "col": 47,
       "row": 30,
-      "owner": "hre"
+      "owner": "sweden"
     },
     {
       "col": 48,
@@ -15715,22 +15715,22 @@
     {
       "col": 42,
       "row": 31,
-      "owner": "bavaria"
+      "owner": "hre"
     },
     {
       "col": 43,
       "row": 31,
-      "owner": "bavaria"
+      "owner": "hre"
     },
     {
       "col": 44,
       "row": 31,
-      "owner": "bavaria"
+      "owner": "hre"
     },
     {
       "col": 45,
       "row": 31,
-      "owner": "bavaria"
+      "owner": "hre"
     },
     {
       "col": 46,
@@ -16220,7 +16220,7 @@
     {
       "col": 43,
       "row": 32,
-      "owner": "bavaria"
+      "owner": "hre"
     },
     {
       "col": 44,
@@ -17200,7 +17200,7 @@
     {
       "col": 39,
       "row": 34,
-      "owner": "france"
+      "owner": "hre"
     },
     {
       "col": 40,
@@ -20725,510 +20725,510 @@
     {
       "col": 44,
       "row": 41,
-      "owner": "bavaria"
-    },
-    {
-      "col": 45,
-      "row": 41,
-      "owner": "austria"
-    },
-    {
-      "col": 46,
-      "row": 41,
-      "owner": "austria"
-    },
-    {
-      "col": 47,
-      "row": 41,
-      "owner": "austria"
-    },
-    {
-      "col": 48,
-      "row": 41,
-      "owner": "austria"
-    },
-    {
-      "col": 49,
-      "row": 41,
-      "owner": "austria"
-    },
-    {
-      "col": 50,
-      "row": 41,
-      "owner": "austria"
-    },
-    {
-      "col": 51,
-      "row": 41,
-      "owner": "austria"
-    },
-    {
-      "col": 52,
-      "row": 41,
-      "owner": "austria"
-    },
-    {
-      "col": 53,
-      "row": 41,
-      "owner": "austria"
-    },
-    {
-      "col": 54,
-      "row": 41,
-      "owner": "austria"
-    },
-    {
-      "col": 55,
-      "row": 41,
-      "owner": "austria"
-    },
-    {
-      "col": 56,
-      "row": 41,
-      "owner": "austria"
-    },
-    {
-      "col": 57,
-      "row": 41,
-      "owner": "austria"
-    },
-    {
-      "col": 58,
-      "row": 41,
-      "owner": "austria"
-    },
-    {
-      "col": 59,
-      "row": 41,
-      "owner": "austria"
-    },
-    {
-      "col": 60,
-      "row": 41,
-      "owner": "austria"
-    },
-    {
-      "col": 61,
-      "row": 41,
-      "owner": "austria"
-    },
-    {
-      "col": 62,
-      "row": 41,
-      "owner": "austria"
-    },
-    {
-      "col": 63,
-      "row": 41,
-      "owner": "austria"
-    },
-    {
-      "col": 64,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 65,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 66,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 67,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 68,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 69,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 70,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 71,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 72,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 73,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 74,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 75,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 76,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 77,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 78,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 79,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 80,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 81,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 82,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 83,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 84,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 85,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 86,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 87,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 88,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 89,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 90,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 91,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 92,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 93,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 94,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 95,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 96,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 97,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 98,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 99,
-      "row": 41,
-      "owner": "russia"
-    },
-    {
-      "col": 0,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 1,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 2,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 3,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 4,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 5,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 6,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 7,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 8,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 9,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 10,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 11,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 12,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 13,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 14,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 15,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 16,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 17,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 18,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 19,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 20,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 21,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 22,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 23,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 24,
-      "row": 42,
-      "owner": "france"
-    },
-    {
-      "col": 25,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 26,
-      "row": 42,
-      "owner": "ocean"
-    },
-    {
-      "col": 27,
-      "row": 42,
-      "owner": "france"
-    },
-    {
-      "col": 28,
-      "row": 42,
-      "owner": "france"
-    },
-    {
-      "col": 29,
-      "row": 42,
-      "owner": "france"
-    },
-    {
-      "col": 30,
-      "row": 42,
-      "owner": "france"
-    },
-    {
-      "col": 31,
-      "row": 42,
-      "owner": "france"
-    },
-    {
-      "col": 32,
-      "row": 42,
-      "owner": "france"
-    },
-    {
-      "col": 33,
-      "row": 42,
-      "owner": "france"
-    },
-    {
-      "col": 34,
-      "row": 42,
-      "owner": "france"
-    },
-    {
-      "col": 35,
-      "row": 42,
-      "owner": "france"
-    },
-    {
-      "col": 36,
-      "row": 42,
-      "owner": "france"
-    },
-    {
-      "col": 37,
-      "row": 42,
-      "owner": "france"
-    },
-    {
-      "col": 38,
-      "row": 42,
-      "owner": "france"
-    },
-    {
-      "col": 39,
-      "row": 42,
-      "owner": "hre"
-    },
-    {
-      "col": 40,
-      "row": 42,
-      "owner": "hre"
-    },
-    {
-      "col": 41,
-      "row": 42,
-      "owner": "hre"
-    },
-    {
-      "col": 42,
-      "row": 42,
-      "owner": "hre"
-    },
-    {
-      "col": 43,
-      "row": 42,
-      "owner": "hre"
-    },
-    {
-      "col": 44,
-      "row": 42,
       "owner": "bavaria"
     },
     {
       "col": 45,
+      "row": 41,
+      "owner": "austria"
+    },
+    {
+      "col": 46,
+      "row": 41,
+      "owner": "austria"
+    },
+    {
+      "col": 47,
+      "row": 41,
+      "owner": "austria"
+    },
+    {
+      "col": 48,
+      "row": 41,
+      "owner": "austria"
+    },
+    {
+      "col": 49,
+      "row": 41,
+      "owner": "austria"
+    },
+    {
+      "col": 50,
+      "row": 41,
+      "owner": "austria"
+    },
+    {
+      "col": 51,
+      "row": 41,
+      "owner": "austria"
+    },
+    {
+      "col": 52,
+      "row": 41,
+      "owner": "austria"
+    },
+    {
+      "col": 53,
+      "row": 41,
+      "owner": "austria"
+    },
+    {
+      "col": 54,
+      "row": 41,
+      "owner": "austria"
+    },
+    {
+      "col": 55,
+      "row": 41,
+      "owner": "austria"
+    },
+    {
+      "col": 56,
+      "row": 41,
+      "owner": "austria"
+    },
+    {
+      "col": 57,
+      "row": 41,
+      "owner": "austria"
+    },
+    {
+      "col": 58,
+      "row": 41,
+      "owner": "austria"
+    },
+    {
+      "col": 59,
+      "row": 41,
+      "owner": "austria"
+    },
+    {
+      "col": 60,
+      "row": 41,
+      "owner": "austria"
+    },
+    {
+      "col": 61,
+      "row": 41,
+      "owner": "austria"
+    },
+    {
+      "col": 62,
+      "row": 41,
+      "owner": "austria"
+    },
+    {
+      "col": 63,
+      "row": 41,
+      "owner": "austria"
+    },
+    {
+      "col": 64,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 65,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 66,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 67,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 68,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 69,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 70,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 71,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 72,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 73,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 74,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 75,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 76,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 77,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 78,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 79,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 80,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 81,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 82,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 83,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 84,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 85,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 86,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 87,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 88,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 89,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 90,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 91,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 92,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 93,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 94,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 95,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 96,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 97,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 98,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 99,
+      "row": 41,
+      "owner": "russia"
+    },
+    {
+      "col": 0,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 1,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 2,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 3,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 4,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 5,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 6,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 7,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 8,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 9,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 10,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 11,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 12,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 13,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 14,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 15,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 16,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 17,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 18,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 19,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 20,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 21,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 22,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 23,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 24,
+      "row": 42,
+      "owner": "france"
+    },
+    {
+      "col": 25,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 26,
+      "row": 42,
+      "owner": "ocean"
+    },
+    {
+      "col": 27,
+      "row": 42,
+      "owner": "france"
+    },
+    {
+      "col": 28,
+      "row": 42,
+      "owner": "france"
+    },
+    {
+      "col": 29,
+      "row": 42,
+      "owner": "france"
+    },
+    {
+      "col": 30,
+      "row": 42,
+      "owner": "france"
+    },
+    {
+      "col": 31,
+      "row": 42,
+      "owner": "france"
+    },
+    {
+      "col": 32,
+      "row": 42,
+      "owner": "france"
+    },
+    {
+      "col": 33,
+      "row": 42,
+      "owner": "france"
+    },
+    {
+      "col": 34,
+      "row": 42,
+      "owner": "france"
+    },
+    {
+      "col": 35,
+      "row": 42,
+      "owner": "france"
+    },
+    {
+      "col": 36,
+      "row": 42,
+      "owner": "france"
+    },
+    {
+      "col": 37,
+      "row": 42,
+      "owner": "france"
+    },
+    {
+      "col": 38,
+      "row": 42,
+      "owner": "france"
+    },
+    {
+      "col": 39,
+      "row": 42,
+      "owner": "hre"
+    },
+    {
+      "col": 40,
+      "row": 42,
+      "owner": "hre"
+    },
+    {
+      "col": 41,
+      "row": 42,
+      "owner": "hre"
+    },
+    {
+      "col": 42,
+      "row": 42,
+      "owner": "hre"
+    },
+    {
+      "col": 43,
+      "row": 42,
+      "owner": "hre"
+    },
+    {
+      "col": 44,
+      "row": 42,
+      "owner": "bavaria"
+    },
+    {
+      "col": 45,
       "row": 42,
       "owner": "bavaria"
     },
@@ -22199,18 +22199,18 @@
     },
     {
       "col": 39,
+      "row": 44,
+      "owner": "hre"
+    },
+    {
+      "col": 40,
       "row": 44,
       "owner": "badenwurttemberg"
     },
     {
-      "col": 40,
-      "row": 44,
-      "owner": "badenwurttemberg"
-    },
-    {
       "col": 41,
       "row": 44,
-      "owner": "hre"
+      "owner": "badenwurttemberg"
     },
     {
       "col": 42,
@@ -22705,12 +22705,12 @@
     {
       "col": 40,
       "row": 45,
-      "owner": "hre"
+      "owner": "badenwurttemberg"
     },
     {
       "col": 41,
       "row": 45,
-      "owner": "hre"
+      "owner": "badenwurttemberg"
     },
     {
       "col": 42,
@@ -22735,7 +22735,7 @@
     {
       "col": 46,
       "row": 45,
-      "owner": "austria"
+      "owner": "bavaria"
     },
     {
       "col": 47,
@@ -23200,17 +23200,17 @@
     {
       "col": 39,
       "row": 46,
-      "owner": "hre"
+      "owner": "badenwurttemberg"
     },
     {
       "col": 40,
       "row": 46,
-      "owner": "hre"
+      "owner": "badenwurttemberg"
     },
     {
       "col": 41,
       "row": 46,
-      "owner": "hre"
+      "owner": "badenwurttemberg"
     },
     {
       "col": 42,
@@ -23235,7 +23235,7 @@
     {
       "col": 46,
       "row": 46,
-      "owner": "austria"
+      "owner": "bavaria"
     },
     {
       "col": 47,
@@ -23705,7 +23705,7 @@
     {
       "col": 40,
       "row": 47,
-      "owner": "hre"
+      "owner": "badenwurttemberg"
     },
     {
       "col": 41,
@@ -23730,7 +23730,7 @@
     {
       "col": 45,
       "row": 47,
-      "owner": "ocean"
+      "owner": "austria"
     },
     {
       "col": 46,
@@ -24235,7 +24235,7 @@
     {
       "col": 46,
       "row": 48,
-      "owner": "ocean"
+      "owner": "austria"
     },
     {
       "col": 47,
@@ -24710,7 +24710,7 @@
     {
       "col": 41,
       "row": 49,
-      "owner": "hre"
+      "owner": "austria"
     },
     {
       "col": 42,
@@ -28215,17 +28215,17 @@
     {
       "col": 42,
       "row": 56,
-      "owner": "spain"
+      "owner": "italy"
     },
     {
       "col": 43,
       "row": 56,
-      "owner": "spain"
+      "owner": "italy"
     },
     {
       "col": 44,
       "row": 56,
-      "owner": "spain"
+      "owner": "italy"
     },
     {
       "col": 45,
@@ -28715,12 +28715,12 @@
     {
       "col": 42,
       "row": 57,
-      "owner": "spain"
+      "owner": "italy"
     },
     {
       "col": 43,
       "row": 57,
-      "owner": "spain"
+      "owner": "italy"
     },
     {
       "col": 44,
@@ -29215,17 +29215,17 @@
     {
       "col": 42,
       "row": 58,
-      "owner": "spain"
+      "owner": "italy"
     },
     {
       "col": 43,
       "row": 58,
-      "owner": "spain"
+      "owner": "italy"
     },
     {
       "col": 44,
       "row": 58,
-      "owner": "spain"
+      "owner": "italy"
     },
     {
       "col": 45,
@@ -29720,7 +29720,7 @@
     {
       "col": 43,
       "row": 59,
-      "owner": "spain"
+      "owner": "italy"
     },
     {
       "col": 44,
@@ -37095,7 +37095,7 @@
     {
       "col": 18,
       "row": 74,
-      "owner": "naples"
+      "owner": "britain"
     },
     {
       "col": 19,
@@ -37595,7 +37595,7 @@
     {
       "col": 18,
       "row": 75,
-      "owner": "naples"
+      "owner": "ocean"
     },
     {
       "col": 19,
@@ -38095,32 +38095,32 @@
     {
       "col": 18,
       "row": 76,
-      "owner": "naples"
+      "owner": "ottoman"
     },
     {
       "col": 19,
       "row": 76,
-      "owner": "naples"
+      "owner": "ottoman"
     },
     {
       "col": 20,
       "row": 76,
-      "owner": "naples"
+      "owner": "ottoman"
     },
     {
       "col": 21,
       "row": 76,
-      "owner": "naples"
+      "owner": "ottoman"
     },
     {
       "col": 22,
       "row": 76,
-      "owner": "naples"
+      "owner": "ottoman"
     },
     {
       "col": 23,
       "row": 76,
-      "owner": "naples"
+      "owner": "ottoman"
     },
     {
       "col": 24,
@@ -38590,37 +38590,37 @@
     {
       "col": 17,
       "row": 77,
-      "owner": "naples"
+      "owner": "ottoman"
     },
     {
       "col": 18,
       "row": 77,
-      "owner": "naples"
+      "owner": "ottoman"
     },
     {
       "col": 19,
       "row": 77,
-      "owner": "naples"
+      "owner": "ottoman"
     },
     {
       "col": 20,
       "row": 77,
-      "owner": "naples"
+      "owner": "ottoman"
     },
     {
       "col": 21,
       "row": 77,
-      "owner": "naples"
+      "owner": "ottoman"
     },
     {
       "col": 22,
       "row": 77,
-      "owner": "naples"
+      "owner": "ottoman"
     },
     {
       "col": 23,
       "row": 77,
-      "owner": "naples"
+      "owner": "ottoman"
     },
     {
       "col": 24,
