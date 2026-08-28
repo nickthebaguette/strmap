@@ -12,7 +12,7 @@ export const countries = {
 
     france: {
         name: "France",
-        color: "#abfcd0"
+        color: "#231BA7"
     },
 
     spain: {
@@ -48,47 +48,47 @@ export const countries = {
 
     austria: {
         name: "Austria",
-        color: "#78faed"
+        color: "#D9B106"
     },
 
     russia: {
         name: "Russian Empire",
-        color: "#dcc736"
+        color: "#055B2D"
     },
 
     sweden: {
         name: "Sweden",
-        color: "#f18ebd"
+        color: "#2121FF"
     },
 
     denmark: {
         name: "Denmark-Norway",
-        color: "#f200d5"
+        color: "#891E47"
     },
 
     italy: {
         name: "Kingdom of Italy",
-        color: "#fcba96"
+        color: "#6EA563"
     },
 
     ottoman: {
         name: "Ottoman Empire",
-        color: "#6e77ed"
+        color: "#562828"
     },
 
     switzerland: {
         name: "Switzerland",
-        color: "#f2f497"
+        color: "#AD6464"
     },
 
     bavaria: {
         name: "Bavaria",
-        color: "#b2f197"
+        color: "#66D8FF"
     },
 
     saxony: {
         name: "Saxony",
-        color: "#89f17b"
+        color: "#BAF17B"
     },
 
     naples: {
@@ -103,17 +103,17 @@ export const countries = {
 
     badenwurttemberg: {
         name: "Baden-Württemberg",
-        color: "#486b58"
+        color: "#6B4124"
     },
 
     hre: {
         name: "Holy Roman Empire",
-        color: "#0800f2"
+        color: "#CCB886"
     },
 
     sardinia: {
         name: "Sardinia",
-        color: "#c5c6b1"
+        color: "#7BC421"
     }
 
 };
