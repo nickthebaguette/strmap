@@ -7,7 +7,9 @@ import {
     countries,
     hexToWorld,
     MAP_WIDTH,
-    MAP_HEIGHT
+    MAP_HEIGHT,
+    COLS,
+    ROWS
 } from "./map.js";
 
 import {
@@ -42,22 +44,21 @@ export const mapCtx =
 
 
 // ============================================================
-// TEXTURES
-// ============================================================
-//
-// All visual textures are handled here.
-//
-// Political color
-//      ↓
-// parchment / water
-//      ↓
-// terrain symbols
-//      ↓
-// hex border
-//
-// Terrain textures are transparent PNG overlays.
+// VISUAL SETTINGS
 // ============================================================
 
+const HEX_SIZE = 14;
+
+const HEX_BORDER_WIDTH = 0.7;
+
+const COUNTRY_BORDER_WIDTH = 2.2;
+
+const COUNTRY_BORDER_ALPHA = 0.9;
+
+
+// ============================================================
+// TEXTURES
+// ============================================================
 
 // ------------------------------------------------------------
 // Base textures
@@ -370,17 +371,13 @@ function drawHexOnContext(
 
             context.save();
 
-
             context.globalAlpha =
                 0.55;
-
 
             context.fillStyle =
                 pattern;
 
-
             context.fill();
-
 
             context.restore();
 
@@ -392,11 +389,6 @@ function drawHexOnContext(
     // ========================================================
     // TERRAIN TEXTURE
     // ========================================================
-    //
-    // Terrain is intentionally weaker than the parchment.
-    //
-    // The political color should remain dominant.
-    //
 
     if (
         terrainTexture
@@ -423,17 +415,13 @@ function drawHexOnContext(
 
             context.save();
 
-
             context.globalAlpha =
                 0.45;
-
 
             context.fillStyle =
                 pattern;
 
-
             context.fill();
-
 
             context.restore();
 
@@ -443,7 +431,7 @@ function drawHexOnContext(
 
 
     // ========================================================
-    // HEX BORDER
+    // NORMAL HEX BORDER
     // ========================================================
 
     createHexPath(
@@ -458,9 +446,510 @@ function drawHexOnContext(
         "#30302d";
 
     context.lineWidth =
-        0.7;
+        HEX_BORDER_WIDTH;
 
     context.stroke();
+
+}
+
+
+// ============================================================
+// DRAW POLITICAL BORDERS
+// ============================================================
+//
+// Political borders are derived from map ownership.
+//
+// A border is drawn when:
+//
+//     tile.owner !== neighbor.owner
+//
+// AND:
+//
+//     neither tile is ocean.
+//
+// Each shared edge receives TWO colored halves:
+//
+//     COUNTRY A | COUNTRY B
+//
+// This gives the frontier a two-sided cartographic appearance.
+//
+// ============================================================
+
+function drawCountryBorders() {
+
+    mapCtx.save();
+
+
+    mapCtx.globalAlpha =
+        COUNTRY_BORDER_ALPHA;
+
+
+    // --------------------------------------------------------
+    // Directions
+    // --------------------------------------------------------
+    //
+    // Hexes use odd-row offset coordinates.
+    //
+    // Neighbor coordinates depend on whether the current row
+    // is even or odd.
+    //
+    // Each tile only checks three directions.
+    //
+    // This prevents drawing the same border twice.
+    //
+    // --------------------------------------------------------
+
+    for (
+        const tile
+        of tiles
+    ) {
+
+        if (
+            tile.owner === "ocean"
+        ) {
+
+            continue;
+
+        }
+
+
+        const rowIsOdd =
+            tile.row % 2 !== 0;
+
+
+        const neighbors =
+            rowIsOdd
+
+                ? [
+
+                    // upper-left
+                    {
+                        col:
+                            tile.col,
+
+                        row:
+                            tile.row - 1
+                    },
+
+                    // upper-right
+                    {
+                        col:
+                            tile.col + 1,
+
+                        row:
+                            tile.row - 1
+                    },
+
+                    // right
+                    {
+                        col:
+                            tile.col + 1,
+
+                        row:
+                            tile.row
+                    }
+
+                ]
+
+                : [
+
+                    // upper-left
+                    {
+                        col:
+                            tile.col - 1,
+
+                        row:
+                            tile.row - 1
+                    },
+
+                    // upper-right
+                    {
+                        col:
+                            tile.col,
+
+                        row:
+                            tile.row - 1
+                    },
+
+                    // right
+                    {
+                        col:
+                            tile.col + 1,
+
+                        row:
+                            tile.row
+                    }
+
+                ];
+
+
+        for (
+            let direction = 0;
+
+            direction <
+            neighbors.length;
+
+            direction++
+        ) {
+
+            const neighbor =
+                neighbors[
+                    direction
+                ];
+
+
+            // ------------------------------------------------
+            // Check map bounds
+            // ------------------------------------------------
+
+            if (
+                neighbor.col < 0 ||
+                neighbor.col >= COLS ||
+                neighbor.row < 0 ||
+                neighbor.row >= ROWS
+            ) {
+
+                continue;
+
+            }
+
+
+            const neighborTile =
+                tiles[
+                    neighbor.row * COLS +
+                    neighbor.col
+                ];
+
+
+            if (
+                !neighborTile
+            ) {
+
+                continue;
+
+            }
+
+
+            // ------------------------------------------------
+            // Ignore ocean borders
+            // ------------------------------------------------
+
+            if (
+                neighborTile.owner === "ocean"
+            ) {
+
+                continue;
+
+            }
+
+
+            // ------------------------------------------------
+            // Same country = no political border
+            // ------------------------------------------------
+
+            if (
+                neighborTile.owner ===
+                tile.owner
+            ) {
+
+                continue;
+
+            }
+
+
+            // ------------------------------------------------
+            // Draw shared edge
+            // ------------------------------------------------
+
+            drawSharedBorder(
+                tile,
+                neighborTile,
+                direction
+            );
+
+        }
+
+    }
+
+
+    mapCtx.restore();
+
+}
+
+
+// ============================================================
+// DRAW SHARED BORDER
+// ============================================================
+//
+// Draws a two-colored border along the shared edge.
+//
+// The line is drawn in two halves:
+//
+//     country A color
+//              |
+//     country B color
+//
+// ============================================================
+
+function drawSharedBorder(
+    tile,
+    neighborTile,
+    direction
+) {
+
+    const a =
+        hexToWorld(
+            tile.col,
+            tile.row
+        );
+
+
+    const b =
+        hexToWorld(
+            neighborTile.col,
+            neighborTile.row
+        );
+
+
+    // --------------------------------------------------------
+    // Determine shared edge endpoints
+    // --------------------------------------------------------
+
+    let start;
+    let end;
+
+
+    // ========================================================
+    // RIGHT EDGE
+    // ========================================================
+
+    if (
+        direction === 2
+    ) {
+
+        start = {
+
+            x:
+                a.x +
+                HEX_SIZE *
+                Math.cos(
+                    -Math.PI / 6
+                ),
+
+            y:
+                a.y +
+                HEX_SIZE *
+                Math.sin(
+                    -Math.PI / 6
+                )
+
+        };
+
+
+        end = {
+
+            x:
+                a.x +
+                HEX_SIZE *
+                Math.cos(
+                    Math.PI / 6
+                ),
+
+            y:
+                a.y +
+                HEX_SIZE *
+                Math.sin(
+                    Math.PI / 6
+                )
+
+        };
+
+    }
+
+
+    // ========================================================
+    // UPPER-LEFT
+    // ========================================================
+
+    else if (
+        direction === 0
+    ) {
+
+        start = {
+
+            x:
+                a.x +
+                HEX_SIZE *
+                Math.cos(
+                    -5 * Math.PI / 6
+                ),
+
+            y:
+                a.y +
+                HEX_SIZE *
+                Math.sin(
+                    -5 * Math.PI / 6
+                )
+
+        };
+
+
+        end = {
+
+            x:
+                a.x +
+                HEX_SIZE *
+                Math.cos(
+                    -Math.PI / 2
+                ),
+
+            y:
+                a.y +
+                HEX_SIZE *
+                Math.sin(
+                    -Math.PI / 2
+                )
+
+        };
+
+    }
+
+
+    // ========================================================
+    // UPPER-RIGHT
+    // ========================================================
+
+    else {
+
+        start = {
+
+            x:
+                a.x +
+                HEX_SIZE *
+                Math.cos(
+                    -Math.PI / 2
+                ),
+
+            y:
+                a.y +
+                HEX_SIZE *
+                Math.sin(
+                    -Math.PI / 2
+                )
+
+        };
+
+
+        end = {
+
+            x:
+                a.x +
+                HEX_SIZE *
+                Math.cos(
+                    -Math.PI / 6
+                ),
+
+            y:
+                a.y +
+                HEX_SIZE *
+                Math.sin(
+                    -Math.PI / 6
+                )
+
+        };
+
+    }
+
+
+    // --------------------------------------------------------
+    // Midpoint
+    // --------------------------------------------------------
+
+    const midpoint = {
+
+        x:
+            (start.x + end.x) / 2,
+
+        y:
+            (start.y + end.y) / 2
+
+    };
+
+
+    // --------------------------------------------------------
+    // First half
+    // --------------------------------------------------------
+
+    drawBorderSegment(
+
+        start,
+
+        midpoint,
+
+        countries[
+            tile.owner
+        ].color
+
+    );
+
+
+    // --------------------------------------------------------
+    // Second half
+    // --------------------------------------------------------
+
+    drawBorderSegment(
+
+        midpoint,
+
+        end,
+
+        countries[
+            neighborTile.owner
+        ].color
+
+    );
+
+}
+
+
+// ============================================================
+// DRAW BORDER SEGMENT
+// ============================================================
+
+function drawBorderSegment(
+    start,
+    end,
+    color
+) {
+
+    mapCtx.beginPath();
+
+
+    mapCtx.moveTo(
+        start.x,
+        start.y
+    );
+
+
+    mapCtx.lineTo(
+        end.x,
+        end.y
+    );
+
+
+    mapCtx.strokeStyle =
+        color;
+
+
+    mapCtx.lineWidth =
+        COUNTRY_BORDER_WIDTH;
+
+
+    mapCtx.lineCap =
+        "butt";
+
+
+    mapCtx.stroke();
 
 }
 
@@ -534,13 +1023,11 @@ export function rebuildMapCanvas() {
 
 
         // ====================================================
-        // DETERMINE TERRAIN
+        // TERRAIN
         // ====================================================
 
         const terrain =
             getTerrain(
-                tile.col,
-                tile.row,
                 tile
             );
 
@@ -585,11 +1072,6 @@ export function rebuildMapCanvas() {
         // ====================================================
         // TERRAIN TEXTURE
         // ====================================================
-        //
-        // Water does not receive a terrain overlay.
-        //
-        // Ocean is already handled by waterTexture.
-        //
 
         let terrainTexture =
             null;
@@ -601,13 +1083,15 @@ export function rebuildMapCanvas() {
         ) {
 
             terrainTexture =
-                terrainTextures[terrain];
+                terrainTextures[
+                    terrain
+                ];
 
         }
 
 
         // ====================================================
-        // DRAW
+        // DRAW TILE
         // ====================================================
 
         drawHexOnContext(
@@ -615,10 +1099,9 @@ export function rebuildMapCanvas() {
             mapCtx,
 
             world.x,
-
             world.y,
 
-            14,
+            HEX_SIZE,
 
             country.color,
 
@@ -629,6 +1112,13 @@ export function rebuildMapCanvas() {
         );
 
     }
+
+
+    // ========================================================
+    // POLITICAL BORDERS
+    // ========================================================
+
+    drawCountryBorders();
 
 
     mapCtx.restore();
@@ -730,7 +1220,7 @@ export function draw(
 
 
     // ========================================================
-    // BORDER
+    // OUTER BORDER
     // ========================================================
 
     ctx.strokeStyle =
