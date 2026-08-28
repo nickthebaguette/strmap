@@ -12,54 +12,650 @@
 
     <title>Strategy Map Editor</title>
 
-    <style>
-
-        html,
-        body {
-
-            margin: 0;
-            padding: 0;
-
-            width: 100%;
-            height: 100%;
-
-            overflow: hidden;
-
-            background: #252522;
-
-        }
-
-
-        #editorCanvas {
-
-            position: absolute;
-
-            left: 0;
-            top: 0;
-
-            width: 100%;
-            height: 100%;
-
-            display: block;
-
-            cursor: default;
-
-        }
-
-    </style>
+    <link
+        rel="icon"
+        type="image/png"
+        href="favicon.png"
+    >
 
 </head>
 
 
 <body>
 
-    <canvas id="editorCanvas"></canvas>
+
+<!-- ========================================================
+     MAP
+     ======================================================== -->
+
+<canvas id="editorCanvas"></canvas>
 
 
-    <script
-        type="module"
-        src="js/editor.js"
-    ></script>
+<!-- ========================================================
+     EDITOR UI
+     ======================================================== -->
+
+<div id="editor-panel">
+
+
+    <!-- ====================================================
+         HEADER
+         ==================================================== -->
+
+    <div class="panel-header">
+
+        <h1>Map Editor</h1>
+
+        <div id="status">
+            Ready
+        </div>
+
+    </div>
+
+
+    <!-- ====================================================
+         TOOL MODE
+         ==================================================== -->
+
+    <section>
+
+        <h3>Tool</h3>
+
+        <div class="button-row">
+
+            <button
+                id="tool-select"
+                class="tool-button active"
+            >
+                Select
+            </button>
+
+            <button
+                id="tool-territory"
+                class="tool-button"
+            >
+                Territory
+            </button>
+
+            <button
+                id="tool-terrain"
+                class="tool-button"
+            >
+                Terrain
+            </button>
+
+            <button
+                id="tool-city"
+                class="tool-button"
+            >
+                City
+            </button>
+
+            <button
+                id="tool-army"
+                class="tool-button"
+            >
+                Army
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- ====================================================
+         TERRITORY
+         ==================================================== -->
+
+    <section id="territory-tools">
+
+        <h3>Territory</h3>
+
+        <label for="country-select">
+            Country
+        </label>
+
+        <select id="country-select"></select>
+
+    </section>
+
+
+    <!-- ====================================================
+         TERRAIN
+         ==================================================== -->
+
+    <section id="terrain-tools">
+
+        <h3>Terrain</h3>
+
+        <label for="terrain-select">
+            Terrain
+        </label>
+
+        <select id="terrain-select">
+
+            <option value="plains">
+                Plains
+            </option>
+
+            <option value="forest">
+                Forest
+            </option>
+
+            <option value="hills">
+                Hills
+            </option>
+
+            <option value="mountains">
+                Mountains
+            </option>
+
+            <option value="desert">
+                Desert
+            </option>
+
+            <option value="swamp">
+                Swamp
+            </option>
+
+        </select>
+
+    </section>
+
+
+    <!-- ====================================================
+         CITY
+         ==================================================== -->
+
+    <section id="city-tools">
+
+        <h3>City</h3>
+
+        <label for="city-name">
+            Name
+        </label>
+
+        <input
+            id="city-name"
+            type="text"
+            placeholder="City name"
+        >
+
+
+        <label for="city-country">
+            Country
+        </label>
+
+        <select id="city-country"></select>
+
+
+        <div class="button-row">
+
+            <button id="city-place">
+                Place City
+            </button>
+
+            <button id="city-delete">
+                Delete
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- ====================================================
+         ARMY
+         ==================================================== -->
+
+    <section id="army-tools">
+
+        <h3>Army</h3>
+
+        <label for="army-name">
+            Name
+        </label>
+
+        <input
+            id="army-name"
+            type="text"
+            placeholder="Army name"
+        >
+
+
+        <label for="army-country">
+            Country
+        </label>
+
+        <select id="army-country"></select>
+
+
+        <label for="army-strength">
+            Strength
+        </label>
+
+        <input
+            id="army-strength"
+            type="number"
+            min="0"
+            value="1000"
+        >
+
+
+        <label for="army-icon">
+            Icon
+        </label>
+
+        <input
+            id="army-icon"
+            type="text"
+            value="icons/armies/army.png"
+        >
+
+
+        <div class="button-row">
+
+            <button id="army-place">
+                Place Army
+            </button>
+
+            <button id="army-delete">
+                Delete
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- ====================================================
+         SELECTED TILE
+         ==================================================== -->
+
+    <section id="selection-panel">
+
+        <h3>Selected Tile</h3>
+
+        <div id="selected-tile">
+            None
+        </div>
+
+        <div id="selected-territory">
+            Territory: None
+        </div>
+
+        <div id="selected-terrain">
+            Terrain: None
+        </div>
+
+        <div id="selected-entity">
+            Entity: None
+        </div>
+
+    </section>
+
+
+    <!-- ====================================================
+         DOWNLOADS
+         ==================================================== -->
+
+    <section>
+
+        <h3>Export</h3>
+
+        <div class="download-list">
+
+            <button id="download-map">
+                Download map.json
+            </button>
+
+            <button id="download-terrain">
+                Download terrain.json
+            </button>
+
+            <button id="download-cities">
+                Download cities.json
+            </button>
+
+            <button id="download-armies">
+                Download armies.json
+            </button>
+
+        </div>
+
+    </section>
+
+
+</div>
+
+
+<!-- ========================================================
+     STYLE
+     ======================================================== -->
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+
+    html,
+    body {
+
+        margin: 0;
+
+        padding: 0;
+
+        width: 100%;
+
+        height: 100%;
+
+        overflow: hidden;
+
+        font-family:
+            Arial,
+            sans-serif;
+
+        background:
+            #181817;
+
+        color:
+            #e8e5d8;
+
+    }
+
+
+    #editorCanvas {
+
+        position: fixed;
+
+        inset: 0;
+
+        width: 100%;
+
+        height: 100%;
+
+        display: block;
+
+        cursor: default;
+
+    }
+
+
+    #editor-panel {
+
+        position: fixed;
+
+        top: 15px;
+
+        right: 15px;
+
+        width: 280px;
+
+        max-height: calc(100vh - 30px);
+
+        overflow-y: auto;
+
+        padding: 16px;
+
+        background:
+            rgba(30, 30, 28, 0.94);
+
+        border:
+            1px solid #55534b;
+
+        border-radius:
+            8px;
+
+        box-shadow:
+            0 5px 25px rgba(0,0,0,0.45);
+
+        z-index: 10;
+
+    }
+
+
+    .panel-header {
+
+        margin-bottom: 14px;
+
+    }
+
+
+    .panel-header h1 {
+
+        margin:
+            0 0 4px 0;
+
+        font-size:
+            22px;
+
+    }
+
+
+    #status {
+
+        font-size:
+            12px;
+
+        color:
+            #aaa79c;
+
+    }
+
+
+    section {
+
+        margin-top:
+            16px;
+
+        padding-top:
+            12px;
+
+        border-top:
+            1px solid #45443f;
+
+    }
+
+
+    section:first-of-type {
+
+        border-top:
+            none;
+
+        margin-top:
+            0;
+
+    }
+
+
+    h3 {
+
+        margin:
+            0 0 9px 0;
+
+        font-size:
+            14px;
+
+        color:
+            #d7d2c2;
+
+    }
+
+
+    label {
+
+        display:
+            block;
+
+        margin:
+            7px 0 4px 0;
+
+        font-size:
+            12px;
+
+        color:
+            #aaa79c;
+
+    }
+
+
+    select,
+    input {
+
+        width: 100%;
+
+        padding:
+            7px 8px;
+
+        border:
+            1px solid #55534b;
+
+        border-radius:
+            4px;
+
+        background:
+            #242421;
+
+        color:
+            #e8e5d8;
+
+        outline:
+            none;
+
+    }
+
+
+    select:focus,
+    input:focus {
+
+        border-color:
+            #888477;
+
+    }
+
+
+    button {
+
+        padding:
+            7px 9px;
+
+        border:
+            1px solid #59574f;
+
+        border-radius:
+            4px;
+
+        background:
+            #33322e;
+
+        color:
+            #e8e5d8;
+
+        cursor:
+            pointer;
+
+        font-size:
+            12px;
+
+    }
+
+
+    button:hover {
+
+        background:
+            #45433d;
+
+    }
+
+
+    button.active {
+
+        background:
+            #68645a;
+
+        border-color:
+            #9b9687;
+
+    }
+
+
+    .button-row {
+
+        display:
+            flex;
+
+        gap:
+            6px;
+
+        margin-top:
+            8px;
+
+    }
+
+
+    .button-row button {
+
+        flex:
+            1;
+
+    }
+
+
+    .download-list {
+
+        display:
+            flex;
+
+        flex-direction:
+            column;
+
+        gap:
+            6px;
+
+    }
+
+
+    .download-list button {
+
+        width:
+            100%;
+
+        text-align:
+            left;
+
+    }
+
+
+    #selected-tile,
+    #selected-territory,
+    #selected-terrain,
+    #selected-entity {
+
+        font-size:
+            12px;
+
+        margin:
+            4px 0;
+
+        color:
+            #bbb8ad;
+
+    }
+
+</style>
+
+
+<!-- ========================================================
+     SCRIPT
+     ======================================================== -->
+
+<script
+    type="module"
+    src="js/editor.js"
+></script>
+
 
 </body>
 
