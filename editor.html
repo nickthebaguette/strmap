@@ -12,490 +12,54 @@
 
     <title>Strategy Map Editor</title>
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+    <style>
+
+        html,
+        body {
+
+            margin: 0;
+            padding: 0;
+
+            width: 100%;
+            height: 100%;
+
+            overflow: hidden;
+
+            background: #252522;
+
+        }
+
+
+        #editorCanvas {
+
+            position: absolute;
+
+            left: 0;
+            top: 0;
+
+            width: 100%;
+            height: 100%;
+
+            display: block;
+
+            cursor: default;
+
+        }
+
+    </style>
 
 </head>
 
 
 <body>
 
-    <canvas id="map"></canvas>
+    <canvas id="editorCanvas"></canvas>
 
 
-    <!-- ================================================== -->
-    <!-- EDITOR PANEL -->
-    <!-- ================================================== -->
-
-    <div id="editor-panel">
-
-        <h2>Map Editor</h2>
-
-
-        <!-- ================================================== -->
-        <!-- EDITOR MODE -->
-        <!-- ================================================== -->
-
-        <div class="editor-section">
-
-            <strong>Editor Mode</strong>
-
-            <select id="editor-mode">
-
-                <option value="territory">
-                    Territory
-                </option>
-
-                <option value="city">
-                    City
-                </option>
-
-                <option value="army">
-                    Army
-                </option>
-
-            </select>
-
-        </div>
-
-
-        <!-- ================================================== -->
-        <!-- TERRITORY MODE -->
-        <!-- ================================================== -->
-
-        <div
-            id="territory-editor"
-            class="editor-mode-panel"
-        >
-
-            <div class="editor-section">
-
-                <strong>Country</strong>
-
-                <select id="country-select">
-
-                    <option value="ocean">
-                        Ocean
-                    </option>
-
-                    <option value="france">
-                        France
-                    </option>
-
-                    <option value="spain">
-                        Spain
-                    </option>
-
-                    <option value="portugal">
-                        Portugal
-                    </option>
-
-                    <option value="britain">
-                        Great Britain
-                    </option>
-
-                    <option value="batavia">
-                        Batavian Republic
-                    </option>
-
-                    <option value="prussia">
-                        Prussia
-                    </option>
-
-                    <option value="austria">
-                        Austria
-                    </option>
-
-                    <option value="russia">
-                        Russian Empire
-                    </option>
-
-                    <option value="sweden">
-                        Sweden
-                    </option>
-
-                    <option value="denmark">
-                        Denmark-Norway
-                    </option>
-
-                    <option value="italy">
-                        Kingdom of Italy
-                    </option>
-
-                    <option value="ottoman">
-                        Ottoman Empire
-                    </option>
-
-                    <option value="switzerland">
-                        Switzerland
-                    </option>
-
-                    <option value="bavaria">
-                        Bavaria
-                    </option>
-
-                    <option value="saxony">
-                        Saxony
-                    </option>
-
-                    <option value="naples">
-                        Naples
-                    </option>
-
-                    <option value="papal">
-                        Papal States
-                    </option>
-
-                </select>
-
-            </div>
-
-        </div>
-
-
-        <!-- ================================================== -->
-        <!-- CITY MODE -->
-        <!-- ================================================== -->
-
-        <div
-            id="city-editor"
-            class="editor-mode-panel"
-            style="display:none;"
-        >
-
-            <div class="editor-section">
-
-                <strong>City</strong>
-
-                <p>
-                    Click a hex to place or edit a city.
-                </p>
-
-            </div>
-
-
-            <div class="editor-section">
-
-                <label>
-                    Name
-                </label>
-
-                <input
-                    type="text"
-                    id="city-name"
-                    placeholder="Paris"
-                >
-
-            </div>
-
-
-            <div class="editor-section">
-
-                <label>
-                    Country
-                </label>
-
-                <select id="city-country">
-
-                    <option value="france">
-                        France
-                    </option>
-
-                    <option value="spain">
-                        Spain
-                    </option>
-
-                    <option value="portugal">
-                        Portugal
-                    </option>
-
-                    <option value="britain">
-                        Great Britain
-                    </option>
-
-                    <option value="batavia">
-                        Batavian Republic
-                    </option>
-
-                    <option value="prussia">
-                        Prussia
-                    </option>
-
-                    <option value="austria">
-                        Austria
-                    </option>
-
-                    <option value="russia">
-                        Russian Empire
-                    </option>
-
-                    <option value="sweden">
-                        Sweden
-                    </option>
-
-                    <option value="denmark">
-                        Denmark-Norway
-                    </option>
-
-                    <option value="italy">
-                        Kingdom of Italy
-                    </option>
-
-                    <option value="ottoman">
-                        Ottoman Empire
-                    </option>
-
-                    <option value="switzerland">
-                        Switzerland
-                    </option>
-
-                    <option value="bavaria">
-                        Bavaria
-                    </option>
-
-                    <option value="saxony">
-                        Saxony
-                    </option>
-
-                    <option value="naples">
-                        Naples
-                    </option>
-
-                    <option value="papal">
-                        Papal States
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <div class="editor-section">
-
-                <button id="place-city-button">
-                    Place / Update City
-                </button>
-
-                <button id="delete-city-button">
-                    Delete City
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <!-- ================================================== -->
-        <!-- ARMY MODE -->
-        <!-- ================================================== -->
-
-        <div
-            id="army-editor"
-            class="editor-mode-panel"
-            style="display:none;"
-        >
-
-            <div class="editor-section">
-
-                <strong>Army</strong>
-
-                <p>
-                    Click a hex to place or edit an army.
-                </p>
-
-            </div>
-
-
-            <div class="editor-section">
-
-                <label>
-                    Army Name
-                </label>
-
-                <input
-                    type="text"
-                    id="army-name"
-                    placeholder="Army of the North"
-                >
-
-            </div>
-
-
-            <div class="editor-section">
-
-                <label>
-                    Country
-                </label>
-
-                <select id="army-country">
-
-                    <option value="france">
-                        France
-                    </option>
-
-                    <option value="spain">
-                        Spain
-                    </option>
-
-                    <option value="portugal">
-                        Portugal
-                    </option>
-
-                    <option value="britain">
-                        Great Britain
-                    </option>
-
-                    <option value="batavia">
-                        Batavian Republic
-                    </option>
-
-                    <option value="prussia">
-                        Prussia
-                    </option>
-
-                    <option value="austria">
-                        Austria
-                    </option>
-
-                    <option value="russia">
-                        Russian Empire
-                    </option>
-
-                    <option value="sweden">
-                        Sweden
-                    </option>
-
-                    <option value="denmark">
-                        Denmark-Norway
-                    </option>
-
-                    <option value="italy">
-                        Kingdom of Italy
-                    </option>
-
-                    <option value="ottoman">
-                        Ottoman Empire
-                    </option>
-
-                    <option value="switzerland">
-                        Switzerland
-                    </option>
-
-                    <option value="bavaria">
-                        Bavaria
-                    </option>
-
-                    <option value="saxony">
-                        Saxony
-                    </option>
-
-                    <option value="naples">
-                        Naples
-                    </option>
-
-                    <option value="papal">
-                        Papal States
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <div class="editor-section">
-
-                <label>
-                    Strength
-                </label>
-
-                <input
-                    type="number"
-                    id="army-strength"
-                    value="10000"
-                    min="0"
-                >
-
-            </div>
-
-
-            <div class="editor-section">
-
-                <label>
-                    Commander
-                </label>
-
-                <input
-                    type="text"
-                    id="army-commander"
-                    placeholder="Napoleon"
-                >
-
-            </div>
-
-
-            <div class="editor-section">
-
-                <button id="place-army-button">
-                    Place / Update Army
-                </button>
-
-                <button id="delete-army-button">
-                    Delete Army
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <!-- ================================================== -->
-        <!-- FILE CONTROLS -->
-        <!-- ================================================== -->
-
-        <div class="editor-section">
-
-            <button id="save-button">
-                Save Locally
-            </button>
-
-            <button id="download-button">
-                Download Map JSON
-            </button>
-
-        </div>
-
-
-        <div class="editor-section">
-
-            <button id="download-cities-button">
-                Download Cities JSON
-            </button>
-
-            <button id="download-armies-button">
-                Download Armies JSON
-            </button>
-
-        </div>
-
-
-        <!-- ================================================== -->
-        <!-- STATUS -->
-        <!-- ================================================== -->
-
-        <div class="editor-section">
-
-            <p id="status">
-                Unsaved changes
-            </p>
-
-        </div>
-
-    </div>
-
-
-    <script src="editor.js"></script>
+    <script
+        type="module"
+        src="js/editor.js"
+    ></script>
 
 </body>
 
