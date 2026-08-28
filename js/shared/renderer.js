@@ -709,7 +709,7 @@ function drawBorderSegment(
 
 
     context.strokeStyle =
-        darkenColor(country.color, 0.50);
+        darkenColor(color, 0.50);
 
     context.lineWidth =
         width;
