@@ -1254,7 +1254,7 @@ export function rebuildMapCanvas() {
             world.x,
             world.y,
 
-            HEX_SIZE_LOCAL,
+            HEX_SIZE,
 
             country.color,
 
