@@ -1,11 +1,4 @@
 {
   "cities": [
-    {
-      "id": 1,
-      "name": "Paris",
-      "country": "france",
-      "col": 30,
-      "row": 44
-    }
   ]
 }
