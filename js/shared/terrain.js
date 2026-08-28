@@ -16,7 +16,7 @@
 //     → terrain.json loading/exporting
 //
 // IMPORTANT:
-//     terrain.js NEVER defines the map dimensions itself.
+//     terrain.js NEVER defines map dimensions itself.
 //
 //     map.js is the authority for COLS and ROWS.
 //
@@ -32,17 +32,6 @@ import {
 
 // ============================================================
 // TERRAIN TYPES
-// ============================================================
-//
-// These are the terrain types the game understands.
-//
-// "water" is intentionally included here so the renderer
-// can treat it as a valid terrain type.
-//
-// However, water is NOT manually editable.
-//
-// Ocean tiles automatically become water.
-//
 // ============================================================
 
 export const TERRAIN_TYPES = {
@@ -118,8 +107,6 @@ export const TERRAIN_TYPES = {
 //
 // Every non-ocean tile is plains unless an override exists.
 //
-// This is what keeps terrain.json compact.
-//
 // ============================================================
 
 export const DEFAULT_TERRAIN =
@@ -130,7 +117,7 @@ export const DEFAULT_TERRAIN =
 // TERRAIN OVERRIDES
 // ============================================================
 //
-// Stored like:
+// Example:
 //
 // {
 //     "42,31": "forest",
@@ -138,7 +125,7 @@ export const DEFAULT_TERRAIN =
 //     "50,40": "mountains"
 // }
 //
-// There is intentionally no entry for normal plains.
+// Plains are not stored because plains are the default.
 //
 // ============================================================
 
@@ -227,7 +214,7 @@ export function isTerrainEditable(
 // GET TERRAIN
 // ============================================================
 //
-// This is the main terrain lookup function.
+// Main terrain lookup.
 //
 // Usage:
 //
@@ -263,13 +250,9 @@ export function getTerrain(
     // OCEAN
     // --------------------------------------------------------
     //
-    // Ocean is determined by political map ownership.
-//
-//     map.js → owner === "ocean"
-//                 ↓
-//             terrain = water
-//
-// --------------------------------------------------------
+    // Ocean ownership automatically determines water terrain.
+    //
+    // --------------------------------------------------------
 
     if (
         tile.owner === "ocean"
@@ -318,7 +301,7 @@ export function getTerrain(
 // GET TERRAIN BY COORDINATES
 // ============================================================
 //
-// Convenience version.
+// Convenience function.
 //
 // Usage:
 //
@@ -462,10 +445,7 @@ export function setTerrain(
     // PLAINS = DEFAULT
     // --------------------------------------------------------
     //
-    // We don't store default values.
-    //
-    // This is one of the main reasons terrain.json remains
-    // extremely small.
+    // Don't store the default terrain.
     //
     // --------------------------------------------------------
 
@@ -496,7 +476,7 @@ export function setTerrain(
 //
 // Removes a manual override.
 //
-// The tile immediately goes back to plains.
+// The tile returns to plains.
 //
 // ============================================================
 
@@ -541,10 +521,10 @@ export function clearTerrain(
 
 
 // ============================================================
-// LOAD TERRAIN DATA
+// APPLY TERRAIN DATA
 // ============================================================
 //
-// The expected terrain.json format:
+// Expected terrain.json:
 //
 // {
 //     "default": "plains",
@@ -553,7 +533,9 @@ export function clearTerrain(
 //     }
 // }
 //
-// There is deliberately NO cols / rows here.
+// No cols / rows are stored here.
+//
+// map.js remains the sole authority for map dimensions.
 //
 // ============================================================
 
@@ -591,10 +573,7 @@ export function applyTerrainData(
     // DEFAULT
     // --------------------------------------------------------
     //
-    // At the moment plains is our intended default.
-    //
-    // We still validate the value so a malformed file doesn't
-    // silently break the terrain system.
+    // Currently plains is the only supported default.
     //
     // --------------------------------------------------------
 
@@ -605,18 +584,15 @@ export function applyTerrainData(
         )
     ) {
 
-        // We currently use a fixed default.
-        //
-        // This check is mainly here for validation/future
-        // expansion.
-
         if (
             data.default !== DEFAULT_TERRAIN
         ) {
 
             console.warn(
+
                 `Terrain file specifies default "${data.default}". ` +
                 `The current terrain system uses "${DEFAULT_TERRAIN}".`
+
             );
 
         }
@@ -649,7 +625,7 @@ export function applyTerrainData(
     ) {
 
         // ----------------------------------------------------
-        // Parse "col,row"
+        // Parse coordinate key
         // ----------------------------------------------------
 
         const parts =
@@ -796,11 +772,13 @@ export async function loadTerrain() {
 
 
         console.log(
+
             `Terrain loaded: ${
                 Object.keys(
                     terrainOverrides
                 ).length
             } overrides`
+
         );
 
 
@@ -813,13 +791,18 @@ export async function loadTerrain() {
     ) {
 
         console.warn(
+
             "Could not load terrain.json. " +
             "Using default plains terrain.",
+
             error
+
         );
 
 
+        // ----------------------------------------------------
         // Make sure we start clean.
+        // ----------------------------------------------------
 
         for (
             const key
@@ -846,15 +829,14 @@ export async function loadTerrain() {
 //
 // Returns a copy rather than the actual object.
 //
-// This prevents other modules from accidentally modifying
-// terrain data without going through setTerrain().
-//
 // ============================================================
 
 export function getTerrainOverrides() {
 
     return {
+
         ...terrainOverrides
+
     };
 
 }
@@ -877,7 +859,7 @@ export function getTerrainOverrideCount() {
 // CREATE TERRAIN JSON
 // ============================================================
 //
-// Produces the compact terrain.json structure.
+// Produces the compact terrain.json format.
 //
 // ============================================================
 
@@ -888,10 +870,11 @@ export function createTerrainJSON() {
         default:
             DEFAULT_TERRAIN,
 
-        tiles:
-            {
-                ...terrainOverrides
-            }
+        tiles: {
+
+            ...terrainOverrides
+
+        }
 
     };
 
