@@ -1,10 +1,25 @@
-// terrain.js
-// Handles terrain data and terrain editing.
+// ============================================================
+// TERRAIN.JS
+// ============================================================
 //
-// Terrain defaults:
-// - Ocean tiles are automatically "water"
-// - Land tiles are automatically "plains"
-// - terrain.json only stores manual terrain overrides
+// Terrain is stored separately from map.json.
+//
+// map.json:
+//     Political ownership
+//
+// terrain.json:
+//     Manual terrain overrides
+//
+// Rules:
+//
+//     Ocean tile          -> water
+//     Land without entry -> plains
+//     Land with override -> specified terrain
+//
+// terrain.json therefore only needs to contain terrain that
+// differs from the default.
+//
+// ============================================================
 
 
 // ============================================================
@@ -12,10 +27,6 @@
 // ============================================================
 
 export const TERRAIN_TYPES = {
-    water: {
-        name: "Water",
-        editable: false
-    },
 
     plains: {
         name: "Plains",
@@ -45,58 +56,129 @@ export const TERRAIN_TYPES = {
     swamp: {
         name: "Swamp",
         editable: true
+    },
+
+    water: {
+        name: "Water",
+        editable: false
     }
+
 };
 
 
 // ============================================================
-// TERRAIN DATA
+// TERRAIN STATE
 // ============================================================
 
 let terrainData = {
+
     cols: 150,
+
     rows: 90,
+
     default: "plains",
+
     tiles: {}
+
 };
 
 
 // ============================================================
-// LOAD TERRAIN.JSON
+// LOAD TERRAIN
 // ============================================================
 
 export async function loadTerrain() {
+
     try {
-        const response = await fetch("data/terrain.json");
+
+        const response =
+            await fetch(
+                "data/terrain.json"
+            );
+
 
         if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
+
+            throw new Error(
+                `HTTP ${response.status}`
+            );
+
         }
 
-        const data = await response.json();
+
+        const data =
+            await response.json();
+
 
         terrainData = {
-            cols: data.cols ?? 150,
-            rows: data.rows ?? 90,
-            default: data.default ?? "plains",
-            tiles: data.tiles ?? {}
+
+            cols:
+                Number(data.cols) || 150,
+
+            rows:
+                Number(data.rows) || 90,
+
+            default:
+                data.default || "plains",
+
+            tiles:
+                data.tiles || {}
+
         };
+
 
         console.log(
-            `Terrain loaded: ${Object.keys(terrainData.tiles).length} overrides`
+            "Terrain loaded:",
+            Object.keys(
+                terrainData.tiles
+            ).length,
+            "overrides"
         );
 
-    } catch (error) {
-        console.error("Failed to load terrain.json:", error);
 
-        // Keep the default empty terrain dataset.
+    } catch (error) {
+
+        console.error(
+            "Failed to load terrain.json:",
+            error
+        );
+
+
+        // A missing terrain file should NOT break
+        // the editor or game.
+
         terrainData = {
+
             cols: 150,
+
             rows: 90,
+
             default: "plains",
+
             tiles: {}
+
         };
+
     }
+
+}
+
+
+// ============================================================
+// INITIALIZE TERRAIN
+// ============================================================
+
+export function initializeTerrain(
+    cols,
+    rows
+) {
+
+    terrainData.cols =
+        cols;
+
+    terrainData.rows =
+        rows;
+
 }
 
 
@@ -104,114 +186,240 @@ export async function loadTerrain() {
 // TERRAIN KEY
 // ============================================================
 
-function getTerrainKey(col, row) {
+export function terrainKey(
+    col,
+    row
+) {
+
     return `${col},${row}`;
+
 }
 
 
 // ============================================================
 // GET TERRAIN
 // ============================================================
+//
+// mapTile is the corresponding tile from map.js/editor map.
+//
+// Ocean is always water.
+//
+// Everything else defaults to plains unless manually
+// overridden in terrain.json.
+//
 
-export function getTerrain(col, row, mapTiles) {
-
-    const key = getTerrainKey(col, row);
+export function getTerrain(
+    col,
+    row,
+    mapTile
+) {
 
     // --------------------------------------------------------
-    // Ocean always has water terrain.
+    // Ocean
     // --------------------------------------------------------
 
-    const mapTile = mapTiles?.find(
-        tile => tile.col === col && tile.row === row
-    );
+    if (
+        mapTile &&
+        mapTile.owner === "ocean"
+    ) {
 
-    if (mapTile && mapTile.owner === "ocean") {
         return "water";
+
     }
 
 
     // --------------------------------------------------------
-    // Check for manually assigned terrain.
+    // Manual override
     // --------------------------------------------------------
 
-    if (terrainData.tiles[key]) {
+    const key =
+        terrainKey(
+            col,
+            row
+        );
+
+
+    if (
+        terrainData.tiles[key] &&
+        TERRAIN_TYPES[
+            terrainData.tiles[key]
+        ]
+    ) {
+
         return terrainData.tiles[key];
+
     }
 
 
     // --------------------------------------------------------
-    // All other land defaults to plains.
+    // Default
     // --------------------------------------------------------
 
     return terrainData.default;
+
 }
 
 
 // ============================================================
 // SET TERRAIN
 // ============================================================
+//
+// Setting plains removes the override because plains is the
+// default.
+//
+// Water cannot be manually assigned.
+//
+// Ocean tiles cannot receive land terrain.
+//
 
-export function setTerrain(col, row, terrain, mapTiles) {
+export function setTerrain(
+    col,
+    row,
+    terrain,
+    mapTile
+) {
 
-    // Make sure the terrain exists.
-    if (!TERRAIN_TYPES[terrain]) {
-        console.warn(`Unknown terrain type: ${terrain}`);
-        return;
+    if (
+        !TERRAIN_TYPES[terrain]
+    ) {
+
+        console.warn(
+            `Unknown terrain: ${terrain}`
+        );
+
+        return false;
+
     }
 
 
-    // Water is automatically determined by map.js.
-    // Don't allow it to be manually assigned.
-    if (terrain === "water") {
-        console.warn("Water terrain is determined automatically by map.js.");
-        return;
+    // Water is controlled by map ownership.
+
+    if (
+        terrain === "water"
+    ) {
+
+        return false;
+
     }
 
 
-    // Don't allow terrain to be painted onto ocean.
-    const mapTile = mapTiles?.find(
-        tile => tile.col === col && tile.row === row
-    );
+    // Don't paint land terrain onto ocean.
 
-    if (mapTile && mapTile.owner === "ocean") {
-        return;
+    if (
+        mapTile &&
+        mapTile.owner === "ocean"
+    ) {
+
+        return false;
+
     }
 
 
-    const key = getTerrainKey(col, row);
+    const key =
+        terrainKey(
+            col,
+            row
+        );
 
 
     // --------------------------------------------------------
-    // If assigning the default terrain, remove the override.
+    // Default terrain = no override
     // --------------------------------------------------------
 
-    if (terrain === terrainData.default) {
+    if (
+        terrain === terrainData.default
+    ) {
+
         delete terrainData.tiles[key];
+
     }
 
+
     // --------------------------------------------------------
-    // Otherwise store an override.
+    // Non-default terrain = override
     // --------------------------------------------------------
 
     else {
-        terrainData.tiles[key] = terrain;
+
+        terrainData.tiles[key] =
+            terrain;
+
     }
+
+
+    return true;
+
 }
 
 
 // ============================================================
-// GET ALL TERRAIN OVERRIDES
+// REMOVE TERRAIN OVERRIDE
+// ============================================================
+
+export function clearTerrain(
+    col,
+    row
+) {
+
+    const key =
+        terrainKey(
+            col,
+            row
+        );
+
+
+    delete terrainData.tiles[key];
+
+}
+
+
+// ============================================================
+// GET OVERRIDES
 // ============================================================
 
 export function getTerrainOverrides() {
+
     return terrainData.tiles;
+
 }
 
 
 // ============================================================
 // GET TERRAIN DATA
 // ============================================================
+//
+// Used when exporting terrain.json.
+//
 
 export function getTerrainData() {
-    return terrainData;
+
+    return {
+
+        cols:
+            terrainData.cols,
+
+        rows:
+            terrainData.rows,
+
+        default:
+            terrainData.default,
+
+        tiles:
+            {
+                ...terrainData.tiles
+            }
+
+    };
+
+}
+
+
+// ============================================================
+// CREATE TERRAIN JSON
+// ============================================================
+
+export function createTerrainJSON() {
+
+    return getTerrainData();
+
 }
