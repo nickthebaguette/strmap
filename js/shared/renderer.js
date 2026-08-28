@@ -660,6 +660,27 @@ function getNeighbourForEdge(
 // DRAW BORDER SEGMENT
 // ============================================================
 
+function darkenColor(hex, amount = 0.3) {
+
+    const value =
+        hex.replace("#", "");
+
+    const r =
+        parseInt(value.substring(0, 2), 16);
+
+    const g =
+        parseInt(value.substring(2, 4), 16);
+
+    const b =
+        parseInt(value.substring(4, 6), 16);
+
+    return `rgb(
+        ${Math.max(0, r * (1 - amount))},
+        ${Math.max(0, g * (1 - amount))},
+        ${Math.max(0, b * (1 - amount))}
+    )`;
+}
+
 function drawBorderSegment(
     context,
     a,
@@ -688,7 +709,7 @@ function drawBorderSegment(
 
 
     context.strokeStyle =
-        color;
+        darkenColor(country.color, 0.50);
 
     context.lineWidth =
         width;
@@ -735,7 +756,7 @@ function drawPoliticalBorders() {
     // Ocean border is deliberately weaker.
 
     const OCEAN_BORDER_WIDTH =
-        1.2;
+        1.8;
 
 
     const OCEAN_BORDER_ALPHA =
