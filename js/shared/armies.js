@@ -1,17 +1,76 @@
 // ============================================================
+// ARMIES.JS
+// ============================================================
+
+import {
+    hexToWorld
+} from "./map.js";
+
+
+// ============================================================
 // ARMIES
 // ============================================================
 
-const armies = [];
+export const armies = [];
+
+
+// ============================================================
+// ARMY ICON CACHE
+// ============================================================
+
+const iconCache = {};
+
+
+// ============================================================
+// LOAD ICON
+// ============================================================
+
+function getArmyIcon(
+    path
+) {
+
+    if (
+        !path
+    ) {
+
+        return null;
+
+    }
+
+
+    // Already loaded / loading.
+
+    if (
+        iconCache[path]
+    ) {
+
+        return iconCache[path];
+
+    }
+
+
+    const image =
+        new Image();
+
+    image.src =
+        path;
+
+
+    iconCache[path] =
+        image;
+
+
+    return image;
+
+}
 
 
 // ============================================================
 // DRAW ARMIES
 // ============================================================
 
-function drawArmies(
-    ctx,
-    hexToWorld
+export function drawArmies(
+    ctx
 ) {
 
     for (
@@ -25,22 +84,35 @@ function drawArmies(
             );
 
 
-        const size = 22;
+        const size =
+            22;
 
+
+        const icon =
+            getArmyIcon(
+                army.icon
+            );
+
+
+        // ----------------------------------------------------
+        // ICON
+        // ----------------------------------------------------
 
         if (
-            army.iconImage &&
-            army.iconImage.complete &&
-            army.iconImage.naturalWidth > 0
+            icon &&
+            icon.complete &&
+            icon.naturalWidth > 0
         ) {
 
             ctx.drawImage(
 
-                army.iconImage,
+                icon,
 
-                world.x - size / 2,
+                world.x -
+                size / 2,
 
-                world.y - size / 2,
+                world.y -
+                size / 2,
 
                 size,
 
@@ -48,17 +120,30 @@ function drawArmies(
 
             );
 
-        } else {
+        }
+
+        // ----------------------------------------------------
+        // FALLBACK
+        // ----------------------------------------------------
+
+        else {
 
             ctx.beginPath();
 
             ctx.arc(
+
                 world.x,
+
                 world.y,
+
                 5,
+
                 0,
+
                 Math.PI * 2
+
             );
+
 
             ctx.fillStyle =
                 "#ffffff";
@@ -73,28 +158,10 @@ function drawArmies(
 
 
 // ============================================================
-// FIND ARMY
+// LOAD ARMIES FROM JSON
 // ============================================================
 
-function getArmyAt(
-    col,
-    row
-) {
-
-    return armies.find(
-        army =>
-            army.col === col &&
-            army.row === row
-    );
-
-}
-
-
-// ============================================================
-// LOAD ARMIES
-// ============================================================
-
-async function loadArmies() {
+export async function loadArmies() {
 
     try {
 
@@ -104,13 +171,13 @@ async function loadArmies() {
             );
 
 
-        if (!response.ok) {
+        if (
+            !response.ok
+        ) {
 
-            console.log(
-                "No armies.json found."
+            throw new Error(
+                "Could not load armies.json"
             );
-
-            return;
 
         }
 
@@ -138,13 +205,21 @@ async function loadArmies() {
             of data.armies
         ) {
 
+            const col =
+                Number(
+                    armyData.col
+                );
+
+
+            const row =
+                Number(
+                    armyData.row
+                );
+
+
             if (
-                !Number.isInteger(
-                    Number(armyData.col)
-                ) ||
-                !Number.isInteger(
-                    Number(armyData.row)
-                )
+                !Number.isInteger(col) ||
+                !Number.isInteger(row)
             ) {
 
                 continue;
@@ -152,7 +227,7 @@ async function loadArmies() {
             }
 
 
-            const army = {
+            armies.push({
 
                 id:
                     Number(
@@ -177,40 +252,23 @@ async function loadArmies() {
                     "icons/armies/army.png",
 
                 col:
-                    Number(
-                        armyData.col
-                    ),
+                    col,
 
                 row:
-                    Number(
-                        armyData.row
-                    )
+                    row
 
-            };
-
-
-            army.iconImage =
-                new Image();
-
-            army.iconImage.src =
-                army.icon;
-
-
-            armies.push(
-                army
-            );
+            });
 
         }
 
-
-        draw();
 
     }
 
     catch (error) {
 
-        console.log(
-            "No armies.json found."
+        console.warn(
+            "Could not load armies.json:",
+            error
         );
 
     }
