@@ -62,13 +62,13 @@ import {
 
 
 import {
-
+    
     loadTerrain,
     getTerrain,
-    setTerrain
-
+    setTerrain,
+    createTerrainJSON
+    
 } from "./shared/terrain.js";
-
 
 import {
 
