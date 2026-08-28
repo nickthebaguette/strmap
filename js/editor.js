@@ -1678,28 +1678,11 @@ document
 
             downloadJSON(
                 "terrain.json",
-                (
-                    // terrain.js exposes this function
-                    // through the module.
-                    import(
-                        "./shared/terrain.js"
-                    )
-                    .then(
-                        module => {
-
-                            downloadJSON(
-                                "terrain.json",
-                                module.createTerrainJSON()
-                            );
-
-                        }
-                    )
-                )
+                createTerrainJSON()
             );
 
         }
     );
-
 
 // ------------------------------------------------------------
 // CITIES
