@@ -20,6 +20,11 @@
 // This means the editor and the actual game are always
 // rendering the same map.
 //
+// Camera interaction is intentionally identical to main.js:
+//     • Left mouse button = pan
+//     • >2px movement = drag
+//     • Mouse wheel = zoom
+//
 // ============================================================
 
 
@@ -214,36 +219,25 @@ window.addEventListener(
 
 
 // ============================================================
-// ZOOM
+// PAN
+// ============================================================
+//
+// This intentionally matches main.js.
+//
+// Left mouse button starts panning.
+//
+// A movement greater than 2 pixels is considered an actual
+// drag.
+//
 // ============================================================
 
-canvas.addEventListener(
-    "wheel",
-    event => {
+let dragging = false;
 
-        event.preventDefault();
+let wasDragging = false;
 
-        zoomCamera(
-            canvas,
-            event
-        );
+let lastX = 0;
 
-    },
-    {
-        passive: false
-    }
-);
-
-
-// ============================================================
-// PAN CAMERA
-// ============================================================
-
-let isPanning = false;
-
-let lastMouseX = 0;
-
-let lastMouseY = 0;
+let lastY = 0;
 
 
 // ------------------------------------------------------------
@@ -254,26 +248,29 @@ canvas.addEventListener(
     "mousedown",
     event => {
 
-        // Middle mouse button.
+        // ----------------------------------------------------
+        // LEFT MOUSE BUTTON ONLY
+        // ----------------------------------------------------
 
         if (
-            event.button === 1
+            event.button !== 0
         ) {
 
-            event.preventDefault();
-
-            isPanning = true;
-
-            lastMouseX =
-                event.clientX;
-
-            lastMouseY =
-                event.clientY;
-
-            canvas.style.cursor =
-                "grabbing";
+            return;
 
         }
+
+
+        dragging = true;
+
+        wasDragging = false;
+
+
+        lastX =
+            event.clientX;
+
+        lastY =
+            event.clientY;
 
     }
 );
@@ -283,12 +280,12 @@ canvas.addEventListener(
 // MOVE CAMERA
 // ------------------------------------------------------------
 
-window.addEventListener(
+canvas.addEventListener(
     "mousemove",
     event => {
 
         if (
-            !isPanning
+            !dragging
         ) {
 
             return;
@@ -298,13 +295,31 @@ window.addEventListener(
 
         const dx =
             event.clientX -
-            lastMouseX;
+            lastX;
 
 
         const dy =
             event.clientY -
-            lastMouseY;
+            lastY;
 
+
+        // ----------------------------------------------------
+        // DETECT ACTUAL DRAG
+        // ----------------------------------------------------
+
+        if (
+            Math.abs(dx) > 2 ||
+            Math.abs(dy) > 2
+        ) {
+
+            wasDragging = true;
+
+        }
+
+
+        // ----------------------------------------------------
+        // PAN
+        // ----------------------------------------------------
 
         panCamera(
             canvas,
@@ -313,10 +328,14 @@ window.addEventListener(
         );
 
 
-        lastMouseX =
+        // ----------------------------------------------------
+        // UPDATE LAST POSITION
+        // ----------------------------------------------------
+
+        lastX =
             event.clientX;
 
-        lastMouseY =
+        lastY =
             event.clientY;
 
     }
@@ -329,18 +348,9 @@ window.addEventListener(
 
 window.addEventListener(
     "mouseup",
-    event => {
+    () => {
 
-        if (
-            event.button === 1
-        ) {
-
-            isPanning = false;
-
-            canvas.style.cursor =
-                "default";
-
-        }
+        dragging = false;
 
     }
 );
@@ -354,11 +364,31 @@ window.addEventListener(
     "blur",
     () => {
 
-        isPanning = false;
+        dragging = false;
 
-        canvas.style.cursor =
-            "default";
+    }
+);
 
+
+// ============================================================
+// ZOOM
+// ============================================================
+
+canvas.addEventListener(
+    "wheel",
+    event => {
+
+        event.preventDefault();
+
+
+        zoomCamera(
+            canvas,
+            event
+        );
+
+    },
+    {
+        passive: false
     }
 );
 
