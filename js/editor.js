@@ -236,7 +236,7 @@ canvas.addEventListener(
 
 
 // ============================================================
-// PAN
+// PAN CAMERA
 // ============================================================
 
 let isPanning = false;
@@ -245,6 +245,10 @@ let lastMouseX = 0;
 
 let lastMouseY = 0;
 
+
+// ------------------------------------------------------------
+// START PAN
+// ------------------------------------------------------------
 
 canvas.addEventListener(
     "mousedown",
@@ -255,6 +259,8 @@ canvas.addEventListener(
         if (
             event.button === 1
         ) {
+
+            event.preventDefault();
 
             isPanning = true;
 
@@ -272,6 +278,10 @@ canvas.addEventListener(
     }
 );
 
+
+// ------------------------------------------------------------
+// MOVE CAMERA
+// ------------------------------------------------------------
 
 window.addEventListener(
     "mousemove",
@@ -313,6 +323,10 @@ window.addEventListener(
 );
 
 
+// ------------------------------------------------------------
+// STOP PAN
+// ------------------------------------------------------------
+
 window.addEventListener(
     "mouseup",
     event => {
@@ -327,6 +341,23 @@ window.addEventListener(
                 "default";
 
         }
+
+    }
+);
+
+
+// ------------------------------------------------------------
+// CANCEL PAN IF WINDOW LOSES FOCUS
+// ------------------------------------------------------------
+
+window.addEventListener(
+    "blur",
+    () => {
+
+        isPanning = false;
+
+        canvas.style.cursor =
+            "default";
 
     }
 );
