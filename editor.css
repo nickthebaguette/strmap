@@ -1,575 +1,515 @@
 /* ============================================================
-EDITOR.CSS
-============================================================ */
-
-/* ============================================================
-PAGE
-============================================================ */
+   EDITOR.CSS
+   ============================================================ */
 
 html,
 body {
+    margin: 0;
+    padding: 0;
 
-```
-margin: 0;
+    width: 100%;
+    height: 100%;
 
-padding: 0;
+    overflow: hidden;
 
-width: 100%;
+    background: #252522;
 
-height: 100%;
-
-overflow: hidden;
-
-background: #252522;
-
-font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
-```
-
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 }
 
+
 /* ============================================================
-MAP
-============================================================ */
+   MAP
+   ============================================================ */
 
 #editorCanvas {
+    position: fixed;
 
-```
-position: fixed;
+    left: 0;
+    top: 0;
 
-left: 0;
+    width: 100%;
+    height: 100%;
 
-top: 0;
+    display: block;
 
-width: 100%;
-
-height: 100%;
-
-display: block;
-
-cursor: default;
-```
-
+    cursor: default;
 }
 
+
 /* ============================================================
-TOP TOOLBAR
-============================================================ */
+   TOP TOOLBAR
+   ============================================================ */
 
 #toolbar {
+    position: fixed;
 
-```
-position: fixed;
+    top: 15px;
+    left: 50%;
 
-top: 15px;
+    transform: translateX(-50%);
 
-left: 50%;
+    display: flex;
 
-transform:
-    translateX(-50%);
+    gap: 6px;
 
-display: flex;
+    padding: 7px;
 
-gap: 6px;
+    background:
+        rgba(37, 37, 34, 0.94);
 
-padding: 7px;
+    border:
+        1px solid #555550;
 
-background:
-    rgba(37, 37, 34, 0.94);
+    border-radius: 8px;
 
-border:
-    1px solid #555550;
+    box-shadow:
+        0 4px 14px
+        rgba(0, 0, 0, 0.35);
 
-border-radius: 8px;
-
-box-shadow:
-    0 4px 14px
-    rgba(0, 0, 0, 0.35);
-
-z-index: 20;
-```
-
+    z-index: 20;
 }
 
+
 /* ============================================================
-TOOL BUTTONS
-============================================================ */
+   TOOL BUTTONS
+   ============================================================ */
 
 .tool-button {
+    border: 0;
 
-```
-border: 0;
+    border-radius: 5px;
 
-border-radius: 5px;
+    padding:
+        9px 15px;
 
-padding:
-    9px 15px;
+    background:
+        #41413d;
 
-background:
-    #41413d;
+    color:
+        #e8e8e3;
 
-color:
-    #e8e8e3;
+    font-size: 14px;
 
-font-size: 14px;
+    cursor: pointer;
 
-cursor: pointer;
-
-transition:
-    background 0.12s ease,
-    transform 0.08s ease;
-```
-
+    transition:
+        background 0.12s ease,
+        transform 0.08s ease;
 }
 
 .tool-button:hover {
-
-```
-background:
-    #555550;
-```
-
+    background:
+        #555550;
 }
 
 .tool-button:active {
-
-```
-transform:
-    translateY(1px);
-```
-
+    transform:
+        translateY(1px);
 }
 
 .tool-button.active {
+    background:
+        #77776f;
 
-```
-background:
-    #77776f;
-
-color:
-    white;
-```
-
+    color:
+        white;
 }
 
+
 /* ============================================================
-EDITOR PANEL
-============================================================ */
+   EDITOR PANEL
+   ============================================================ */
 
 #editor-panel {
+    position: fixed;
 
-```
-position: fixed;
+    top: 70px;
+    right: 18px;
 
-top: 70px;
+    width: 250px;
 
-right: 18px;
+    z-index: 20;
 
-width: 250px;
-
-z-index: 20;
-
-pointer-events: none;
-```
-
+    pointer-events: none;
 }
 
+
 /* ============================================================
-TOOL PANELS
-============================================================ */
+   TOOL PANELS
+   ============================================================ */
 
 .tool-panel {
+    display: none;
 
-```
-display: none;
+    pointer-events: auto;
 
-pointer-events: auto;
+    box-sizing: border-box;
 
-padding: 18px;
+    width: 100%;
 
-background:
-    rgba(37, 37, 34, 0.96);
+    padding: 18px;
 
-border:
-    1px solid #555550;
+    background:
+        rgba(37, 37, 34, 0.96);
 
-border-radius: 8px;
+    border:
+        1px solid #555550;
 
-box-shadow:
-    0 5px 18px
-    rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
 
-color:
-    #e8e8e3;
-```
+    box-shadow:
+        0 5px 18px
+        rgba(0, 0, 0, 0.4);
 
+    color:
+        #e8e8e3;
 }
 
 .tool-panel.active {
-
-```
-display: block;
-```
-
+    display: block;
 }
 
+
 /* ============================================================
-PANEL HEADINGS
-============================================================ */
+   PANEL HEADINGS
+   ============================================================ */
 
 .tool-panel h2 {
+    margin:
+        0 0 15px 0;
 
-```
-margin:
-    0 0 15px 0;
+    font-size: 18px;
 
-font-size: 18px;
-
-font-weight: 600;
-```
-
+    font-weight: 600;
 }
 
+
 /* ============================================================
-LABELS
-============================================================ */
+   LABELS
+   ============================================================ */
 
 .tool-panel label {
+    display: block;
 
-```
-display: block;
+    margin:
+        11px 0 5px 0;
 
-margin:
-    11px 0 5px 0;
+    font-size: 13px;
 
-font-size: 13px;
-
-color:
-    #c8c8c2;
-```
-
+    color:
+        #c8c8c2;
 }
 
+
 /* ============================================================
-INPUTS / SELECTS
-============================================================ */
+   INPUTS / SELECTS
+   ============================================================ */
 
 .tool-panel input,
 .tool-panel select {
+    box-sizing: border-box;
 
-```
-box-sizing: border-box;
+    width: 100%;
 
-width: 100%;
+    padding:
+        8px 9px;
 
-padding:
-    8px 9px;
+    border:
+        1px solid #666660;
 
-border:
-    1px solid #666660;
+    border-radius: 5px;
 
-border-radius: 5px;
+    background:
+        #30302d;
 
-background:
-    #30302d;
+    color:
+        #eeeeea;
 
-color:
-    #eeeeea;
+    font-size: 14px;
 
-font-size: 14px;
-
-outline: none;
-```
-
+    outline: none;
 }
 
 .tool-panel input:focus,
 .tool-panel select:focus {
-
-```
-border-color:
-    #999991;
-```
-
+    border-color:
+        #999991;
 }
 
+
 /* ============================================================
-HINT
-============================================================ */
+   HINT
+   ============================================================ */
 
 .hint {
+    margin:
+        13px 0 0 0;
 
-```
-margin:
-    13px 0 0 0;
+    color:
+        #999992;
 
-color:
-    #999992;
+    font-size: 12px;
 
-font-size: 12px;
-
-line-height: 1.45;
-```
-
+    line-height: 1.45;
 }
 
+
 /* ============================================================
-PANEL BUTTONS
-============================================================ */
+   PANEL BUTTONS
+   ============================================================ */
 
 .panel-buttons {
+    display: flex;
 
-```
-display: flex;
+    gap: 7px;
 
-gap: 7px;
-
-margin-top: 15px;
-```
-
+    margin-top: 15px;
 }
 
 .panel-buttons button {
+    flex: 1;
 
-```
-flex: 1;
+    border: 0;
 
-border: 0;
+    border-radius: 5px;
 
-border-radius: 5px;
+    padding:
+        8px 6px;
 
-padding:
-    8px 6px;
+    background:
+        #555550;
 
-background:
-    #555550;
+    color:
+        #eeeeea;
 
-color:
-    #eeeeea;
+    cursor: pointer;
 
-cursor: pointer;
-
-font-size: 13px;
-```
-
+    font-size: 13px;
 }
 
 .panel-buttons button:hover {
-
-```
-background:
-    #696963;
-```
-
+    background:
+        #696963;
 }
 
 .panel-buttons .danger {
-
-```
-background:
-    #593a3a;
-```
-
+    background:
+        #593a3a;
 }
 
 .panel-buttons .danger:hover {
-
-```
-background:
-    #704747;
-```
-
+    background:
+        #704747;
 }
 
+
 /* ============================================================
-SELECTION PANEL
-============================================================ */
+   SELECTION PANEL
+   ============================================================ */
 
 #selection-panel {
+    position: fixed;
 
-```
-position: fixed;
+    left: 15px;
+    bottom: 15px;
 
-left: 15px;
+    z-index: 20;
 
-bottom: 15px;
+    padding:
+        10px 13px;
 
-z-index: 20;
+    background:
+        rgba(37, 37, 34, 0.92);
 
-padding:
-    10px 13px;
+    border:
+        1px solid #555550;
 
-background:
-    rgba(37, 37, 34, 0.92);
+    border-radius: 6px;
 
-border:
-    1px solid #555550;
+    color:
+        #d9d9d4;
 
-border-radius: 6px;
+    font-size: 12px;
 
-color:
-    #d9d9d4;
+    line-height: 1.6;
 
-font-size: 12px;
-
-line-height: 1.6;
-
-pointer-events: none;
-```
-
+    pointer-events: none;
 }
 
+
 /* ============================================================
-STATUS
-============================================================ */
+   STATUS
+   ============================================================ */
 
 #status {
+    position: fixed;
 
-```
-position: fixed;
+    left: 50%;
+    bottom: 15px;
 
-left: 50%;
+    transform:
+        translateX(-50%);
 
-bottom: 15px;
+    z-index: 20;
 
-transform:
-    translateX(-50%);
+    padding:
+        7px 12px;
 
-z-index: 20;
+    background:
+        rgba(37, 37, 34, 0.92);
 
-padding:
-    7px 12px;
+    border:
+        1px solid #555550;
 
-background:
-    rgba(37, 37, 34, 0.92);
+    border-radius: 6px;
 
-border:
-    1px solid #555550;
+    color:
+        #cfcfc9;
 
-border-radius: 6px;
+    font-size: 12px;
 
-color:
-    #cfcfc9;
+    pointer-events: none;
 
-font-size: 12px;
-
-pointer-events: none;
-```
-
+    white-space: nowrap;
 }
 
+
 /* ============================================================
-DOWNLOAD PANEL
-============================================================ */
+   DOWNLOAD PANEL
+   ============================================================ */
 
 #download-panel {
+    position: fixed;
 
-```
-position: fixed;
+    right: 15px;
+    bottom: 15px;
 
-right: 15px;
+    z-index: 20;
 
-bottom: 15px;
+    display: flex;
 
-z-index: 20;
+    gap: 5px;
 
-display: flex;
+    padding: 6px;
 
-gap: 5px;
+    background:
+        rgba(37, 37, 34, 0.92);
 
-padding: 6px;
+    border:
+        1px solid #555550;
 
-background:
-    rgba(37, 37, 34, 0.92);
-
-border:
-    1px solid #555550;
-
-border-radius: 6px;
-```
-
+    border-radius: 6px;
 }
 
 #download-panel button {
+    border: 0;
 
-```
-border: 0;
+    border-radius: 4px;
 
-border-radius: 4px;
+    padding:
+        7px 9px;
 
-padding:
-    7px 9px;
+    background:
+        #41413d;
 
-background:
-    #41413d;
+    color:
+        #ddddda;
 
-color:
-    #ddddda;
+    font-size: 11px;
 
-font-size: 11px;
-
-cursor: pointer;
-```
-
+    cursor: pointer;
 }
 
 #download-panel button:hover {
-
-```
-background:
-    #555550;
-```
-
+    background:
+        #555550;
 }
+
 
 /* ============================================================
-SMALL SCREENS
-============================================================ */
+   TOOL PANEL ANIMATION
+   ============================================================ */
 
-@media (
-max-width: 700px
-) {
+.tool-panel {
+    animation:
+        panelAppear 0.12s ease-out;
+}
 
-```
-#toolbar {
+@keyframes panelAppear {
+    from {
+        opacity: 0;
 
-    max-width:
-        calc(100% - 20px);
+        transform:
+            translateY(-5px);
+    }
 
-    overflow-x: auto;
+    to {
+        opacity: 1;
 
+        transform:
+            translateY(0);
+    }
 }
 
 
-.tool-button {
+/* ============================================================
+   SMALL SCREENS
+   ============================================================ */
 
-    white-space:
-        nowrap;
+@media (max-width: 700px) {
 
-    padding:
-        8px 11px;
+    #toolbar {
+        max-width:
+            calc(100% - 20px);
 
-}
-
-
-#editor-panel {
-
-    right: 10px;
-
-    left: 10px;
-
-    width: auto;
-
-}
+        overflow-x: auto;
+    }
 
 
-#download-panel {
+    .tool-button {
+        white-space:
+            nowrap;
 
-    display: none;
+        padding:
+            8px 11px;
+    }
 
-}
-```
+
+    #editor-panel {
+        right: 10px;
+        left: 10px;
+
+        width: auto;
+    }
+
+
+    #download-panel {
+        display: none;
+    }
+
+
+    #selection-panel {
+        left: 10px;
+        bottom: 10px;
+
+        max-width:
+            calc(100% - 20px);
+    }
+
+
+    #status {
+        max-width:
+            50%;
+
+        overflow:
+            hidden;
+
+        text-overflow:
+            ellipsis;
+    }
 
 }
