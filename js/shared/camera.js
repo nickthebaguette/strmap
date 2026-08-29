@@ -4,22 +4,30 @@
 // ============================================================
 
 import {
-    MAP_LEFT,
-    MAP_TOP,
-    MAP_RIGHT,
-    MAP_BOTTOM,
     MAP_WIDTH,
     MAP_HEIGHT
 } from "./map.js";
 
 
-export const FRAME_OVERHANG = 14 * 0.5;
+// ============================================================
+// FRAME
+// ============================================================
 
-export const FRAME_WIDTH = 7;
+export const FRAME_OVERHANG =
+    14 * 0.5;
+
+
+export const FRAME_WIDTH =
+    7;
+
 
 export const FRAME_COLOR =
     "#252522";
 
+
+// ============================================================
+// CAMERA
+// ============================================================
 
 export const camera = {
 
@@ -32,9 +40,12 @@ export const camera = {
 };
 
 
-export let MIN_ZOOM = 0.55;
+export let MIN_ZOOM =
+    0.55;
 
-export const MAX_ZOOM = 3.0;
+
+export const MAX_ZOOM =
+    3.0;
 
 
 // ============================================================
@@ -49,11 +60,13 @@ export function screenToWorld(
     return {
 
         x:
-            x / camera.zoom +
+            x /
+            camera.zoom +
             camera.x,
 
         y:
-            y / camera.zoom +
+            y /
+            camera.zoom +
             camera.y
 
     };
@@ -73,21 +86,23 @@ export function worldToScreen(
     return {
 
         x:
-            (x - camera.x) *
+            (
+                x -
+                camera.x
+            ) *
             camera.zoom,
 
         y:
-            (y - camera.y) *
+            (
+                y -
+                camera.y
+            ) *
             camera.zoom
 
     };
 
 }
 
-
-// ============================================================
-// MINIMUM ZOOM
-// ============================================================
 
 // ============================================================
 // MINIMUM ZOOM
@@ -117,8 +132,13 @@ export function updateMinimumZoom(
         frameHeight;
 
 
+    // We need enough zoom to fit BOTH dimensions.
+    //
+    // Since the map must fit completely inside the viewport,
+    // the smaller scale is the limiting one.
+
     MIN_ZOOM =
-        Math.max(
+        Math.min(
             zoomX,
             zoomY
         );
@@ -132,10 +152,6 @@ export function updateMinimumZoom(
 
 }
 
-
-// ============================================================
-// CLAMP
-// ============================================================
 
 // ============================================================
 // CLAMP
@@ -156,22 +172,20 @@ export function clampCamera(
 
 
     const frameLeft =
-        MAP_LEFT -
-        FRAME_OVERHANG;
+        -FRAME_OVERHANG;
 
 
     const frameTop =
-        MAP_TOP -
-        FRAME_OVERHANG;
+        -FRAME_OVERHANG;
 
 
     const frameRight =
-        MAP_RIGHT +
+        MAP_WIDTH +
         FRAME_OVERHANG;
 
 
     const frameBottom =
-        MAP_BOTTOM +
+        MAP_HEIGHT +
         FRAME_OVERHANG;
 
 
@@ -190,7 +204,8 @@ export function clampCamera(
     // ========================================================
 
     if (
-        visibleWidth >= frameWidth
+        visibleWidth >=
+        frameWidth
     ) {
 
         camera.x =
@@ -215,12 +230,14 @@ export function clampCamera(
 
         camera.x =
             Math.max(
+
                 minX,
 
                 Math.min(
                     camera.x,
                     maxX
                 )
+
             );
 
     }
@@ -231,7 +248,8 @@ export function clampCamera(
     // ========================================================
 
     if (
-        visibleHeight >= frameHeight
+        visibleHeight >=
+        frameHeight
     ) {
 
         camera.y =
@@ -256,22 +274,20 @@ export function clampCamera(
 
         camera.y =
             Math.max(
+
                 minY,
 
                 Math.min(
                     camera.y,
                     maxY
                 )
+
             );
 
     }
 
 }
 
-
-// ============================================================
-// RESIZE
-// ============================================================
 
 // ============================================================
 // RESIZE
@@ -284,6 +300,7 @@ export function resizeCamera(
     canvas.width =
         window.innerWidth;
 
+
     canvas.height =
         window.innerHeight;
 
@@ -294,54 +311,54 @@ export function resizeCamera(
 
 
     // --------------------------------------------------------
-    // Always start / remain at a valid zoom.
-    //
-    // If the current zoom is too large for the new viewport,
-    // reduce it to the minimum required zoom.
+    // If the current zoom is below the minimum, raise it.
     // --------------------------------------------------------
 
     camera.zoom =
+        Math.max(
+            camera.zoom,
+            MIN_ZOOM
+        );
+
+
+    // --------------------------------------------------------
+    // Never exceed maximum.
+    // --------------------------------------------------------
+
+    camera.zoom =
+        Math.min(
+            camera.zoom,
+            MAX_ZOOM
+        );
+
+
+    clampCamera(
+        canvas
+    );
+
+}
+
+
+// ============================================================
+// RESET / FIT CAMERA
+// ============================================================
+//
+// Useful for editor initialization and future "Fit Map"
+// buttons.
+//
+// ============================================================
+
+export function fitCamera(
+    canvas
+) {
+
+    updateMinimumZoom(
+        canvas
+    );
+
+
+    camera.zoom =
         MIN_ZOOM;
-
-
-    // --------------------------------------------------------
-    // Center the map in the viewport.
-    // --------------------------------------------------------
-
-    const frameWidth =
-        MAP_WIDTH +
-        FRAME_OVERHANG * 2;
-
-
-    const frameHeight =
-        MAP_HEIGHT +
-        FRAME_OVERHANG * 2;
-
-
-    const visibleWidth =
-        canvas.width /
-        camera.zoom;
-
-
-    const visibleHeight =
-        canvas.height /
-        camera.zoom;
-
-
-    camera.x =
-        (
-            frameWidth -
-            visibleWidth
-        ) / 2 -
-        FRAME_OVERHANG;
-
-
-    camera.y =
-        (
-            frameHeight -
-            visibleHeight
-        ) / 2 -
-        FRAME_OVERHANG;
 
 
     clampCamera(
@@ -368,6 +385,7 @@ export function zoomCamera(
         event.clientX -
         rect.left;
 
+
     const mouseY =
         event.clientY -
         rect.top;
@@ -384,24 +402,29 @@ export function zoomCamera(
         event.deltaY < 0
     ) {
 
-        camera.zoom *= 1.1;
+        camera.zoom *=
+            1.1;
 
     }
 
     else {
 
-        camera.zoom *= 0.9;
+        camera.zoom *=
+            0.9;
 
     }
 
 
     camera.zoom =
         Math.max(
+
             MIN_ZOOM,
+
             Math.min(
                 MAX_ZOOM,
                 camera.zoom
             )
+
         );
 
 
@@ -415,6 +438,7 @@ export function zoomCamera(
     camera.x +=
         before.x -
         after.x;
+
 
     camera.y +=
         before.y -
@@ -439,10 +463,13 @@ export function panCamera(
 ) {
 
     camera.x -=
-        dx / camera.zoom;
+        dx /
+        camera.zoom;
+
 
     camera.y -=
-        dy / camera.zoom;
+        dy /
+        camera.zoom;
 
 
     clampCamera(
@@ -450,3 +477,18 @@ export function panCamera(
     );
 
 }
+
+
+// ============================================================
+// WINDOW RESIZE
+// ============================================================
+
+window.addEventListener(
+    "resize",
+    () => {
+
+        // Camera resizing is handled by the individual
+        // application because it owns the canvas.
+
+    }
+);
