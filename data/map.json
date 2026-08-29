@@ -1,5 +1,5 @@
 {
-  "cols": 100,
+  "cols": 90,
   "rows": 78,
   "tiles": [
     {
@@ -38954,51 +38954,6 @@
     },
     {
       "col": 90,
-      "row": 77,
-      "owner": "ottoman"
-    },
-    {
-      "col": 91,
-      "row": 77,
-      "owner": "ottoman"
-    },
-    {
-      "col": 92,
-      "row": 77,
-      "owner": "ottoman"
-    },
-    {
-      "col": 93,
-      "row": 77,
-      "owner": "ottoman"
-    },
-    {
-      "col": 94,
-      "row": 77,
-      "owner": "ottoman"
-    },
-    {
-      "col": 95,
-      "row": 77,
-      "owner": "ottoman"
-    },
-    {
-      "col": 96,
-      "row": 77,
-      "owner": "ottoman"
-    },
-    {
-      "col": 97,
-      "row": 77,
-      "owner": "ottoman"
-    },
-    {
-      "col": 98,
-      "row": 77,
-      "owner": "ottoman"
-    },
-    {
-      "col": 99,
       "row": 77,
       "owner": "ottoman"
     }
