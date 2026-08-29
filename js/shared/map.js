@@ -2,6 +2,29 @@
 // MAP.JS
 // Shared map/grid system
 // ============================================================
+//
+// map.json is the authority for:
+//
+//     COLS
+//     ROWS
+//
+// Nothing here hardcodes the actual map dimensions.
+//
+// This module handles:
+//
+//     political ownership
+//     grid geometry
+//     tile creation
+//     coordinate conversion
+//     map loading
+//     map JSON exporting
+//
+// ============================================================
+
+
+// ============================================================
+// COUNTRIES
+// ============================================================
 
 export const countries = {
 
@@ -35,7 +58,6 @@ export const countries = {
         color: "#fe9836"
     },
 
-    // Kept as an alias in case older map data uses "netherlands".
     netherlands: {
         name: "Batavian Republic",
         color: "#fe9836"
@@ -119,41 +141,157 @@ export const countries = {
 };
 
 
-
 // ============================================================
 // GRID
 // ============================================================
+//
+// These are geometric constants.
+//
+// COLS and ROWS are deliberately not fixed.
+// They are populated by map.json.
+//
+// ============================================================
 
-export let COLS = 100;
-export let ROWS = 60;
+export let COLS = 0;
+export let ROWS = 0;
+
 
 export const HEX_SIZE = 14;
 
+
 export const HEX_WIDTH =
-    Math.sqrt(3) * HEX_SIZE;
-
-export const HEX_VERTICAL_DISTANCE =
-    HEX_SIZE * 1.5;
-
-
-export let MAP_WIDTH =
-    COLS * HEX_WIDTH +
-    HEX_WIDTH;
-
-export let MAP_HEIGHT =
-    ROWS * HEX_VERTICAL_DISTANCE +
+    Math.sqrt(3) *
     HEX_SIZE;
 
 
+export const HEX_VERTICAL_DISTANCE =
+    HEX_SIZE *
+    1.5;
+
+
+// ============================================================
+// MAP BOUNDS
+// ============================================================
+//
+// Unlike the old system, these represent the actual outer
+// bounds of the rendered hex field.
+//
+// The first hex is centred at:
+//
+//     x = 0
+//     y = 0
+//
+// Therefore its left/top edges are negative.
+//
+// This is intentional.
+//
+// ============================================================
+
+export let MAP_LEFT = 0;
+export let MAP_TOP = 0;
+
+export let MAP_RIGHT = 0;
+export let MAP_BOTTOM = 0;
+
+export let MAP_WIDTH = 0;
+export let MAP_HEIGHT = 0;
+
+
+// ============================================================
+// UPDATE MAP DIMENSIONS
+// ============================================================
+
 export function updateMapDimensions() {
 
+    if (
+        COLS <= 0 ||
+        ROWS <= 0
+    ) {
+
+        MAP_LEFT = 0;
+        MAP_TOP = 0;
+
+        MAP_RIGHT = 0;
+        MAP_BOTTOM = 0;
+
+        MAP_WIDTH = 0;
+        MAP_HEIGHT = 0;
+
+        return;
+
+    }
+
+
+    // --------------------------------------------------------
+    // Left / top
+    // --------------------------------------------------------
+    //
+    // The first hex is centred at 0,0.
+    //
+    // A pointy hex has a horizontal and vertical radius of
+    // HEX_SIZE.
+    //
+    // --------------------------------------------------------
+
+    MAP_LEFT =
+        -HEX_SIZE;
+
+    MAP_TOP =
+        -HEX_SIZE;
+
+
+    // --------------------------------------------------------
+    // Last row offset
+    // --------------------------------------------------------
+
+    const lastRowOffset =
+        (
+            (ROWS - 1) % 2
+        ) *
+        HEX_WIDTH / 2;
+
+
+    // --------------------------------------------------------
+    // Right edge
+    // --------------------------------------------------------
+
+    const lastColumnCenterX =
+        (COLS - 1) *
+        HEX_WIDTH +
+        lastRowOffset;
+
+
+    MAP_RIGHT =
+        lastColumnCenterX +
+        HEX_SIZE;
+
+
+    // --------------------------------------------------------
+    // Bottom edge
+    // --------------------------------------------------------
+
+    const lastRowCenterY =
+        (ROWS - 1) *
+        HEX_VERTICAL_DISTANCE;
+
+
+    MAP_BOTTOM =
+        lastRowCenterY +
+        HEX_SIZE;
+
+
+    // --------------------------------------------------------
+    // Final dimensions
+    // --------------------------------------------------------
+
     MAP_WIDTH =
-        COLS * HEX_WIDTH +
-        HEX_WIDTH;
+        MAP_RIGHT -
+        MAP_LEFT;
+
 
     MAP_HEIGHT =
-        ROWS * HEX_VERTICAL_DISTANCE +
-        HEX_SIZE;
+        MAP_BOTTOM -
+        MAP_TOP;
 
 }
 
@@ -165,9 +303,14 @@ export function updateMapDimensions() {
 export const tiles = [];
 
 
+// ============================================================
+// CREATE TILES
+// ============================================================
+
 export function createTiles() {
 
     tiles.length = 0;
+
 
     for (
         let row = 0;
@@ -185,7 +328,9 @@ export function createTiles() {
 
                 col,
                 row,
-                owner: "ocean"
+
+                owner:
+                    "ocean"
 
             });
 
@@ -208,8 +353,12 @@ export function hexToWorld(
     return {
 
         x:
-            col * HEX_WIDTH +
-            (row % 2) *
+            col *
+            HEX_WIDTH +
+
+            (
+                row % 2
+            ) *
             HEX_WIDTH / 2,
 
         y:
@@ -230,10 +379,22 @@ export function getTileAt(
     worldY
 ) {
 
+    if (
+        COLS <= 0 ||
+        ROWS <= 0
+    ) {
+
+        return null;
+
+    }
+
+
     const approxCol =
         Math.round(
-            worldX / HEX_WIDTH
+            worldX /
+            HEX_WIDTH
         );
+
 
     const approxRow =
         Math.round(
@@ -244,19 +405,28 @@ export function getTileAt(
 
     let closest = null;
 
+
     let closestDistance =
         HEX_SIZE;
 
 
     for (
-        let row = approxRow - 2;
-        row <= approxRow + 2;
+        let row =
+            approxRow - 2;
+
+        row <=
+            approxRow + 2;
+
         row++
     ) {
 
         for (
-            let col = approxCol - 2;
-            col <= approxCol + 2;
+            let col =
+                approxCol - 2;
+
+            col <=
+                approxCol + 2;
+
             col++
         ) {
 
@@ -272,7 +442,7 @@ export function getTileAt(
             }
 
 
-            const p =
+            const position =
                 hexToWorld(
                     col,
                     row
@@ -280,10 +450,13 @@ export function getTileAt(
 
 
             const dx =
-                worldX - p.x;
+                worldX -
+                position.x;
+
 
             const dy =
-                worldY - p.y;
+                worldY -
+                position.y;
 
 
             const distance =
@@ -300,8 +473,10 @@ export function getTileAt(
 
                 closest =
                     tiles[
-                        row * COLS + col
+                        row * COLS +
+                        col
                     ];
+
 
                 closestDistance =
                     distance;
@@ -322,50 +497,100 @@ export function getTileAt(
 // LOAD MAP DATA
 // ============================================================
 
-export function applyMapData(data) {
+export function applyMapData(
+    data
+) {
 
     if (
-        Number.isInteger(
-            Number(data.cols)
-        )
+        !data ||
+        typeof data !== "object"
+    ) {
+
+        throw new Error(
+            "Invalid map data."
+        );
+
+    }
+
+
+    // --------------------------------------------------------
+    // DIMENSIONS
+    // --------------------------------------------------------
+
+    const newCols =
+        Number(
+            data.cols
+        );
+
+
+    const newRows =
+        Number(
+            data.rows
+        );
+
+
+    if (
+        Number.isInteger(newCols) &&
+        newCols > 0
     ) {
 
         COLS =
-            Number(data.cols);
+            newCols;
 
     }
 
 
     if (
-        Number.isInteger(
-            Number(data.rows)
-        )
+        Number.isInteger(newRows) &&
+        newRows > 0
     ) {
 
         ROWS =
-            Number(data.rows);
+            newRows;
 
     }
 
 
+    // --------------------------------------------------------
+    // Recalculate geometry
+    // --------------------------------------------------------
+
     updateMapDimensions();
+
+
+    // --------------------------------------------------------
+    // Create empty map
+    // --------------------------------------------------------
 
     createTiles();
 
 
+    // --------------------------------------------------------
+    // TILE FORMAT
+    // --------------------------------------------------------
+
     if (
-        Array.isArray(data.tiles)
+        Array.isArray(
+            data.tiles
+        )
     ) {
 
         for (
-            const savedTile of data.tiles
+            const savedTile
+            of data.tiles
         ) {
 
             const col =
-                Number(savedTile.col);
+                Number(
+                    savedTile.col
+                );
+
 
             const row =
-                Number(savedTile.row);
+                Number(
+                    savedTile.row
+                );
+
 
             const owner =
                 savedTile.owner;
@@ -403,26 +628,43 @@ export function applyMapData(data) {
 
 
             tiles[
-                row * COLS + col
-            ].owner = owner;
+                row * COLS +
+                col
+            ].owner =
+                owner;
 
         }
 
+
+        return;
+
     }
 
-    else if (
-        Array.isArray(data.owners)
+
+    // --------------------------------------------------------
+    // LEGACY OWNERS FORMAT
+    // --------------------------------------------------------
+
+    if (
+        Array.isArray(
+            data.owners
+        )
     ) {
 
         for (
             let i = 0;
-            i < data.owners.length &&
-            i < tiles.length;
+
+            i <
+                data.owners.length &&
+            i <
+                tiles.length;
+
             i++
         ) {
 
             const owner =
                 data.owners[i];
+
 
             if (
                 countries[owner]
@@ -435,16 +677,30 @@ export function applyMapData(data) {
 
         }
 
+
+        return;
+
     }
 
-    else if (
-        Array.isArray(data.map)
+
+    // --------------------------------------------------------
+    // LEGACY MAP FORMAT
+    // --------------------------------------------------------
+
+    if (
+        Array.isArray(
+            data.map
+        )
     ) {
 
         for (
             let row = 0;
-            row < data.map.length &&
-            row < ROWS;
+
+            row <
+                data.map.length &&
+            row <
+                ROWS;
+
             row++
         ) {
 
@@ -453,7 +709,9 @@ export function applyMapData(data) {
 
 
             if (
-                !Array.isArray(mapRow)
+                !Array.isArray(
+                    mapRow
+                )
             ) {
 
                 continue;
@@ -463,8 +721,12 @@ export function applyMapData(data) {
 
             for (
                 let col = 0;
-                col < mapRow.length &&
-                col < COLS;
+
+                col <
+                    mapRow.length &&
+                col <
+                    COLS;
+
                 col++
             ) {
 
@@ -477,8 +739,10 @@ export function applyMapData(data) {
                 ) {
 
                     tiles[
-                        row * COLS + col
-                    ].owner = owner;
+                        row * COLS +
+                        col
+                    ].owner =
+                        owner;
 
                 }
 
@@ -499,21 +763,89 @@ export function createMapJSON() {
 
     return {
 
-        cols: COLS,
+        cols:
+            COLS,
 
-        rows: ROWS,
+        rows:
+            ROWS,
 
         tiles:
-            tiles.map(tile => ({
+            tiles.map(
+                tile => ({
 
-                col: tile.col,
+                    col:
+                        tile.col,
 
-                row: tile.row,
+                    row:
+                        tile.row,
 
-                owner: tile.owner
+                    owner:
+                        tile.owner
 
-            }))
+                })
+            )
 
     };
+
+}
+
+
+// ============================================================
+// MAP INITIALIZATION
+// ============================================================
+//
+// Useful for situations where another module wants an empty
+// map before map.json has loaded.
+//
+// ============================================================
+
+export function initializeEmptyMap(
+    cols,
+    rows
+) {
+
+    const newCols =
+        Number(cols);
+
+
+    const newRows =
+        Number(rows);
+
+
+    if (
+        !Number.isInteger(newCols) ||
+        newCols <= 0
+    ) {
+
+        throw new Error(
+            "Invalid column count."
+        );
+
+    }
+
+
+    if (
+        !Number.isInteger(newRows) ||
+        newRows <= 0
+    ) {
+
+        throw new Error(
+            "Invalid row count."
+        );
+
+    }
+
+
+    COLS =
+        newCols;
+
+
+    ROWS =
+        newRows;
+
+
+    updateMapDimensions();
+
+    createTiles();
 
 }
