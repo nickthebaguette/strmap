@@ -1,115 +1,111 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
-    <meta charset="UTF-8">
+```
+<meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <title>Strategy Map Editor</title>
+<title>Strategy Map Editor</title>
 
-    <link
-        rel="icon"
-        type="image/png"
-        href="favicon.png"
-    >
+<link
+    rel="stylesheet"
+    href="editor.css"
+>
+
+<link
+    rel="icon"
+    type="image/png"
+    href="favicon.png"
+>
+```
 
 </head>
 
-
 <body>
 
-
-<!-- ========================================================
+```
+<!-- ======================================================
      MAP
-     ======================================================== -->
+     ====================================================== -->
 
 <canvas id="editorCanvas"></canvas>
 
 
-<!-- ========================================================
-     EDITOR UI
-     ======================================================== -->
+<!-- ======================================================
+     TOP TOOLBAR
+     ====================================================== -->
+
+<div id="toolbar">
+
+    <button
+        id="tool-select"
+        class="tool-button active"
+    >
+        Select
+    </button>
+
+
+    <button
+        id="tool-territory"
+        class="tool-button"
+    >
+        Territory
+    </button>
+
+
+    <button
+        id="tool-terrain"
+        class="tool-button"
+    >
+        Terrain
+    </button>
+
+
+    <button
+        id="tool-city"
+        class="tool-button"
+    >
+        City
+    </button>
+
+
+    <button
+        id="tool-army"
+        class="tool-button"
+    >
+        Army
+    </button>
+
+</div>
+
+
+<!-- ======================================================
+     EDITOR PANEL
+     
+     This starts hidden.
+     Only the currently selected tool opens it.
+     ====================================================== -->
 
 <div id="editor-panel">
 
 
-    <!-- ====================================================
-         HEADER
-         ==================================================== -->
+    <!-- ==================================================
+         TERRITORY PANEL
+         ================================================== -->
 
-    <div class="panel-header">
+    <div
+        id="territory-editor"
+        class="tool-panel"
+    >
 
-        <h1>Map Editor</h1>
-
-        <div id="status">
-            Ready
-        </div>
-
-    </div>
-
-
-    <!-- ====================================================
-         TOOL MODE
-         ==================================================== -->
-
-    <section>
-
-        <h3>Tool</h3>
-
-        <div class="button-row">
-
-            <button
-                id="tool-select"
-                class="tool-button active"
-            >
-                Select
-            </button>
-
-            <button
-                id="tool-territory"
-                class="tool-button"
-            >
-                Territory
-            </button>
-
-            <button
-                id="tool-terrain"
-                class="tool-button"
-            >
-                Terrain
-            </button>
-
-            <button
-                id="tool-city"
-                class="tool-button"
-            >
-                City
-            </button>
-
-            <button
-                id="tool-army"
-                class="tool-button"
-            >
-                Army
-            </button>
-
-        </div>
-
-    </section>
-
-
-    <!-- ====================================================
-         TERRITORY
-         ==================================================== -->
-
-    <section id="territory-tools">
-
-        <h3>Territory</h3>
+        <h2>Territory</h2>
 
         <label for="country-select">
             Country
@@ -117,16 +113,23 @@
 
         <select id="country-select"></select>
 
-    </section>
+        <p class="hint">
+            Click a hex to change its owner.
+        </p>
+
+    </div>
 
 
-    <!-- ====================================================
-         TERRAIN
-         ==================================================== -->
+    <!-- ==================================================
+         TERRAIN PANEL
+         ================================================== -->
 
-    <section id="terrain-tools">
+    <div
+        id="terrain-editor"
+        class="tool-panel"
+    >
 
-        <h3>Terrain</h3>
+        <h2>Terrain</h2>
 
         <label for="terrain-select">
             Terrain
@@ -160,16 +163,24 @@
 
         </select>
 
-    </section>
+        <p class="hint">
+            Click a land hex to apply terrain.
+        </p>
+
+    </div>
 
 
-    <!-- ====================================================
-         CITY
-         ==================================================== -->
+    <!-- ==================================================
+         CITY PANEL
+         ================================================== -->
 
-    <section id="city-tools">
+    <div
+        id="city-editor"
+        class="tool-panel"
+    >
 
-        <h3>City</h3>
+        <h2>City</h2>
+
 
         <label for="city-name">
             Name
@@ -189,28 +200,40 @@
         <select id="city-country"></select>
 
 
-        <div class="button-row">
+        <div class="panel-buttons">
 
             <button id="city-place">
-                Place City
+                Place / Update
             </button>
 
-            <button id="city-delete">
+            <button
+                id="city-delete"
+                class="danger"
+            >
                 Delete
             </button>
 
         </div>
 
-    </section>
+
+        <p class="hint">
+            Select a hex on the map, then place or update the city.
+        </p>
+
+    </div>
 
 
-    <!-- ====================================================
-         ARMY
-         ==================================================== -->
+    <!-- ==================================================
+         ARMY PANEL
+         ================================================== -->
 
-    <section id="army-tools">
+    <div
+        id="army-editor"
+        class="tool-panel"
+    >
 
-        <h3>Army</h3>
+        <h2>Army</h2>
+
 
         <label for="army-name">
             Name
@@ -238,7 +261,7 @@
             id="army-strength"
             type="number"
             min="0"
-            value="1000"
+            value="0"
         >
 
 
@@ -249,413 +272,104 @@
         <input
             id="army-icon"
             type="text"
-            value="icons/armies/army.png"
+            placeholder="icons/armies/army.png"
         >
 
 
-        <div class="button-row">
+        <div class="panel-buttons">
 
             <button id="army-place">
-                Place Army
+                Place / Update
             </button>
 
-            <button id="army-delete">
+            <button
+                id="army-delete"
+                class="danger"
+            >
                 Delete
             </button>
 
         </div>
 
-    </section>
 
+        <p class="hint">
+            Select a hex on the map, then place or update the army.
+        </p>
 
-    <!-- ====================================================
-         SELECTED TILE
-         ==================================================== -->
-
-    <section id="selection-panel">
-
-        <h3>Selected Tile</h3>
-
-        <div id="selected-tile">
-            None
-        </div>
-
-        <div id="selected-territory">
-            Territory: None
-        </div>
-
-        <div id="selected-terrain">
-            Terrain: None
-        </div>
-
-        <div id="selected-entity">
-            Entity: None
-        </div>
-
-    </section>
-
-
-    <!-- ====================================================
-         DOWNLOADS
-         ==================================================== -->
-
-    <section>
-
-        <h3>Export</h3>
-
-        <div class="download-list">
-
-            <button id="download-map">
-                Download map.json
-            </button>
-
-            <button id="download-terrain">
-                Download terrain.json
-            </button>
-
-            <button id="download-cities">
-                Download cities.json
-            </button>
-
-            <button id="download-armies">
-                Download armies.json
-            </button>
-
-        </div>
-
-    </section>
+    </div>
 
 
 </div>
 
 
-<!-- ========================================================
-     STYLE
-     ======================================================== -->
+<!-- ======================================================
+     SELECTION INFORMATION
+     ====================================================== -->
 
-<style>
+<div id="selection-panel">
 
-    * {
-        box-sizing: border-box;
-    }
+    <div id="selected-tile">
+        Position: None
+    </div>
 
+    <div id="selected-territory">
+        Territory: None
+    </div>
 
-    html,
-    body {
+    <div id="selected-terrain">
+        Terrain: None
+    </div>
 
-        margin: 0;
+    <div id="selected-entity">
+        Entity: None
+    </div>
 
-        padding: 0;
+</div>
 
-        width: 100%;
 
-        height: 100%;
+<!-- ======================================================
+     STATUS
+     ====================================================== -->
 
-        overflow: hidden;
+<div id="status">
+    Loading editor...
+</div>
 
-        font-family:
-            Arial,
-            sans-serif;
 
-        background:
-            #181817;
+<!-- ======================================================
+     DOWNLOAD PANEL
+     ====================================================== -->
 
-        color:
-            #e8e5d8;
+<div id="download-panel">
 
-    }
+    <button id="download-map">
+        Map
+    </button>
 
+    <button id="download-terrain">
+        Terrain
+    </button>
 
-    #editorCanvas {
+    <button id="download-cities">
+        Cities
+    </button>
 
-        position: fixed;
+    <button id="download-armies">
+        Armies
+    </button>
 
-        inset: 0;
+</div>
 
-        width: 100%;
 
-        height: 100%;
-
-        display: block;
-
-        cursor: default;
-
-    }
-
-
-    #editor-panel {
-
-        position: fixed;
-
-        top: 15px;
-
-        right: 15px;
-
-        width: 280px;
-
-        max-height: calc(100vh - 30px);
-
-        overflow-y: auto;
-
-        padding: 16px;
-
-        background:
-            rgba(30, 30, 28, 0.94);
-
-        border:
-            1px solid #55534b;
-
-        border-radius:
-            8px;
-
-        box-shadow:
-            0 5px 25px rgba(0,0,0,0.45);
-
-        z-index: 10;
-
-    }
-
-
-    .panel-header {
-
-        margin-bottom: 14px;
-
-    }
-
-
-    .panel-header h1 {
-
-        margin:
-            0 0 4px 0;
-
-        font-size:
-            22px;
-
-    }
-
-
-    #status {
-
-        font-size:
-            12px;
-
-        color:
-            #aaa79c;
-
-    }
-
-
-    section {
-
-        margin-top:
-            16px;
-
-        padding-top:
-            12px;
-
-        border-top:
-            1px solid #45443f;
-
-    }
-
-
-    section:first-of-type {
-
-        border-top:
-            none;
-
-        margin-top:
-            0;
-
-    }
-
-
-    h3 {
-
-        margin:
-            0 0 9px 0;
-
-        font-size:
-            14px;
-
-        color:
-            #d7d2c2;
-
-    }
-
-
-    label {
-
-        display:
-            block;
-
-        margin:
-            7px 0 4px 0;
-
-        font-size:
-            12px;
-
-        color:
-            #aaa79c;
-
-    }
-
-
-    select,
-    input {
-
-        width: 100%;
-
-        padding:
-            7px 8px;
-
-        border:
-            1px solid #55534b;
-
-        border-radius:
-            4px;
-
-        background:
-            #242421;
-
-        color:
-            #e8e5d8;
-
-        outline:
-            none;
-
-    }
-
-
-    select:focus,
-    input:focus {
-
-        border-color:
-            #888477;
-
-    }
-
-
-    button {
-
-        padding:
-            7px 9px;
-
-        border:
-            1px solid #59574f;
-
-        border-radius:
-            4px;
-
-        background:
-            #33322e;
-
-        color:
-            #e8e5d8;
-
-        cursor:
-            pointer;
-
-        font-size:
-            12px;
-
-    }
-
-
-    button:hover {
-
-        background:
-            #45433d;
-
-    }
-
-
-    button.active {
-
-        background:
-            #68645a;
-
-        border-color:
-            #9b9687;
-
-    }
-
-
-    .button-row {
-
-        display:
-            flex;
-
-        gap:
-            6px;
-
-        margin-top:
-            8px;
-
-    }
-
-
-    .button-row button {
-
-        flex:
-            1;
-
-    }
-
-
-    .download-list {
-
-        display:
-            flex;
-
-        flex-direction:
-            column;
-
-        gap:
-            6px;
-
-    }
-
-
-    .download-list button {
-
-        width:
-            100%;
-
-        text-align:
-            left;
-
-    }
-
-
-    #selected-tile,
-    #selected-territory,
-    #selected-terrain,
-    #selected-entity {
-
-        font-size:
-            12px;
-
-        margin:
-            4px 0;
-
-        color:
-            #bbb8ad;
-
-    }
-
-</style>
-
-
-<!-- ========================================================
+<!-- ======================================================
      SCRIPT
-     ======================================================== -->
+     ====================================================== -->
 
 <script
     type="module"
     src="js/editor.js"
 ></script>
-
+```
 
 </body>
 
