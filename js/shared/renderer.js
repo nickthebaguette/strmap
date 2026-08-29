@@ -1293,19 +1293,20 @@ export function rebuildMapCanvas() {
 // DRAW
 // ============================================================
 
+// ============================================================
+// DRAW
+// ============================================================
+
 export function draw(
     ctx,
     canvas
 ) {
 
     ctx.clearRect(
-
         0,
         0,
-
         canvas.width,
         canvas.height
-
     );
 
 
@@ -1328,15 +1329,20 @@ export function draw(
 
 
     ctx.scale(
-
         camera.zoom,
         camera.zoom
-
     );
 
 
     // ========================================================
-    // FRAME
+    // OUTER FRAME
+    // ========================================================
+    //
+    // This covers the empty hex-space surrounding the actual
+    // map.
+    //
+    // It is deliberately behind everything else.
+    //
     // ========================================================
 
     ctx.fillStyle =
@@ -1345,15 +1351,15 @@ export function draw(
 
     ctx.fillRect(
 
-        -FRAME_OVERHANG,
+        -OUTER_FRAME_OVERHANG,
 
-        -FRAME_OVERHANG,
+        -OUTER_FRAME_OVERHANG,
 
         MAP_WIDTH +
-        FRAME_OVERHANG * 2,
+        OUTER_FRAME_OVERHANG * 2,
 
         MAP_HEIGHT +
-        FRAME_OVERHANG * 2
+        OUTER_FRAME_OVERHANG * 2
 
     );
 
@@ -1392,7 +1398,7 @@ export function draw(
 
 
     // ========================================================
-    // FRAME BORDER
+    // INNER FRAME BORDER
     // ========================================================
 
     ctx.strokeStyle =
@@ -1415,6 +1421,39 @@ export function draw(
 
         MAP_HEIGHT +
         FRAME_OVERHANG * 2
+
+    );
+
+
+    // ========================================================
+    // OUTER FRAME BORDER
+    // ========================================================
+    //
+    // A subtle outer edge makes the additional space read as
+    // intentional framing rather than empty canvas.
+    //
+    // ========================================================
+
+    ctx.strokeStyle =
+        FRAME_COLOR;
+
+
+    ctx.lineWidth =
+        FRAME_WIDTH /
+        camera.zoom;
+
+
+    ctx.strokeRect(
+
+        -OUTER_FRAME_OVERHANG,
+
+        -OUTER_FRAME_OVERHANG,
+
+        MAP_WIDTH +
+        OUTER_FRAME_OVERHANG * 2,
+
+        MAP_HEIGHT +
+        OUTER_FRAME_OVERHANG * 2
 
     );
 
