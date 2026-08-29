@@ -4,6 +4,10 @@
 // ============================================================
 
 import {
+    MAP_LEFT,
+    MAP_TOP,
+    MAP_RIGHT,
+    MAP_BOTTOM,
     MAP_WIDTH,
     MAP_HEIGHT
 } from "./map.js";
@@ -85,6 +89,10 @@ export function worldToScreen(
 // MINIMUM ZOOM
 // ============================================================
 
+// ============================================================
+// MINIMUM ZOOM
+// ============================================================
+
 export function updateMinimumZoom(
     canvas
 ) {
@@ -92,6 +100,7 @@ export function updateMinimumZoom(
     const frameWidth =
         MAP_WIDTH +
         FRAME_OVERHANG * 2;
+
 
     const frameHeight =
         MAP_HEIGHT +
@@ -101,6 +110,7 @@ export function updateMinimumZoom(
     const zoomX =
         canvas.width /
         frameWidth;
+
 
     const zoomY =
         canvas.height /
@@ -127,6 +137,10 @@ export function updateMinimumZoom(
 // CLAMP
 // ============================================================
 
+// ============================================================
+// CLAMP
+// ============================================================
+
 export function clampCamera(
     canvas
 ) {
@@ -135,23 +149,29 @@ export function clampCamera(
         canvas.width /
         camera.zoom;
 
+
     const visibleHeight =
         canvas.height /
         camera.zoom;
 
 
     const frameLeft =
-        -FRAME_OVERHANG;
-
-    const frameTop =
-        -FRAME_OVERHANG;
-
-    const frameRight =
-        MAP_WIDTH +
+        MAP_LEFT -
         FRAME_OVERHANG;
 
+
+    const frameTop =
+        MAP_TOP -
+        FRAME_OVERHANG;
+
+
+    const frameRight =
+        MAP_RIGHT +
+        FRAME_OVERHANG;
+
+
     const frameBottom =
-        MAP_HEIGHT +
+        MAP_BOTTOM +
         FRAME_OVERHANG;
 
 
@@ -159,10 +179,15 @@ export function clampCamera(
         frameRight -
         frameLeft;
 
+
     const frameHeight =
         frameBottom -
         frameTop;
 
+
+    // ========================================================
+    // HORIZONTAL
+    // ========================================================
 
     if (
         visibleWidth >= frameWidth
@@ -182,6 +207,7 @@ export function clampCamera(
         const minX =
             frameLeft;
 
+
         const maxX =
             frameRight -
             visibleWidth;
@@ -190,6 +216,7 @@ export function clampCamera(
         camera.x =
             Math.max(
                 minX,
+
                 Math.min(
                     camera.x,
                     maxX
@@ -198,6 +225,10 @@ export function clampCamera(
 
     }
 
+
+    // ========================================================
+    // VERTICAL
+    // ========================================================
 
     if (
         visibleHeight >= frameHeight
@@ -217,6 +248,7 @@ export function clampCamera(
         const minY =
             frameTop;
 
+
         const maxY =
             frameBottom -
             visibleHeight;
@@ -225,6 +257,7 @@ export function clampCamera(
         camera.y =
             Math.max(
                 minY,
+
                 Math.min(
                     camera.y,
                     maxY
