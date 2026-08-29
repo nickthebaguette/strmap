@@ -1,0 +1,575 @@
+/* ============================================================
+EDITOR.CSS
+============================================================ */
+
+/* ============================================================
+PAGE
+============================================================ */
+
+html,
+body {
+
+```
+margin: 0;
+
+padding: 0;
+
+width: 100%;
+
+height: 100%;
+
+overflow: hidden;
+
+background: #252522;
+
+font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+```
+
+}
+
+/* ============================================================
+MAP
+============================================================ */
+
+#editorCanvas {
+
+```
+position: fixed;
+
+left: 0;
+
+top: 0;
+
+width: 100%;
+
+height: 100%;
+
+display: block;
+
+cursor: default;
+```
+
+}
+
+/* ============================================================
+TOP TOOLBAR
+============================================================ */
+
+#toolbar {
+
+```
+position: fixed;
+
+top: 15px;
+
+left: 50%;
+
+transform:
+    translateX(-50%);
+
+display: flex;
+
+gap: 6px;
+
+padding: 7px;
+
+background:
+    rgba(37, 37, 34, 0.94);
+
+border:
+    1px solid #555550;
+
+border-radius: 8px;
+
+box-shadow:
+    0 4px 14px
+    rgba(0, 0, 0, 0.35);
+
+z-index: 20;
+```
+
+}
+
+/* ============================================================
+TOOL BUTTONS
+============================================================ */
+
+.tool-button {
+
+```
+border: 0;
+
+border-radius: 5px;
+
+padding:
+    9px 15px;
+
+background:
+    #41413d;
+
+color:
+    #e8e8e3;
+
+font-size: 14px;
+
+cursor: pointer;
+
+transition:
+    background 0.12s ease,
+    transform 0.08s ease;
+```
+
+}
+
+.tool-button:hover {
+
+```
+background:
+    #555550;
+```
+
+}
+
+.tool-button:active {
+
+```
+transform:
+    translateY(1px);
+```
+
+}
+
+.tool-button.active {
+
+```
+background:
+    #77776f;
+
+color:
+    white;
+```
+
+}
+
+/* ============================================================
+EDITOR PANEL
+============================================================ */
+
+#editor-panel {
+
+```
+position: fixed;
+
+top: 70px;
+
+right: 18px;
+
+width: 250px;
+
+z-index: 20;
+
+pointer-events: none;
+```
+
+}
+
+/* ============================================================
+TOOL PANELS
+============================================================ */
+
+.tool-panel {
+
+```
+display: none;
+
+pointer-events: auto;
+
+padding: 18px;
+
+background:
+    rgba(37, 37, 34, 0.96);
+
+border:
+    1px solid #555550;
+
+border-radius: 8px;
+
+box-shadow:
+    0 5px 18px
+    rgba(0, 0, 0, 0.4);
+
+color:
+    #e8e8e3;
+```
+
+}
+
+.tool-panel.active {
+
+```
+display: block;
+```
+
+}
+
+/* ============================================================
+PANEL HEADINGS
+============================================================ */
+
+.tool-panel h2 {
+
+```
+margin:
+    0 0 15px 0;
+
+font-size: 18px;
+
+font-weight: 600;
+```
+
+}
+
+/* ============================================================
+LABELS
+============================================================ */
+
+.tool-panel label {
+
+```
+display: block;
+
+margin:
+    11px 0 5px 0;
+
+font-size: 13px;
+
+color:
+    #c8c8c2;
+```
+
+}
+
+/* ============================================================
+INPUTS / SELECTS
+============================================================ */
+
+.tool-panel input,
+.tool-panel select {
+
+```
+box-sizing: border-box;
+
+width: 100%;
+
+padding:
+    8px 9px;
+
+border:
+    1px solid #666660;
+
+border-radius: 5px;
+
+background:
+    #30302d;
+
+color:
+    #eeeeea;
+
+font-size: 14px;
+
+outline: none;
+```
+
+}
+
+.tool-panel input:focus,
+.tool-panel select:focus {
+
+```
+border-color:
+    #999991;
+```
+
+}
+
+/* ============================================================
+HINT
+============================================================ */
+
+.hint {
+
+```
+margin:
+    13px 0 0 0;
+
+color:
+    #999992;
+
+font-size: 12px;
+
+line-height: 1.45;
+```
+
+}
+
+/* ============================================================
+PANEL BUTTONS
+============================================================ */
+
+.panel-buttons {
+
+```
+display: flex;
+
+gap: 7px;
+
+margin-top: 15px;
+```
+
+}
+
+.panel-buttons button {
+
+```
+flex: 1;
+
+border: 0;
+
+border-radius: 5px;
+
+padding:
+    8px 6px;
+
+background:
+    #555550;
+
+color:
+    #eeeeea;
+
+cursor: pointer;
+
+font-size: 13px;
+```
+
+}
+
+.panel-buttons button:hover {
+
+```
+background:
+    #696963;
+```
+
+}
+
+.panel-buttons .danger {
+
+```
+background:
+    #593a3a;
+```
+
+}
+
+.panel-buttons .danger:hover {
+
+```
+background:
+    #704747;
+```
+
+}
+
+/* ============================================================
+SELECTION PANEL
+============================================================ */
+
+#selection-panel {
+
+```
+position: fixed;
+
+left: 15px;
+
+bottom: 15px;
+
+z-index: 20;
+
+padding:
+    10px 13px;
+
+background:
+    rgba(37, 37, 34, 0.92);
+
+border:
+    1px solid #555550;
+
+border-radius: 6px;
+
+color:
+    #d9d9d4;
+
+font-size: 12px;
+
+line-height: 1.6;
+
+pointer-events: none;
+```
+
+}
+
+/* ============================================================
+STATUS
+============================================================ */
+
+#status {
+
+```
+position: fixed;
+
+left: 50%;
+
+bottom: 15px;
+
+transform:
+    translateX(-50%);
+
+z-index: 20;
+
+padding:
+    7px 12px;
+
+background:
+    rgba(37, 37, 34, 0.92);
+
+border:
+    1px solid #555550;
+
+border-radius: 6px;
+
+color:
+    #cfcfc9;
+
+font-size: 12px;
+
+pointer-events: none;
+```
+
+}
+
+/* ============================================================
+DOWNLOAD PANEL
+============================================================ */
+
+#download-panel {
+
+```
+position: fixed;
+
+right: 15px;
+
+bottom: 15px;
+
+z-index: 20;
+
+display: flex;
+
+gap: 5px;
+
+padding: 6px;
+
+background:
+    rgba(37, 37, 34, 0.92);
+
+border:
+    1px solid #555550;
+
+border-radius: 6px;
+```
+
+}
+
+#download-panel button {
+
+```
+border: 0;
+
+border-radius: 4px;
+
+padding:
+    7px 9px;
+
+background:
+    #41413d;
+
+color:
+    #ddddda;
+
+font-size: 11px;
+
+cursor: pointer;
+```
+
+}
+
+#download-panel button:hover {
+
+```
+background:
+    #555550;
+```
+
+}
+
+/* ============================================================
+SMALL SCREENS
+============================================================ */
+
+@media (
+max-width: 700px
+) {
+
+```
+#toolbar {
+
+    max-width:
+        calc(100% - 20px);
+
+    overflow-x: auto;
+
+}
+
+
+.tool-button {
+
+    white-space:
+        nowrap;
+
+    padding:
+        8px 11px;
+
+}
+
+
+#editor-panel {
+
+    right: 10px;
+
+    left: 10px;
+
+    width: auto;
+
+}
+
+
+#download-panel {
+
+    display: none;
+
+}
+```
+
+}
