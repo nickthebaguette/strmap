@@ -17,6 +17,7 @@ import {
     FRAME_OVERHANG,
     FRAME_WIDTH,
     FRAME_COLOR,
+    OUTER_FRAME_OVERHANG,
     camera
 } from "./camera.js";
 
