@@ -273,6 +273,10 @@ export function clampCamera(
 // RESIZE
 // ============================================================
 
+// ============================================================
+// RESIZE
+// ============================================================
+
 export function resizeCamera(
     canvas
 ) {
@@ -289,18 +293,55 @@ export function resizeCamera(
     );
 
 
+    // --------------------------------------------------------
+    // Always start / remain at a valid zoom.
+    //
+    // If the current zoom is too large for the new viewport,
+    // reduce it to the minimum required zoom.
+    // --------------------------------------------------------
+
     camera.zoom =
-        Math.max(
-            camera.zoom,
-            MIN_ZOOM
-        );
+        MIN_ZOOM;
 
 
-    camera.zoom =
-        Math.min(
-            camera.zoom,
-            MAX_ZOOM
-        );
+    // --------------------------------------------------------
+    // Center the map in the viewport.
+    // --------------------------------------------------------
+
+    const frameWidth =
+        MAP_WIDTH +
+        FRAME_OVERHANG * 2;
+
+
+    const frameHeight =
+        MAP_HEIGHT +
+        FRAME_OVERHANG * 2;
+
+
+    const visibleWidth =
+        canvas.width /
+        camera.zoom;
+
+
+    const visibleHeight =
+        canvas.height /
+        camera.zoom;
+
+
+    camera.x =
+        (
+            frameWidth -
+            visibleWidth
+        ) / 2 -
+        FRAME_OVERHANG;
+
+
+    camera.y =
+        (
+            frameHeight -
+            visibleHeight
+        ) / 2 -
+        FRAME_OVERHANG;
 
 
     clampCamera(
