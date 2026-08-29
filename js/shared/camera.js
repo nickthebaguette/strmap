@@ -2,27 +2,11 @@
 // CAMERA.JS
 // Shared camera system
 // ============================================================
-//
-// The camera is shared by:
-//
-//     main.js
-//     editor.js
-//
-// The map itself defines its dimensions through map.js.
-//
-// The camera is responsible for:
-//
-//     - zoom
-//     - panning
-//     - viewport limits
-//     - keeping the map inside the screen
-//
-// ============================================================
-
 
 import {
     MAP_WIDTH,
-    MAP_HEIGHT
+    MAP_HEIGHT,
+    HEX_SIZE
 } from "./map.js";
 
 
@@ -30,31 +14,29 @@ import {
 // FRAME
 // ============================================================
 
-export const FRAME_OVERHANG =
-    14 * 0.5;
+// Inner frame around the actual map.
 
+export const FRAME_OVERHANG =
+    HEX_SIZE * 0.5;
 
 export const FRAME_WIDTH =
     7;
-
 
 export const FRAME_COLOR =
     "#252522";
 
 
+// Outer frame.
+//
+// This covers one full hex worth of empty space around the
+// complete map footprint.
+
+export const OUTER_FRAME_OVERHANG =
+    HEX_SIZE;
+
+
 // ============================================================
 // CAMERA
-// ============================================================
-//
-// x / y represent the world coordinate at the TOP-LEFT
-// corner of the screen.
-//
-// zoom:
-//
-//     1.0 = normal
-//     2.0 = 2x zoom
-//     0.5 = zoomed out
-//
 // ============================================================
 
 export const camera = {
@@ -68,48 +50,11 @@ export const camera = {
 };
 
 
-// ============================================================
-// ZOOM LIMITS
-// ============================================================
-
 export let MIN_ZOOM =
     0.55;
 
-
 export const MAX_ZOOM =
     3.0;
-
-
-// ============================================================
-// GET FRAME BOUNDS
-// ============================================================
-//
-// These are the actual world-space bounds of the visible
-// framed map.
-//
-// ============================================================
-
-function getFrameBounds() {
-
-    return {
-
-        left:
-            -FRAME_OVERHANG,
-
-        top:
-            -FRAME_OVERHANG,
-
-        right:
-            MAP_WIDTH +
-            FRAME_OVERHANG,
-
-        bottom:
-            MAP_HEIGHT +
-            FRAME_OVERHANG
-
-    };
-
-}
 
 
 // ============================================================
@@ -167,20 +112,39 @@ export function worldToScreen(
 
 
 // ============================================================
-// MINIMUM ZOOM
+// CAMERA BOUNDS
 // ============================================================
 //
-// The minimum zoom is the zoom at which the ENTIRE framed
-// map fits inside the viewport.
+// The camera is allowed to see the outer frame, but cannot
+// move beyond it.
 //
-// This is important because:
-//
-//     zoom < MIN_ZOOM
-//
-// would allow the player to see empty space around the map.
-//
-// We use MAX here because both dimensions must fit.
-//
+// ============================================================
+
+export function getCameraBounds() {
+
+    return {
+
+        left:
+            -OUTER_FRAME_OVERHANG,
+
+        top:
+            -OUTER_FRAME_OVERHANG,
+
+        right:
+            MAP_WIDTH +
+            OUTER_FRAME_OVERHANG,
+
+        bottom:
+            MAP_HEIGHT +
+            OUTER_FRAME_OVERHANG
+
+    };
+
+}
+
+
+// ============================================================
+// MINIMUM ZOOM
 // ============================================================
 
 export function updateMinimumZoom(
@@ -188,7 +152,7 @@ export function updateMinimumZoom(
 ) {
 
     const bounds =
-        getFrameBounds();
+        getCameraBounds();
 
 
     const frameWidth =
@@ -228,95 +192,24 @@ export function updateMinimumZoom(
 
 
 // ============================================================
-// CENTER MAP
-// ============================================================
-//
-// Places the camera so the entire framed map is centered
-// inside the viewport.
-//
-// This is used when:
-//
-//     - the page first loads
-//     - the map dimensions change
-//     - the window is resized while at minimum zoom
-//
-// ============================================================
-
-export function centerCamera(
-    canvas
-) {
-
-    const bounds =
-        getFrameBounds();
-
-
-    const visibleWidth =
-        canvas.width /
-        camera.zoom;
-
-
-    const visibleHeight =
-        canvas.height /
-        camera.zoom;
-
-
-    camera.x =
-        bounds.left -
-        (
-            visibleWidth -
-            (
-                bounds.right -
-                bounds.left
-            )
-        ) / 2;
-
-
-    camera.y =
-        bounds.top -
-        (
-            visibleHeight -
-            (
-                bounds.bottom -
-                bounds.top
-            )
-        ) / 2;
-
-}
-
-
-// ============================================================
 // CLAMP CAMERA
-// ============================================================
-//
-// Keeps the camera from showing anything outside the framed
-// map.
-//
-// At high zoom:
-//
-//     camera stops at the map edges.
-//
-// At minimum zoom:
-//
-//     the map is centered.
-//
 // ============================================================
 
 export function clampCamera(
     canvas
 ) {
 
-    const bounds =
-        getFrameBounds();
-
-
     const visibleWidth =
         canvas.width /
         camera.zoom;
 
-
     const visibleHeight =
         canvas.height /
         camera.zoom;
+
+
+    const bounds =
+        getCameraBounds();
 
 
     const frameWidth =
@@ -329,13 +222,12 @@ export function clampCamera(
         bounds.top;
 
 
-    // ========================================================
+    // --------------------------------------------------------
     // HORIZONTAL
-    // ========================================================
+    // --------------------------------------------------------
 
     if (
-        visibleWidth >=
-        frameWidth
+        visibleWidth >= frameWidth
     ) {
 
         camera.x =
@@ -351,7 +243,6 @@ export function clampCamera(
 
         const minX =
             bounds.left;
-
 
         const maxX =
             bounds.right -
@@ -370,13 +261,12 @@ export function clampCamera(
     }
 
 
-    // ========================================================
+    // --------------------------------------------------------
     // VERTICAL
-    // ========================================================
+    // --------------------------------------------------------
 
     if (
-        visibleHeight >=
-        frameHeight
+        visibleHeight >= frameHeight
     ) {
 
         camera.y =
@@ -392,7 +282,6 @@ export function clampCamera(
 
         const minY =
             bounds.top;
-
 
         const maxY =
             bounds.bottom -
@@ -424,7 +313,6 @@ export function resizeCamera(
     canvas.width =
         window.innerWidth;
 
-
     canvas.height =
         window.innerHeight;
 
@@ -433,10 +321,6 @@ export function resizeCamera(
         canvas
     );
 
-
-    // --------------------------------------------------------
-    // Make sure zoom is legal.
-    // --------------------------------------------------------
 
     camera.zoom =
         Math.max(
@@ -460,49 +344,7 @@ export function resizeCamera(
 
 
 // ============================================================
-// RESET / FIT MAP
-// ============================================================
-//
-// Useful when the map has just been loaded.
-//
-// This guarantees that the initial view is the complete map
-// rather than inheriting an old camera position or zoom.
-//
-// ============================================================
-
-export function fitMap(
-    canvas
-) {
-
-    updateMinimumZoom(
-        canvas
-    );
-
-
-    camera.zoom =
-        MIN_ZOOM;
-
-
-    centerCamera(
-        canvas
-    );
-
-
-    clampCamera(
-        canvas
-    );
-
-}
-
-
-// ============================================================
 // ZOOM
-// ============================================================
-//
-// Zooms toward the mouse cursor.
-//
-// The world position underneath the cursor remains fixed.
-//
 // ============================================================
 
 export function zoomCamera(
@@ -518,15 +360,10 @@ export function zoomCamera(
         event.clientX -
         rect.left;
 
-
     const mouseY =
         event.clientY -
         rect.top;
 
-
-    // --------------------------------------------------------
-    // World coordinate under cursor BEFORE zoom.
-    // --------------------------------------------------------
 
     const before =
         screenToWorld(
@@ -534,10 +371,6 @@ export function zoomCamera(
             mouseY
         );
 
-
-    // --------------------------------------------------------
-    // Apply zoom.
-    // --------------------------------------------------------
 
     if (
         event.deltaY < 0
@@ -556,10 +389,6 @@ export function zoomCamera(
     }
 
 
-    // --------------------------------------------------------
-    // Enforce zoom limits.
-    // --------------------------------------------------------
-
     camera.zoom =
         Math.max(
             MIN_ZOOM,
@@ -570,20 +399,12 @@ export function zoomCamera(
         );
 
 
-    // --------------------------------------------------------
-    // World coordinate under cursor AFTER zoom.
-    // --------------------------------------------------------
-
     const after =
         screenToWorld(
             mouseX,
             mouseY
         );
 
-
-    // --------------------------------------------------------
-    // Compensate camera position.
-    // --------------------------------------------------------
 
     camera.x +=
         before.x -
@@ -594,10 +415,6 @@ export function zoomCamera(
         before.y -
         after.y;
 
-
-    // --------------------------------------------------------
-    // Make absolutely sure we remain inside the map.
-    // --------------------------------------------------------
 
     clampCamera(
         canvas
