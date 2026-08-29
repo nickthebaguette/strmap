@@ -40,6 +40,7 @@ import {
 export const mapCanvas =
     document.createElement("canvas");
 
+
 export const mapCtx =
     mapCanvas.getContext("2d");
 
@@ -48,20 +49,13 @@ export const mapCtx =
 // TEXTURES
 // ============================================================
 
-// ------------------------------------------------------------
-// Base textures
-// ------------------------------------------------------------
-
 const parchmentTexture =
     new Image();
+
 
 const waterTexture =
     new Image();
 
-
-// ------------------------------------------------------------
-// Terrain textures
-// ------------------------------------------------------------
 
 const terrainTextures = {
 
@@ -93,6 +87,7 @@ const terrainTextures = {
 let parchmentLoaded =
     false;
 
+
 let waterLoaded =
     false;
 
@@ -121,6 +116,7 @@ const terrainLoaded = {
 parchmentTexture.src =
     "assets/textures/parchment.png";
 
+
 waterTexture.src =
     "assets/textures/water.png";
 
@@ -128,17 +124,22 @@ waterTexture.src =
 terrainTextures.plains.src =
     "assets/textures/terrain/plains.png";
 
+
 terrainTextures.forest.src =
     "assets/textures/terrain/forest.png";
+
 
 terrainTextures.hills.src =
     "assets/textures/terrain/hills.png";
 
+
 terrainTextures.mountains.src =
     "assets/textures/terrain/mountains.png";
 
+
 terrainTextures.desert.src =
     "assets/textures/terrain/desert.png";
+
 
 terrainTextures.swamp.src =
     "assets/textures/terrain/swamp.png";
@@ -245,8 +246,12 @@ function createHexPath(
     ) {
 
         const angle =
-            Math.PI / 180 *
-            (60 * i - 30);
+            Math.PI /
+            180 *
+            (
+                60 * i -
+                30
+            );
 
 
         const px =
@@ -309,8 +314,12 @@ function getHexCorners(
     ) {
 
         const angle =
-            Math.PI / 180 *
-            (60 * i - 30);
+            Math.PI /
+            180 *
+            (
+                60 * i -
+                30
+            );
 
 
         corners.push({
@@ -364,11 +373,12 @@ function drawHexOnContext(
     context.fillStyle =
         color;
 
+
     context.fill();
 
 
     // ========================================================
-    // PARCHMENT / WATER TEXTURE
+    // BASE TEXTURE
     // ========================================================
 
     if (
@@ -478,8 +488,10 @@ function drawHexOnContext(
     context.strokeStyle =
         "#30302d";
 
+
     context.lineWidth =
         0.7;
+
 
     context.stroke();
 
@@ -518,27 +530,6 @@ function getTile(
 // ============================================================
 // GET NEIGHBOUR FOR EDGE
 // ============================================================
-//
-// Hex vertices:
-//
-//       5 -------- 0
-//      /            \
-//     /              \
-//    4                1
-//     \              /
-//      \            /
-//       3 -------- 2
-//
-// Edges:
-//
-// 0 → 1 = RIGHT
-// 1 → 2 = LOWER RIGHT
-// 2 → 3 = LOWER LEFT
-// 3 → 4 = LEFT
-// 4 → 5 = UPPER LEFT
-// 5 → 0 = UPPER RIGHT
-//
-// ============================================================
 
 function getNeighbourForEdge(
     tile,
@@ -553,10 +544,6 @@ function getNeighbourForEdge(
         edge
     ) {
 
-        // ----------------------------------------------------
-        // RIGHT
-        // ----------------------------------------------------
-
         case 0:
 
             return getTile(
@@ -564,10 +551,6 @@ function getNeighbourForEdge(
                 tile.row
             );
 
-
-        // ----------------------------------------------------
-        // LOWER RIGHT
-        // ----------------------------------------------------
 
         case 1:
 
@@ -584,10 +567,6 @@ function getNeighbourForEdge(
                 );
 
 
-        // ----------------------------------------------------
-        // LOWER LEFT
-        // ----------------------------------------------------
-
         case 2:
 
             return even
@@ -603,10 +582,6 @@ function getNeighbourForEdge(
                 );
 
 
-        // ----------------------------------------------------
-        // LEFT
-        // ----------------------------------------------------
-
         case 3:
 
             return getTile(
@@ -614,10 +589,6 @@ function getNeighbourForEdge(
                 tile.row
             );
 
-
-        // ----------------------------------------------------
-        // UPPER LEFT
-        // ----------------------------------------------------
 
         case 4:
 
@@ -633,10 +604,6 @@ function getNeighbourForEdge(
                     tile.row - 1
                 );
 
-
-        // ----------------------------------------------------
-        // UPPER RIGHT
-        // ----------------------------------------------------
 
         case 5:
 
@@ -678,29 +645,56 @@ function darkenColor(
 
     const r =
         parseInt(
-            value.substring(0, 2),
+            value.substring(
+                0,
+                2
+            ),
             16
         );
 
 
     const g =
         parseInt(
-            value.substring(2, 4),
+            value.substring(
+                2,
+                4
+            ),
             16
         );
 
 
     const b =
         parseInt(
-            value.substring(4, 6),
+            value.substring(
+                4,
+                6
+            ),
             16
         );
 
 
     return `rgb(
-        ${Math.max(0, Math.round(r * (1 - amount)))},
-        ${Math.max(0, Math.round(g * (1 - amount)))},
-        ${Math.max(0, Math.round(b * (1 - amount)))}
+        ${Math.max(
+            0,
+            Math.round(
+                r *
+                (1 - amount)
+            )
+        )},
+        ${Math.max(
+            0,
+            Math.round(
+                g *
+                (1 - amount)
+            )
+        )},
+        ${Math.max(
+            0,
+            Math.round(
+                b *
+                (1 - amount)
+            )
+        )}
     )`;
 
 }
@@ -834,38 +828,13 @@ function drawOffsetBorder(
 
 
 // ============================================================
-// DRAW POLITICAL BORDERS
-// ============================================================
-//
-// Political borders are drawn AFTER every tile.
-//
-// This is important.
-//
-// If borders were drawn while the tiles were being rendered,
-// later hexes could paint over earlier border segments.
-//
-// By rendering all borders afterwards:
-//
-//     tiles
-//        ↓
-//     textures
-//        ↓
-//     normal hex outlines
-//        ↓
-//     political borders
-//
-// the political borders always remain visible.
-//
+// POLITICAL BORDERS
 // ============================================================
 
 function drawPoliticalBorders() {
 
     mapCtx.save();
 
-
-    // ========================================================
-    // SETTINGS
-    // ========================================================
 
     const COUNTRY_BORDER_WIDTH =
         1.5;
@@ -883,21 +852,14 @@ function drawPoliticalBorders() {
         0.45;
 
 
-    // ========================================================
-    // PROCESS TILES
-    // ========================================================
-
     for (
         const tile
         of tiles
     ) {
 
-        // ----------------------------------------------------
-        // Ocean tiles don't create political borders.
-        // ----------------------------------------------------
-
         if (
-            tile.owner === "ocean"
+            tile.owner ===
+            "ocean"
         ) {
 
             continue;
@@ -920,10 +882,6 @@ function drawPoliticalBorders() {
             );
 
 
-        // ====================================================
-        // PROCESS SIX EDGES
-        // ====================================================
-
         for (
             let edge = 0;
             edge < 6;
@@ -937,12 +895,6 @@ function drawPoliticalBorders() {
                 );
 
 
-            // ------------------------------------------------
-            // Outside map.
-            //
-            // The frame handles the external boundary.
-            // ------------------------------------------------
-
             if (
                 !neighbour
             ) {
@@ -951,10 +903,6 @@ function drawPoliticalBorders() {
 
             }
 
-
-            // ------------------------------------------------
-            // Same country.
-            // ------------------------------------------------
 
             if (
                 neighbour.owner ===
@@ -1032,10 +980,6 @@ function drawPoliticalBorders() {
             }
 
 
-            // ------------------------------------------------
-            // Edge direction
-            // ------------------------------------------------
-
             const dx =
                 cornerB.x -
                 cornerA.x;
@@ -1062,10 +1006,6 @@ function drawPoliticalBorders() {
             }
 
 
-            // ------------------------------------------------
-            // Perpendicular normal
-            // ------------------------------------------------
-
             let normalX =
                 -dy /
                 length;
@@ -1075,10 +1015,6 @@ function drawPoliticalBorders() {
                 dx /
                 length;
 
-
-            // ------------------------------------------------
-            // Make normal point toward the CURRENT tile.
-            // ------------------------------------------------
 
             const edgeMidX =
                 (
@@ -1122,9 +1058,9 @@ function drawPoliticalBorders() {
             }
 
 
-            // =================================================
-            // CURRENT COUNTRY SIDE
-            // =================================================
+            // -------------------------------------------------
+            // CURRENT COUNTRY
+            // -------------------------------------------------
 
             drawOffsetBorder(
 
@@ -1145,9 +1081,9 @@ function drawPoliticalBorders() {
             );
 
 
-            // =================================================
-            // NEIGHBOUR COUNTRY SIDE
-            // =================================================
+            // -------------------------------------------------
+            // NEIGHBOUR COUNTRY
+            // -------------------------------------------------
 
             drawOffsetBorder(
 
@@ -1201,6 +1137,7 @@ export function rebuildMapCanvas() {
 
         0,
         0,
+
         mapCanvas.width,
         mapCanvas.height
 
@@ -1217,7 +1154,7 @@ export function rebuildMapCanvas() {
 
 
     // ========================================================
-    // DRAW TILES
+    // TILES
     // ========================================================
 
     for (
@@ -1249,18 +1186,6 @@ export function rebuildMapCanvas() {
 
         // ====================================================
         // TERRAIN
-        // ====================================================
-        //
-        // IMPORTANT:
-        //
-        // terrain.js now expects the TILE itself.
-        //
-        //     getTerrain(tile)
-        //
-        // rather than:
-        //
-        //     getTerrain(col, row, tile)
-        //
         // ====================================================
 
         const terrain =
@@ -1321,7 +1246,9 @@ export function rebuildMapCanvas() {
         ) {
 
             terrainTexture =
-                terrainTextures[terrain];
+                terrainTextures[
+                    terrain
+                ];
 
         }
 
@@ -1375,6 +1302,7 @@ export function draw(
 
         0,
         0,
+
         canvas.width,
         canvas.height
 
@@ -1439,6 +1367,7 @@ export function draw(
         mapCanvas,
 
         -FRAME_OVERHANG,
+
         -FRAME_OVERHANG
 
     );
