@@ -12,7 +12,7 @@ body {
 
     overflow: hidden;
 
-    background: #252522;
+    background: #1a1a18;
 
     font-family:
         Arial,
@@ -59,16 +59,22 @@ body {
     padding: 7px;
 
     background:
-        rgba(37, 37, 34, 0.94);
+        linear-gradient(
+            180deg,
+            rgba(55, 55, 50, 0.97) 0%,
+            rgba(37, 37, 34, 0.97) 100%
+        );
 
     border:
-        1px solid #555550;
+        1px solid #6a6a64;
 
-    border-radius: 8px;
+    border-radius: 6px;
 
     box-shadow:
-        0 4px 14px
-        rgba(0, 0, 0, 0.35);
+        0 4px 18px
+        rgba(0, 0, 0, 0.5),
+        inset 0 1px 0
+        rgba(255, 255, 255, 0.08);
 
     z-index: 20;
 }
@@ -79,9 +85,9 @@ body {
    ============================================================ */
 
 .tool-button {
-    border: 0;
+    border: 1px solid #4a4a46;
 
-    border-radius: 5px;
+    border-radius: 4px;
 
     padding:
         9px 15px;
@@ -98,12 +104,16 @@ body {
 
     transition:
         background 0.12s ease,
-        transform 0.08s ease;
+        transform 0.08s ease,
+        border-color 0.12s ease;
 }
 
 .tool-button:hover {
     background:
         #555550;
+
+    border-color:
+        #6a6a64;
 }
 
 .tool-button:active {
@@ -113,10 +123,17 @@ body {
 
 .tool-button.active {
     background:
-        #77776f;
+        #6a6a64;
+
+    border-color:
+        #8a8a84;
 
     color:
         white;
+
+    box-shadow:
+        inset 0 2px 4px
+        rgba(0, 0, 0, 0.3);
 }
 
 
@@ -154,16 +171,22 @@ body {
     padding: 18px;
 
     background:
-        rgba(37, 37, 34, 0.96);
+        linear-gradient(
+            180deg,
+            rgba(55, 55, 50, 0.97) 0%,
+            rgba(37, 37, 34, 0.97) 100%
+        );
 
     border:
-        1px solid #555550;
+        1px solid #6a6a64;
 
-    border-radius: 8px;
+    border-radius: 6px;
 
     box-shadow:
-        0 5px 18px
-        rgba(0, 0, 0, 0.4);
+        0 5px 22px
+        rgba(0, 0, 0, 0.5),
+        inset 0 1px 0
+        rgba(255, 255, 255, 0.08);
 
     color:
         #e8e8e3;
@@ -185,6 +208,12 @@ body {
     font-size: 18px;
 
     font-weight: 600;
+
+    letter-spacing:
+        0.3px;
+
+    color:
+        #f0f0ea;
 }
 
 
@@ -221,7 +250,7 @@ body {
     border:
         1px solid #666660;
 
-    border-radius: 5px;
+    border-radius: 4px;
 
     background:
         #30302d;
@@ -232,6 +261,9 @@ body {
     font-size: 14px;
 
     outline: none;
+
+    transition:
+        border-color 0.12s ease;
 }
 
 .tool-panel input:focus,
@@ -273,9 +305,9 @@ body {
 .panel-buttons button {
     flex: 1;
 
-    border: 0;
+    border: 1px solid #5a5a56;
 
-    border-radius: 5px;
+    border-radius: 4px;
 
     padding:
         8px 6px;
@@ -289,21 +321,34 @@ body {
     cursor: pointer;
 
     font-size: 13px;
+
+    transition:
+        background 0.12s ease,
+        border-color 0.12s ease;
 }
 
 .panel-buttons button:hover {
     background:
         #696963;
+
+    border-color:
+        #7a7a74;
 }
 
 .panel-buttons .danger {
     background:
         #593a3a;
+
+    border-color:
+        #704747;
 }
 
 .panel-buttons .danger:hover {
     background:
         #704747;
+
+    border-color:
+        #865555;
 }
 
 
@@ -323,12 +368,16 @@ body {
         10px 13px;
 
     background:
-        rgba(37, 37, 34, 0.92);
+        linear-gradient(
+            180deg,
+            rgba(55, 55, 50, 0.95) 0%,
+            rgba(37, 37, 34, 0.95) 100%
+        );
 
     border:
-        1px solid #555550;
+        1px solid #6a6a64;
 
-    border-radius: 6px;
+    border-radius: 5px;
 
     color:
         #d9d9d4;
@@ -338,6 +387,10 @@ body {
     line-height: 1.6;
 
     pointer-events: none;
+
+    box-shadow:
+        0 3px 10px
+        rgba(0, 0, 0, 0.4);
 }
 
 
@@ -360,12 +413,16 @@ body {
         7px 12px;
 
     background:
-        rgba(37, 37, 34, 0.92);
+        linear-gradient(
+            180deg,
+            rgba(55, 55, 50, 0.95) 0%,
+            rgba(37, 37, 34, 0.95) 100%
+        );
 
     border:
-        1px solid #555550;
+        1px solid #6a6a64;
 
-    border-radius: 6px;
+    border-radius: 5px;
 
     color:
         #cfcfc9;
@@ -375,6 +432,10 @@ body {
     pointer-events: none;
 
     white-space: nowrap;
+
+    box-shadow:
+        0 3px 10px
+        rgba(0, 0, 0, 0.4);
 }
 
 
@@ -397,18 +458,26 @@ body {
     padding: 6px;
 
     background:
-        rgba(37, 37, 34, 0.92);
+        linear-gradient(
+            180deg,
+            rgba(55, 55, 50, 0.95) 0%,
+            rgba(37, 37, 34, 0.95) 100%
+        );
 
     border:
-        1px solid #555550;
+        1px solid #6a6a64;
 
-    border-radius: 6px;
+    border-radius: 5px;
+
+    box-shadow:
+        0 3px 10px
+        rgba(0, 0, 0, 0.4);
 }
 
 #download-panel button {
-    border: 0;
+    border: 1px solid #4a4a46;
 
-    border-radius: 4px;
+    border-radius: 3px;
 
     padding:
         7px 9px;
@@ -422,11 +491,18 @@ body {
     font-size: 11px;
 
     cursor: pointer;
+
+    transition:
+        background 0.12s ease,
+        border-color 0.12s ease;
 }
 
 #download-panel button:hover {
     background:
         #555550;
+
+    border-color:
+        #6a6a64;
 }
 
 
@@ -461,14 +537,12 @@ body {
    ============================================================ */
 
 @media (max-width: 700px) {
-
     #toolbar {
         max-width:
             calc(100% - 20px);
 
         overflow-x: auto;
     }
-
 
     .tool-button {
         white-space:
@@ -478,7 +552,6 @@ body {
             8px 11px;
     }
 
-
     #editor-panel {
         right: 10px;
         left: 10px;
@@ -486,11 +559,9 @@ body {
         width: auto;
     }
 
-
     #download-panel {
         display: none;
     }
-
 
     #selection-panel {
         left: 10px;
@@ -499,7 +570,6 @@ body {
         max-width:
             calc(100% - 20px);
     }
-
 
     #status {
         max-width:
@@ -511,5 +581,4 @@ body {
         text-overflow:
             ellipsis;
     }
-
 }
