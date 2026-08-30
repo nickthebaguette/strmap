@@ -1,4 +1,74 @@
 {
   "cities": [
+    {
+      "id": 1,
+      "name": "Paris",
+      "country": "france",
+      "col": 31,
+      "row": 44
+    },
+    {
+      "id": 2,
+      "name": "Vienna",
+      "country": "austria",
+      "col": 51,
+      "row": 48
+    },
+    {
+      "id": 3,
+      "name": "Constantinople",
+      "country": "ottoman",
+      "col": 68,
+      "row": 62
+    },
+    {
+      "id": 4,
+      "name": "St. Petersburg",
+      "country": "russia",
+      "col": 70,
+      "row": 11
+    },
+    {
+      "id": 5,
+      "name": "Moscow",
+      "country": "russia",
+      "col": 78,
+      "row": 27
+    },
+    {
+      "id": 6,
+      "name": "Berlin",
+      "country": "prussia",
+      "col": 47,
+      "row": 34
+    },
+    {
+      "id": 7,
+      "name": "London",
+      "country": "britain",
+      "col": 26,
+      "row": 36
+    },
+    {
+      "id": 8,
+      "name": "Madrid",
+      "country": "spain",
+      "col": 20,
+      "row": 65
+    },
+    {
+      "id": 9,
+      "name": "Copenhagen",
+      "country": "denmark",
+      "col": 44,
+      "row": 25
+    },
+    {
+      "id": 10,
+      "name": "Stockholm",
+      "country": "sweden",
+      "col": 52,
+      "row": 13
+    }
   ]
 }
