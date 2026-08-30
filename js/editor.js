@@ -16,97 +16,97 @@
 // ============================================================
 
 import {
-tiles,
-countries,
-applyMapData,
-getTileAt,
-createMapJSON
+    tiles,
+    countries,
+    applyMapData,
+    getTileAt,
+    createMapJSON
 } from "./shared/map.js";
 
 import {
-rebuildMapCanvas,
-draw
+    rebuildMapCanvas,
+    draw
 } from "./shared/renderer.js";
 
 import {
-cities,
-loadCities,
-addCity,
-createCitiesJSON
+    cities,
+    loadCities,
+    addCity,
+    createCitiesJSON
 } from "./shared/cities.js";
 
 import {
-armies,
-loadArmies,
-createArmiesJSON
+    armies,
+    loadArmies,
+    createArmiesJSON
 } from "./shared/armies.js";
 
 import {
-loadTerrain,
-getTerrain,
-setTerrain,
-createTerrainJSON
+    loadTerrain,
+    getTerrain,
+    setTerrain,
+    createTerrainJSON
 } from "./shared/terrain.js";
 
 import {
-camera,
-resizeCamera,
-zoomCamera,
-panCamera
+    camera,
+    resizeCamera,
+    zoomCamera,
+    panCamera
 } from "./shared/camera.js";
+
 
 // ============================================================
 // CANVAS
 // ============================================================
 
 const canvas =
-document.getElementById("editorCanvas");
+    document.getElementById("editorCanvas");
 
 const ctx =
-canvas.getContext("2d");
+    canvas.getContext("2d");
+
 
 // ============================================================
 // UI
 // ============================================================
 
 const status =
-document.getElementById("status");
+    document.getElementById("status");
 
 const countrySelect =
-document.getElementById("country-select");
+    document.getElementById("country-select");
 
 const terrainSelect =
-document.getElementById("terrain-select");
+    document.getElementById("terrain-select");
 
 const cityName =
-document.getElementById("city-name");
+    document.getElementById("city-name");
 
 const cityCountry =
-document.getElementById("city-country");
+    document.getElementById("city-country");
 
 const armyName =
-document.getElementById("army-name");
+    document.getElementById("army-name");
 
 const armyCountry =
-document.getElementById("army-country");
+    document.getElementById("army-country");
 
 const armyStrength =
-document.getElementById("army-strength");
-
-const armyIcon =
-document.getElementById("army-icon");
+    document.getElementById("army-strength");
 
 const selectedTile =
-document.getElementById("selected-tile");
+    document.getElementById("selected-tile");
 
 const selectedTerritory =
-document.getElementById("selected-territory");
+    document.getElementById("selected-territory");
 
 const selectedTerrain =
-document.getElementById("selected-terrain");
+    document.getElementById("selected-terrain");
 
 const selectedEntity =
-document.getElementById("selected-entity");
+    document.getElementById("selected-entity");
+
 
 // ============================================================
 // EDITOR PANELS
@@ -114,37 +114,37 @@ document.getElementById("selected-entity");
 
 const editorPanels = {
 
+    territory:
+        document.getElementById("territory-editor"),
 
-territory:
-    document.getElementById("territory-editor"),
+    terrain:
+        document.getElementById("terrain-editor"),
 
-terrain:
-    document.getElementById("terrain-editor"),
+    city:
+        document.getElementById("city-editor"),
 
-city:
-    document.getElementById("city-editor"),
-
-army:
-    document.getElementById("army-editor")
-
+    army:
+        document.getElementById("army-editor")
 
 };
+
 
 // ============================================================
 // TOOL STATE
 // ============================================================
 
 let currentTool =
-"select";
+    "select";
 
 let selectedTileObject =
-null;
+    null;
 
 let selectedCity =
-null;
+    null;
 
 let selectedArmy =
-null;
+    null;
+
 
 // ============================================================
 // INITIALIZATION
@@ -152,111 +152,109 @@ null;
 
 async function startEditor() {
 
+    status.textContent =
+        "Loading map...";
 
-status.textContent =
-    "Loading map...";
-
-
-resizeCamera(canvas);
+    resizeCamera(canvas);
 
 
-// --------------------------------------------------------
-// LOAD MAP
-// --------------------------------------------------------
+    // --------------------------------------------------------
+    // LOAD MAP
+    // --------------------------------------------------------
 
-try {
+    try {
 
-    const response =
-        await fetch("data/map.json");
+        const response =
+            await fetch("data/map.json");
 
 
-    if (!response.ok) {
+        if (!response.ok) {
 
-        throw new Error(
-            `HTTP ${response.status}`
+            throw new Error(
+                `HTTP ${response.status}`
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        applyMapData(data);
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Could not load map.json:",
+            error
         );
+
+
+        status.textContent =
+            "Failed to load map.";
+
+        return;
 
     }
 
 
-    const data =
-        await response.json();
+    // --------------------------------------------------------
+    // LOAD OTHER DATA
+    // --------------------------------------------------------
+
+    await loadTerrain();
+
+    await loadCities();
+
+    await loadArmies();
 
 
-    applyMapData(data);
+    // --------------------------------------------------------
+    // CREATE COUNTRY LISTS
+    // --------------------------------------------------------
 
-}
-
-catch (error) {
-
-    console.error(
-        "Could not load map.json:",
-        error
+    populateCountrySelect(
+        countrySelect,
+        true
     );
 
 
+    populateCountrySelect(
+        cityCountry,
+        false
+    );
+
+
+    populateCountrySelect(
+        armyCountry,
+        false
+    );
+
+
+    // --------------------------------------------------------
+    // BUILD MAP
+    // --------------------------------------------------------
+
+    rebuildMapCanvas();
+
+
+    updateSelectionDisplay();
+
+
+    setTool("select");
+
+
     status.textContent =
-        "Failed to load map.";
-
-    return;
-
-}
+        `Map loaded: ${tiles.length} tiles`;
 
 
-// --------------------------------------------------------
-// LOAD OTHER DATA
-// --------------------------------------------------------
-
-await loadTerrain();
-
-await loadCities();
-
-await loadArmies();
-
-
-// --------------------------------------------------------
-// CREATE COUNTRY LISTS
-// --------------------------------------------------------
-
-populateCountrySelect(
-    countrySelect,
-    true
-);
-
-
-populateCountrySelect(
-    cityCountry,
-    false
-);
-
-
-populateCountrySelect(
-    armyCountry,
-    false
-);
-
-
-// --------------------------------------------------------
-// BUILD MAP
-// --------------------------------------------------------
-
-rebuildMapCanvas();
-
-
-updateSelectionDisplay();
-
-
-setTool("select");
-
-
-status.textContent =
-    `Map loaded: ${tiles.length} tiles`;
-
-
-requestAnimationFrame(render);
-
+    requestAnimationFrame(render);
 
 }
+
 
 // ============================================================
 // RENDER LOOP
@@ -264,68 +262,66 @@ requestAnimationFrame(render);
 
 function render() {
 
+    draw(
+        ctx,
+        canvas
+    );
 
-draw(
-    ctx,
-    canvas
-);
 
-
-requestAnimationFrame(render);
-
+    requestAnimationFrame(render);
 
 }
+
 
 // ============================================================
 // COUNTRY SELECT
 // ============================================================
 
 function populateCountrySelect(
-select,
-includeOcean
+    select,
+    includeOcean
 ) {
 
+    select.innerHTML =
+        "";
 
-select.innerHTML =
-    "";
 
-
-for (
-    const [
-        id,
-        country
-    ]
-    of Object.entries(countries)
-) {
-
-    if (
-        !includeOcean &&
-        id === "ocean"
+    for (
+        const [
+            id,
+            country
+        ]
+        of Object.entries(countries)
     ) {
 
-        continue;
+        if (
+            !includeOcean &&
+            id === "ocean"
+        ) {
+
+            continue;
+
+        }
+
+
+        const option =
+            document.createElement("option");
+
+
+        option.value =
+            id;
+
+
+        option.textContent =
+            country.name;
+
+
+        select.appendChild(option);
 
     }
 
-
-    const option =
-        document.createElement("option");
-
-
-    option.value =
-        id;
-
-
-    option.textContent =
-        country.name;
-
-
-    select.appendChild(option);
-
 }
 
-
-}
 
 // ============================================================
 // TOOL BUTTONS
@@ -333,45 +329,43 @@ for (
 
 const toolButtons = {
 
+    select:
+        document.getElementById("tool-select"),
 
-select:
-    document.getElementById("tool-select"),
+    territory:
+        document.getElementById("tool-territory"),
 
-territory:
-    document.getElementById("tool-territory"),
+    terrain:
+        document.getElementById("tool-terrain"),
 
-terrain:
-    document.getElementById("tool-terrain"),
+    city:
+        document.getElementById("tool-city"),
 
-city:
-    document.getElementById("tool-city"),
-
-army:
-    document.getElementById("tool-army")
-
+    army:
+        document.getElementById("tool-army")
 
 };
 
+
 for (
-const [
-tool,
-button
-]
-of Object.entries(toolButtons)
+    const [
+        tool,
+        button
+    ]
+    of Object.entries(toolButtons)
 ) {
 
+    button.addEventListener(
+        "click",
+        () => {
 
-button.addEventListener(
-    "click",
-    () => {
+            setTool(tool);
 
-        setTool(tool);
-
-    }
-);
-
+        }
+    );
 
 }
+
 
 // ============================================================
 // SET TOOL
@@ -379,108 +373,105 @@ button.addEventListener(
 
 function setTool(tool) {
 
-
-currentTool =
-    tool;
-
-
-// --------------------------------------------------------
-// BUTTON ACTIVE STATE
-// --------------------------------------------------------
-
-for (
-    const [
-        name,
-        button
-    ]
-    of Object.entries(toolButtons)
-) {
-
-    button.classList.toggle(
-        "active",
-        name === tool
-    );
-
-}
+    currentTool =
+        tool;
 
 
-// --------------------------------------------------------
-// HIDE ALL EDITOR PANELS
-// --------------------------------------------------------
+    // --------------------------------------------------------
+    // BUTTON ACTIVE STATE
+    // --------------------------------------------------------
 
-for (
-    const panel
-    of Object.values(editorPanels)
-) {
+    for (
+        const [
+            name,
+            button
+        ]
+        of Object.entries(toolButtons)
+    ) {
 
-    if (panel) {
-
-        panel.classList.remove("active");
+        button.classList.toggle(
+            "active",
+            name === tool
+        );
 
     }
 
+
+    // --------------------------------------------------------
+    // HIDE ALL EDITOR PANELS
+    // --------------------------------------------------------
+
+    for (
+        const panel
+        of Object.values(editorPanels)
+    ) {
+
+        if (panel) {
+
+            panel.classList.remove("active");
+
+        }
+
+    }
+
+
+    // --------------------------------------------------------
+    // SHOW CURRENT PANEL
+    // --------------------------------------------------------
+
+    if (
+        editorPanels[tool]
+    ) {
+
+        editorPanels[tool].classList.add("active");
+
+    }
+
+
+    // --------------------------------------------------------
+    // CURSOR
+    // --------------------------------------------------------
+
+    if (
+        tool === "select"
+    ) {
+
+        canvas.style.cursor =
+            "default";
+
+    }
+
+    else {
+
+        canvas.style.cursor =
+            "crosshair";
+
+    }
+
+
+    // --------------------------------------------------------
+    // STATUS
+    // --------------------------------------------------------
+
+    status.textContent =
+        `Tool: ${tool}`;
+
 }
 
-
-// --------------------------------------------------------
-// SHOW CURRENT PANEL
-// --------------------------------------------------------
-
-if (
-    editorPanels[tool]
-) {
-
-    editorPanels[tool].classList.add("active");
-
-}
-
-
-// --------------------------------------------------------
-// CURSOR
-// --------------------------------------------------------
-
-if (
-    tool === "select"
-) {
-
-    canvas.style.cursor =
-        "default";
-
-}
-
-else {
-
-    canvas.style.cursor =
-        "crosshair";
-
-}
-
-
-// --------------------------------------------------------
-// STATUS
-// --------------------------------------------------------
-
-status.textContent =
-    `Tool: ${tool}`;
-
-
-}
 
 // ============================================================
 // RESIZE
 // ============================================================
 
 window.addEventListener(
-"resize",
-() => {
+    "resize",
+    () => {
 
+        resizeCamera(canvas);
 
-    resizeCamera(canvas);
-
-}
-
-
+    }
 );
+
 
 // ============================================================
 // MOUSE → WORLD
@@ -488,33 +479,32 @@ window.addEventListener(
 
 function mouseToWorld(event) {
 
+    const rect =
+        canvas.getBoundingClientRect();
 
-const rect =
-    canvas.getBoundingClientRect();
 
+    return {
 
-return {
+        x:
+            (
+                event.clientX -
+                rect.left
+            ) /
+            camera.zoom +
+            camera.x,
 
-    x:
-        (
-            event.clientX -
-            rect.left
-        ) /
-        camera.zoom +
-        camera.x,
+        y:
+            (
+                event.clientY -
+                rect.top
+            ) /
+            camera.zoom +
+            camera.y
 
-    y:
-        (
-            event.clientY -
-            rect.top
-        ) /
-        camera.zoom +
-        camera.y
-
-};
-
+    };
 
 }
+
 
 // ============================================================
 // FIND CITY
@@ -522,22 +512,21 @@ return {
 
 function getCityAtTile(tile) {
 
+    if (!tile) {
 
-if (!tile) {
+        return null;
 
-    return null;
-
-}
+    }
 
 
-return cities.find(
-    city =>
-        city.col === tile.col &&
-        city.row === tile.row
-) || null;
-
+    return cities.find(
+        city =>
+            city.col === tile.col &&
+            city.row === tile.row
+    ) || null;
 
 }
+
 
 // ============================================================
 // FIND ARMY
@@ -545,22 +534,21 @@ return cities.find(
 
 function getArmyAtTile(tile) {
 
+    if (!tile) {
 
-if (!tile) {
+        return null;
 
-    return null;
-
-}
+    }
 
 
-return armies.find(
-    army =>
-        army.col === tile.col &&
-        army.row === tile.row
-) || null;
-
+    return armies.find(
+        army =>
+            army.col === tile.col &&
+            army.row === tile.row
+    ) || null;
 
 }
+
 
 // ============================================================
 // SELECT TILE
@@ -568,23 +556,22 @@ return armies.find(
 
 function selectTile(tile) {
 
-
-selectedTileObject =
-    tile;
-
-
-selectedCity =
-    getCityAtTile(tile);
+    selectedTileObject =
+        tile;
 
 
-selectedArmy =
-    getArmyAtTile(tile);
+    selectedCity =
+        getCityAtTile(tile);
 
 
-updateSelectionDisplay();
+    selectedArmy =
+        getArmyAtTile(tile);
 
+
+    updateSelectionDisplay();
 
 }
+
 
 // ============================================================
 // SELECTION DISPLAY
@@ -592,615 +579,80 @@ updateSelectionDisplay();
 
 function updateSelectionDisplay() {
 
+    if (!selectedTileObject) {
 
-if (!selectedTileObject) {
+        selectedTile.textContent =
+            "Position: None";
 
-    selectedTile.textContent =
-        "Position: None";
+        selectedTerritory.textContent =
+            "Territory: None";
 
-    selectedTerritory.textContent =
-        "Territory: None";
+        selectedTerrain.textContent =
+            "Terrain: None";
 
-    selectedTerrain.textContent =
-        "Terrain: None";
-
-    selectedEntity.textContent =
-        "Entity: None";
-
-    return;
-
-}
-
-
-const tile =
-    selectedTileObject;
-
-
-const country =
-    countries[tile.owner];
-
-
-selectedTile.textContent =
-    `Position: ${tile.col}, ${tile.row}`;
-
-
-selectedTerritory.textContent =
-    `Territory: ${
-        country
-            ? country.name
-            : tile.owner
-    }`;
-
-
-selectedTerrain.textContent =
-    `Terrain: ${
-        getTerrain(tile)
-    }`;
-
-
-if (selectedCity) {
-
-    selectedEntity.textContent =
-        `City: ${selectedCity.name}`;
-
-}
-
-else if (selectedArmy) {
-
-    selectedEntity.textContent =
-        `Army: ${selectedArmy.name}`;
-
-}
-
-else {
-
-    selectedEntity.textContent =
-        "Entity: None";
-
-}
-
-
-}
-
-// ============================================================
-// APPLY TERRITORY
-// ============================================================
-
-function paintTerritory(tile) {
-
-
-if (!tile) {
-
-    return;
-
-}
-
-
-const owner =
-    countrySelect.value;
-
-
-if (!countries[owner]) {
-
-    return;
-
-}
-
-
-tile.owner =
-    owner;
-
-
-rebuildMapCanvas();
-
-
-selectTile(tile);
-
-
-status.textContent =
-    `Changed territory to ${
-        countries[owner].name
-    }`;
-
-
-}
-
-// ============================================================
-// APPLY TERRAIN
-// ============================================================
-
-function paintTerrain(tile) {
-
-
-if (!tile) {
-
-    return;
-
-}
-
-
-if (
-    tile.owner === "ocean"
-) {
-
-    status.textContent =
-        "Ocean tiles automatically use water terrain.";
-
-    return;
-
-}
-
-
-const terrain =
-    terrainSelect.value;
-
-
-const changed =
-    setTerrain(
-        tile,
-        terrain
-    );
-
-
-if (!changed) {
-
-    return;
-
-}
-
-
-rebuildMapCanvas();
-
-
-selectTile(tile);
-
-
-status.textContent =
-    `Changed terrain to ${terrain}`;
-
-
-}
-
-// ============================================================
-// PLACE CITY
-// ============================================================
-
-function placeCity(tile) {
-
-
-if (!tile) {
-
-    return;
-
-}
-
-
-const name =
-    cityName.value.trim();
-
-
-if (!name) {
-
-    status.textContent =
-        "Enter a city name first.";
-
-    return;
-
-}
-
-
-const country =
-    cityCountry.value;
-
-
-const existing =
-    getCityAtTile(tile);
-
-
-// --------------------------------------------------------
-// UPDATE EXISTING
-// --------------------------------------------------------
-
-if (existing) {
-
-    existing.name =
-        name;
-
-
-    existing.country =
-        country;
-
-
-    selectedCity =
-        existing;
-
-
-    status.textContent =
-        `Updated city: ${name}`;
-
-}
-
-// --------------------------------------------------------
-// CREATE
-// --------------------------------------------------------
-
-else {
-
-    const city =
-        addCity(
-            name,
-            country,
-            tile.col,
-            tile.row
-        );
-
-
-    selectedCity =
-        city;
-
-
-    status.textContent =
-        `Placed city: ${name}`;
-
-}
-
-
-rebuildMapCanvas();
-
-
-selectTile(tile);
-
-
-}
-
-// ============================================================
-// DELETE CITY
-// ============================================================
-
-function deleteCity() {
-
-
-if (!selectedCity) {
-
-    status.textContent =
-        "No city selected.";
-
-    return;
-
-}
-
-
-const index =
-    cities.indexOf(selectedCity);
-
-
-if (index !== -1) {
-
-    const name =
-        selectedCity.name;
-
-
-    cities.splice(
-        index,
-        1
-    );
-
-
-    selectedCity =
-        null;
-
-
-    status.textContent =
-        `Deleted city: ${name}`;
-
-
-    rebuildMapCanvas();
-
-
-    updateSelectionDisplay();
-
-}
-
-
-}
-
-// ============================================================
-// PLACE ARMY
-// ============================================================
-
-function placeArmy(tile) {
-
-
-if (!tile) {
-
-    return;
-
-}
-
-
-const name =
-    armyName.value.trim();
-
-
-if (!name) {
-
-    status.textContent =
-        "Enter an army name first.";
-
-    return;
-
-}
-
-
-const country =
-    armyCountry.value;
-
-
-const strength =
-    Number(
-        armyStrength.value
-    ) || 0;
-
-
-const icon =
-    armyIcon.value.trim() ||
-    "icons/armies/army.png";
-
-
-const existing =
-    getArmyAtTile(tile);
-
-
-// --------------------------------------------------------
-// UPDATE EXISTING
-// --------------------------------------------------------
-
-if (existing) {
-
-    existing.name =
-        name;
-
-
-    existing.country =
-        country;
-
-
-    existing.strength =
-        strength;
-
-
-    existing.icon =
-        icon;
-
-
-    selectedArmy =
-        existing;
-
-
-    status.textContent =
-        `Updated army: ${name}`;
-
-}
-
-// --------------------------------------------------------
-// CREATE
-// --------------------------------------------------------
-
-else {
-
-    const nextId =
-        armies.reduce(
-            (
-                maximum,
-                army
-            ) =>
-                Math.max(
-                    maximum,
-                    Number(army.id) || 0
-                ),
-            0
-        ) + 1;
-
-
-    const army = {
-
-        id:
-            nextId,
-
-        name,
-
-        country,
-
-        strength,
-
-        icon,
-
-        col:
-            tile.col,
-
-        row:
-            tile.row
-
-    };
-
-
-    armies.push(army);
-
-
-    selectedArmy =
-        army;
-
-
-    status.textContent =
-        `Placed army: ${name}`;
-
-}
-
-
-rebuildMapCanvas();
-
-
-selectTile(tile);
-
-
-}
-
-// ============================================================
-// DELETE ARMY
-// ============================================================
-
-function deleteArmy() {
-
-
-if (!selectedArmy) {
-
-    status.textContent =
-        "No army selected.";
-
-    return;
-
-}
-
-
-const index =
-    armies.indexOf(selectedArmy);
-
-
-if (index !== -1) {
-
-    const name =
-        selectedArmy.name;
-
-
-    armies.splice(
-        index,
-        1
-    );
-
-
-    selectedArmy =
-        null;
-
-
-    status.textContent =
-        `Deleted army: ${name}`;
-
-
-    rebuildMapCanvas();
-
-
-    updateSelectionDisplay();
-
-}
-
-
-}
-
-// ============================================================
-// CITY BUTTONS
-// ============================================================
-
-document
-.getElementById("city-place")
-.addEventListener(
-"click",
-() => {
-
-
-        if (!selectedTileObject) {
-
-            status.textContent =
-                "Select a tile first.";
-
-            return;
-
-        }
-
-
-        placeCity(
-            selectedTileObject
-        );
-
-    }
-);
-
-
-document
-.getElementById("city-delete")
-.addEventListener(
-"click",
-deleteCity
-);
-
-// ============================================================
-// ARMY BUTTONS
-// ============================================================
-
-document
-.getElementById("army-place")
-.addEventListener(
-"click",
-() => {
-
-
-        if (!selectedTileObject) {
-
-            status.textContent =
-                "Select a tile first.";
-
-            return;
-
-        }
-
-
-        placeArmy(
-            selectedTileObject
-        );
-
-    }
-);
-
-
-document
-.getElementById("army-delete")
-.addEventListener(
-"click",
-deleteArmy
-);
-
-// ============================================================
-// LEFT CLICK
-// ============================================================
-
-canvas.addEventListener(
-"click",
-event => {
-
-
-    // ----------------------------------------------------
-    // Ignore click after dragging.
-    // ----------------------------------------------------
-
-    if (wasDragging) {
-
-        wasDragging =
-            false;
+        selectedEntity.textContent =
+            "Entity: None";
 
         return;
 
     }
 
 
-    const world =
-        mouseToWorld(event);
-
-
     const tile =
-        getTileAt(
-            world.x,
-            world.y
-        );
+        selectedTileObject;
 
+
+    const country =
+        countries[tile.owner];
+
+
+    selectedTile.textContent =
+        `Position: ${tile.col}, ${tile.row}`;
+
+
+    selectedTerritory.textContent =
+        `Territory: ${
+            country
+                ? country.name
+                : tile.owner
+        }`;
+
+
+    selectedTerrain.textContent =
+        `Terrain: ${
+            getTerrain(tile)
+        }`;
+
+
+    if (selectedCity) {
+
+        selectedEntity.textContent =
+            `City: ${selectedCity.name}`;
+
+    }
+
+    else if (selectedArmy) {
+
+        selectedEntity.textContent =
+            `Army: ${selectedArmy.name}`;
+
+    }
+
+    else {
+
+        selectedEntity.textContent =
+            "Entity: None";
+
+    }
+
+}
+
+
+// ============================================================
+// APPLY TERRITORY
+// ============================================================
+
+function paintTerritory(tile) {
 
     if (!tile) {
 
@@ -1209,110 +661,625 @@ event => {
     }
 
 
-    // ----------------------------------------------------
-    // SELECT
-    // ----------------------------------------------------
+    const owner =
+        countrySelect.value;
+
+
+    if (!countries[owner]) {
+
+        return;
+
+    }
+
+
+    tile.owner =
+        owner;
+
+
+    rebuildMapCanvas();
+
+
+    selectTile(tile);
+
+
+    status.textContent =
+        `Changed territory to ${
+            countries[owner].name
+        }`;
+
+}
+
+
+// ============================================================
+// APPLY TERRAIN
+// ============================================================
+
+function paintTerrain(tile) {
+
+    if (!tile) {
+
+        return;
+
+    }
+
 
     if (
-        currentTool === "select"
+        tile.owner === "ocean"
     ) {
 
-        selectTile(tile);
+        status.textContent =
+            "Ocean tiles automatically use water terrain.";
+
+        return;
+
+    }
 
 
-        const country =
-            countries[tile.owner];
+    const terrain =
+        terrainSelect.value;
+
+
+    const changed =
+        setTerrain(
+            tile,
+            terrain
+        );
+
+
+    if (!changed) {
+
+        return;
+
+    }
+
+
+    rebuildMapCanvas();
+
+
+    selectTile(tile);
+
+
+    status.textContent =
+        `Changed terrain to ${terrain}`;
+
+}
+
+
+// ============================================================
+// PLACE CITY
+// ============================================================
+
+function placeCity(tile) {
+
+    if (!tile) {
+
+        return;
+
+    }
+
+
+    const name =
+        cityName.value.trim();
+
+
+    if (!name) {
+
+        status.textContent =
+            "Enter a city name first.";
+
+        return;
+
+    }
+
+
+    const country =
+        cityCountry.value;
+
+
+    const existing =
+        getCityAtTile(tile);
+
+
+    // --------------------------------------------------------
+    // UPDATE EXISTING
+    // --------------------------------------------------------
+
+    if (existing) {
+
+        existing.name =
+            name;
+
+
+        existing.country =
+            country;
+
+
+        selectedCity =
+            existing;
 
 
         status.textContent =
-            country
-                ? `${country.name} — ${tile.col}, ${tile.row}`
-                : `Tile ${tile.col}, ${tile.row}`;
-
-
-        return;
+            `Updated city: ${name}`;
 
     }
 
+    // --------------------------------------------------------
+    // CREATE
+    // --------------------------------------------------------
 
-    // ----------------------------------------------------
-    // TERRITORY
-    // ----------------------------------------------------
+    else {
 
-    if (
-        currentTool === "territory"
-    ) {
-
-        paintTerritory(tile);
-
-        return;
-
-    }
-
-
-    // ----------------------------------------------------
-    // TERRAIN
-    // ----------------------------------------------------
-
-    if (
-        currentTool === "terrain"
-    ) {
-
-        paintTerrain(tile);
-
-        return;
-
-    }
-
-
-    // ----------------------------------------------------
-    // CITY
-    // ----------------------------------------------------
-
-    if (
-        currentTool === "city"
-    ) {
-
-        selectTile(tile);
-
-
-        status.textContent =
-            `City position selected: ${
-                tile.col
-            }, ${
+        const city =
+            addCity(
+                name,
+                country,
+                tile.col,
                 tile.row
-            }`;
+            );
 
+
+        selectedCity =
+            city;
+
+
+        status.textContent =
+            `Placed city: ${name}`;
+
+    }
+
+
+    rebuildMapCanvas();
+
+
+    selectTile(tile);
+
+}
+
+
+// ============================================================
+// DELETE CITY
+// ============================================================
+
+function deleteCity() {
+
+    if (!selectedCity) {
+
+        status.textContent =
+            "No city selected.";
 
         return;
 
     }
 
 
-    // ----------------------------------------------------
-    // ARMY
-    // ----------------------------------------------------
+    const index =
+        cities.indexOf(selectedCity);
 
-    if (
-        currentTool === "army"
-    ) {
 
-        selectTile(tile);
+    if (index !== -1) {
+
+        const name =
+            selectedCity.name;
+
+
+        cities.splice(
+            index,
+            1
+        );
+
+
+        selectedCity =
+            null;
 
 
         status.textContent =
-            `Army position selected: ${
-                tile.col
-            }, ${
-                tile.row
-            }`;
+            `Deleted city: ${name}`;
+
+
+        rebuildMapCanvas();
+
+
+        updateSelectionDisplay();
 
     }
 
 }
 
 
+// ============================================================
+// PLACE ARMY
+// ============================================================
+
+function placeArmy(tile) {
+
+    if (!tile) {
+
+        return;
+
+    }
+
+
+    const name =
+        armyName.value.trim();
+
+
+    if (!name) {
+
+        status.textContent =
+            "Enter an army name first.";
+
+        return;
+
+    }
+
+
+    const country =
+        armyCountry.value;
+
+
+    const strength =
+        Number(
+            armyStrength.value
+        ) || 0;
+
+
+    const existing =
+        getArmyAtTile(tile);
+
+
+    // --------------------------------------------------------
+    // UPDATE EXISTING
+    // --------------------------------------------------------
+
+    if (existing) {
+
+        existing.name =
+            name;
+
+
+        existing.country =
+            country;
+
+
+        existing.strength =
+            strength;
+
+
+        selectedArmy =
+            existing;
+
+
+        status.textContent =
+            `Updated army: ${name}`;
+
+    }
+
+    // --------------------------------------------------------
+    // CREATE
+    // --------------------------------------------------------
+
+    else {
+
+        const nextId =
+            armies.reduce(
+                (
+                    maximum,
+                    army
+                ) =>
+                    Math.max(
+                        maximum,
+                        Number(army.id) || 0
+                    ),
+                0
+            ) + 1;
+
+
+        const army = {
+
+            id:
+                nextId,
+
+            name,
+
+            country,
+
+            strength,
+
+            col:
+                tile.col,
+
+            row:
+                tile.row
+
+        };
+
+
+        armies.push(army);
+
+
+        selectedArmy =
+            army;
+
+
+        status.textContent =
+            `Placed army: ${name}`;
+
+    }
+
+
+    rebuildMapCanvas();
+
+
+    selectTile(tile);
+
+}
+
+
+// ============================================================
+// DELETE ARMY
+// ============================================================
+
+function deleteArmy() {
+
+    if (!selectedArmy) {
+
+        status.textContent =
+            "No army selected.";
+
+        return;
+
+    }
+
+
+    const index =
+        armies.indexOf(selectedArmy);
+
+
+    if (index !== -1) {
+
+        const name =
+            selectedArmy.name;
+
+
+        armies.splice(
+            index,
+            1
+        );
+
+
+        selectedArmy =
+            null;
+
+
+        status.textContent =
+            `Deleted army: ${name}`;
+
+
+        rebuildMapCanvas();
+
+
+        updateSelectionDisplay();
+
+    }
+
+}
+
+
+// ============================================================
+// CITY BUTTONS
+// ============================================================
+
+document
+    .getElementById("city-place")
+    .addEventListener(
+        "click",
+        () => {
+
+            if (!selectedTileObject) {
+
+                status.textContent =
+                    "Select a tile first.";
+
+                return;
+
+            }
+
+
+            placeCity(
+                selectedTileObject
+            );
+
+        }
+    );
+
+
+document
+    .getElementById("city-delete")
+    .addEventListener(
+        "click",
+        deleteCity
+    );
+
+
+// ============================================================
+// ARMY BUTTONS
+// ============================================================
+
+document
+    .getElementById("army-place")
+    .addEventListener(
+        "click",
+        () => {
+
+            if (!selectedTileObject) {
+
+                status.textContent =
+                    "Select a tile first.";
+
+                return;
+
+            }
+
+
+            placeArmy(
+                selectedTileObject
+            );
+
+        }
+    );
+
+
+document
+    .getElementById("army-delete")
+    .addEventListener(
+        "click",
+        deleteArmy
+    );
+
+
+// ============================================================
+// LEFT CLICK
+// ============================================================
+
+canvas.addEventListener(
+    "click",
+    event => {
+
+        // ----------------------------------------------------
+        // Ignore click after dragging.
+        // ----------------------------------------------------
+
+        if (wasDragging) {
+
+            wasDragging =
+                false;
+
+            return;
+
+        }
+
+
+        const world =
+            mouseToWorld(event);
+
+
+        const tile =
+            getTileAt(
+                world.x,
+                world.y
+            );
+
+
+        if (!tile) {
+
+            return;
+
+        }
+
+
+        // ----------------------------------------------------
+        // SELECT
+        // ----------------------------------------------------
+
+        if (
+            currentTool === "select"
+        ) {
+
+            selectTile(tile);
+
+
+            const country =
+                countries[tile.owner];
+
+
+            status.textContent =
+                country
+                    ? `${country.name} — ${tile.col}, ${tile.row}`
+                    : `Tile ${tile.col}, ${tile.row}`;
+
+
+            return;
+
+        }
+
+
+        // ----------------------------------------------------
+        // TERRITORY
+        // ----------------------------------------------------
+
+        if (
+            currentTool === "territory"
+        ) {
+
+            paintTerritory(tile);
+
+            return;
+
+        }
+
+
+        // ----------------------------------------------------
+        // TERRAIN
+        // ----------------------------------------------------
+
+        if (
+            currentTool === "terrain"
+        ) {
+
+            paintTerrain(tile);
+
+            return;
+
+        }
+
+
+        // ----------------------------------------------------
+        // CITY
+        // ----------------------------------------------------
+
+        if (
+            currentTool === "city"
+        ) {
+
+            selectTile(tile);
+
+
+            status.textContent =
+                `City position selected: ${
+                    tile.col
+                }, ${
+                    tile.row
+                }`;
+
+
+            return;
+
+        }
+
+
+        // ----------------------------------------------------
+        // ARMY
+        // ----------------------------------------------------
+
+        if (
+            currentTool === "army"
+        ) {
+
+            selectTile(tile);
+
+
+            status.textContent =
+                `Army position selected: ${
+                    tile.col
+                }, ${
+                    tile.row
+                }`;
+
+        }
+
+    }
 );
+
 
 // ============================================================
 // PAN CAMERA
@@ -1327,241 +1294,230 @@ event => {
 // ============================================================
 
 let dragging =
-false;
+    false;
 
 let wasDragging =
-false;
+    false;
 
 let lastX =
-0;
+    0;
 
 let lastY =
-0;
+    0;
+
 
 canvas.addEventListener(
-"mousedown",
-event => {
+    "mousedown",
+    event => {
+
+        const canPan =
+            currentTool === "select" ||
+            event.shiftKey ||
+            event.code === "Space";
 
 
-    const canPan =
-        currentTool === "select" ||
-        event.shiftKey ||
-        event.code === "Space";
+        if (
+            event.button !== 0 ||
+            !canPan
+        ) {
+
+            return;
+
+        }
 
 
-    if (
-        event.button !== 0 ||
-        !canPan
-    ) {
-
-        return;
-
-    }
-
-
-    dragging =
-        true;
-
-
-    wasDragging =
-        false;
-
-
-    lastX =
-        event.clientX;
-
-
-    lastY =
-        event.clientY;
-
-}
-
-
-);
-
-canvas.addEventListener(
-"mousemove",
-event => {
-
-
-    if (!dragging) {
-
-        return;
-
-    }
-
-
-    const dx =
-        event.clientX -
-        lastX;
-
-
-    const dy =
-        event.clientY -
-        lastY;
-
-
-    if (
-        Math.abs(dx) > 2 ||
-        Math.abs(dy) > 2
-    ) {
-
-        wasDragging =
+        dragging =
             true;
 
+
+        wasDragging =
+            false;
+
+
+        lastX =
+            event.clientX;
+
+
+        lastY =
+            event.clientY;
+
     }
-
-
-    panCamera(
-        canvas,
-        dx,
-        dy
-    );
-
-
-    lastX =
-        event.clientX;
-
-
-    lastY =
-        event.clientY;
-
-}
-
-
 );
+
+
+canvas.addEventListener(
+    "mousemove",
+    event => {
+
+        if (!dragging) {
+
+            return;
+
+        }
+
+
+        const dx =
+            event.clientX -
+            lastX;
+
+
+        const dy =
+            event.clientY -
+            lastY;
+
+
+        if (
+            Math.abs(dx) > 2 ||
+            Math.abs(dy) > 2
+        ) {
+
+            wasDragging =
+                true;
+
+        }
+
+
+        panCamera(
+            canvas,
+            dx,
+            dy
+        );
+
+
+        lastX =
+            event.clientX;
+
+
+        lastY =
+            event.clientY;
+
+    }
+);
+
 
 window.addEventListener(
-"mouseup",
-() => {
+    "mouseup",
+    () => {
 
+        dragging =
+            false;
 
-    dragging =
-        false;
-
-}
-
-
+    }
 );
+
 
 window.addEventListener(
-"blur",
-() => {
+    "blur",
+    () => {
 
+        dragging =
+            false;
 
-    dragging =
-        false;
-
-}
-
-
+    }
 );
+
 
 // ============================================================
 // ZOOM
 // ============================================================
 
 canvas.addEventListener(
-"wheel",
-event => {
+    "wheel",
+    event => {
+
+        event.preventDefault();
 
 
-    event.preventDefault();
+        zoomCamera(
+            canvas,
+            event
+        );
 
-
-    zoomCamera(
-        canvas,
-        event
-    );
-
-},
-{
-    passive: false
-}
-
-
+    },
+    {
+        passive: false
+    }
 );
+
 
 // ============================================================
 // DOWNLOAD JSON
 // ============================================================
 
 function downloadJSON(
-filename,
-data
+    filename,
+    data
 ) {
 
-
-const json =
-    JSON.stringify(
-        data,
-        null,
-        2
-    );
-
-
-const blob =
-    new Blob(
-        [json],
-        {
-            type:
-                "application/json"
-        }
-    );
+    const json =
+        JSON.stringify(
+            data,
+            null,
+            2
+        );
 
 
-const url =
-    URL.createObjectURL(blob);
+    const blob =
+        new Blob(
+            [json],
+            {
+                type:
+                    "application/json"
+            }
+        );
 
 
-const link =
-    document.createElement("a");
+    const url =
+        URL.createObjectURL(blob);
 
 
-link.href =
-    url;
+    const link =
+        document.createElement("a");
 
 
-link.download =
-    filename;
+    link.href =
+        url;
 
 
-document.body.appendChild(link);
+    link.download =
+        filename;
 
 
-link.click();
+    document.body.appendChild(link);
 
 
-link.remove();
+    link.click();
 
 
-URL.revokeObjectURL(url);
+    link.remove();
 
 
-status.textContent =
-    `Downloaded ${filename}`;
+    URL.revokeObjectURL(url);
 
+
+    status.textContent =
+        `Downloaded ${filename}`;
 
 }
+
 
 // ============================================================
 // DOWNLOAD MAP
 // ============================================================
 
 document
-.getElementById("download-map")
-.addEventListener(
-"click",
-() => {
+    .getElementById("download-map")
+    .addEventListener(
+        "click",
+        () => {
 
+            downloadJSON(
+                "map.json",
+                createMapJSON()
+            );
 
-        downloadJSON(
-            "map.json",
-            createMapJSON()
-        );
-
-    }
-);
+        }
+    );
 
 
 // ============================================================
@@ -1569,19 +1525,18 @@ document
 // ============================================================
 
 document
-.getElementById("download-terrain")
-.addEventListener(
-"click",
-() => {
+    .getElementById("download-terrain")
+    .addEventListener(
+        "click",
+        () => {
 
+            downloadJSON(
+                "terrain.json",
+                createTerrainJSON()
+            );
 
-        downloadJSON(
-            "terrain.json",
-            createTerrainJSON()
-        );
-
-    }
-);
+        }
+    );
 
 
 // ============================================================
@@ -1589,19 +1544,18 @@ document
 // ============================================================
 
 document
-.getElementById("download-cities")
-.addEventListener(
-"click",
-() => {
+    .getElementById("download-cities")
+    .addEventListener(
+        "click",
+        () => {
 
+            downloadJSON(
+                "cities.json",
+                createCitiesJSON()
+            );
 
-        downloadJSON(
-            "cities.json",
-            createCitiesJSON()
-        );
-
-    }
-);
+        }
+    );
 
 
 // ============================================================
@@ -1609,19 +1563,18 @@ document
 // ============================================================
 
 document
-.getElementById("download-armies")
-.addEventListener(
-"click",
-() => {
+    .getElementById("download-armies")
+    .addEventListener(
+        "click",
+        () => {
 
+            downloadJSON(
+                "armies.json",
+                createArmiesJSON()
+            );
 
-        downloadJSON(
-            "armies.json",
-            createArmiesJSON()
-        );
-
-    }
-);
+        }
+    );
 
 
 // ============================================================
