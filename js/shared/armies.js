@@ -31,15 +31,6 @@ const ARMY_FLAG_SIZE =
 // ============================================================
 // SOLDIER ICON CONFIGURATION
 // ============================================================
-//
-// Each soldier icon represents 25,000 men.
-//
-// The maximum displayed is 4 icons (100,000 men).
-//
-// Future expansion to 5 icons (125,000 men) is possible by
-// simply changing MAX_SOLDIER_ICONS.
-//
-// ============================================================
 
 export const MEN_PER_SOLDIER_ICON =
     25000;
@@ -128,6 +119,29 @@ export function drawArmies(
             );
 
 
+        ctx.save();
+
+
+        // ----------------------------------------------------
+        // DROP SHADOW
+        // ----------------------------------------------------
+
+        ctx.shadowColor =
+            "rgba(0, 0, 0, 0.55)";
+
+
+        ctx.shadowBlur =
+            8;
+
+
+        ctx.shadowOffsetX =
+            0;
+
+
+        ctx.shadowOffsetY =
+            3;
+
+
         // ----------------------------------------------------
         // FLAG
         // ----------------------------------------------------
@@ -178,6 +192,9 @@ export function drawArmies(
             ctx.fill();
 
         }
+
+
+        ctx.restore();
 
     }
 
@@ -263,18 +280,6 @@ function drawFlagContain(
 
 // ============================================================
 // GET SOLDIER ICON COUNT
-// ============================================================
-//
-// Derives how many soldier icons should be filled based on
-// army strength.
-//
-// Example:
-//
-//     25000  → 1 icon
-//     50000  → 2 icons
-//     75000  → 3 icons
-//     100000 → 4 icons
-//
 // ============================================================
 
 export function getSoldierIconCount(
