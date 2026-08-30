@@ -325,36 +325,38 @@ body {
    SOLDIER ICONS
    ============================================================
    
-   Empty icons use a dark silhouette.
-   Filled icons use the country color via CSS filter.
+   Uses CSS mask to shape the soldier silhouette.
+   
+   The background-color is set via JavaScript.
    
    ============================================================ */
 
 .soldier-icon {
-    display: block;
-
     width: 36px;
 
     height: 36px;
 
-    object-fit: contain;
+    background-color:
+        rgba(0, 0, 0, 0.45);
 
-    object-position: center;
+    -webkit-mask:
+        url("icons/misc/strengthunit.png")
+        center /
+        contain
+        no-repeat;
 
-    opacity: 0.35;
-
-    filter:
-        brightness(0);
+    mask:
+        url("icons/misc/strengthunit.png")
+        center /
+        contain
+        no-repeat;
 
     transition:
-        opacity 0.2s ease,
-        filter 0.2s ease,
+        background-color 0.2s ease,
         transform 0.15s ease;
 }
 
 .soldier-icon.filled {
-    opacity: 1;
-
     transform:
         scale(1.05);
 }
