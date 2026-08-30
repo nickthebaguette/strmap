@@ -4,7 +4,8 @@
 
 import {
     hexToWorld,
-    HEX_SIZE
+    HEX_SIZE,
+    countries
 } from "./map.js";
 
 import {
@@ -22,27 +23,34 @@ export const armies = [];
 // ============================================================
 // ARMY FLAG SIZE
 // ============================================================
+
+const ARMY_FLAG_SIZE =
+    HEX_SIZE * 1.4;
+
+
+// ============================================================
+// SOLDIER ICON CONFIGURATION
+// ============================================================
 //
-// Square flag markers should fit neatly inside a hex.
+// Each soldier icon represents 25,000 men.
 //
-// HEX_SIZE is the radius of a hex from centre to vertex.
+// The maximum displayed is 4 icons (100,000 men).
 //
-// A square slightly larger than the hex's inner radius works
-// well visually without covering the entire hex.
+// Future expansion to 5 icons (125,000 men) is possible by
+// simply changing MAX_SOLDIER_ICONS.
 //
 // ============================================================
 
-const ARMY_FLAG_SIZE =
-    HEX_SIZE * 1.5;
+export const MEN_PER_SOLDIER_ICON =
+    25000;
+
+
+export const MAX_SOLDIER_ICONS =
+    4;
 
 
 // ============================================================
 // FLAG CACHE
-// ============================================================
-//
-// Cache flag images by country ID so we don't create a new
-// Image object for every army on every frame.
-//
 // ============================================================
 
 const flagCache = {};
@@ -68,8 +76,6 @@ function getCountryFlagImage(
 
     }
 
-
-    // Already loaded / loading.
 
     if (
         flagCache[path]
@@ -181,18 +187,6 @@ export function drawArmies(
 // ============================================================
 // DRAW FLAG WITH CONTAIN BEHAVIOUR
 // ============================================================
-//
-// Draws the flag inside a square destination box while
-// preserving the source image's aspect ratio.
-//
-// The flag is centred within the square.
-//
-// This is the canvas equivalent of:
-//
-//     object-fit: contain;
-//     object-position: center;
-//
-// ============================================================
 
 function drawFlagContain(
     ctx,
@@ -220,10 +214,6 @@ function drawFlagContain(
     }
 
 
-    // --------------------------------------------------------
-    // Calculate scale to fit inside the box.
-    // --------------------------------------------------------
-
     const scale =
         Math.min(
 
@@ -246,10 +236,6 @@ function drawFlagContain(
         scale;
 
 
-    // --------------------------------------------------------
-    // Centre within the box.
-    // --------------------------------------------------------
-
     const drawX =
         centerX -
         drawWidth / 2;
@@ -259,10 +245,6 @@ function drawFlagContain(
         centerY -
         drawHeight / 2;
 
-
-    // --------------------------------------------------------
-    // Draw.
-    // --------------------------------------------------------
 
     ctx.drawImage(
 
@@ -276,7 +258,43 @@ function drawFlagContain(
 
     );
 
-    ctx.imageSmoothingEnabled = true
+}
+
+
+// ============================================================
+// GET SOLDIER ICON COUNT
+// ============================================================
+//
+// Derives how many soldier icons should be filled based on
+// army strength.
+//
+// Example:
+//
+//     25000  → 1 icon
+//     50000  → 2 icons
+//     75000  → 3 icons
+//     100000 → 4 icons
+//
+// ============================================================
+
+export function getSoldierIconCount(
+    strength
+) {
+
+    const count =
+        Math.floor(
+            strength /
+            MEN_PER_SOLDIER_ICON
+        );
+
+
+    return Math.max(
+        0,
+        Math.min(
+            count,
+            MAX_SOLDIER_ICONS
+        )
+    );
 
 }
 
@@ -351,15 +369,6 @@ export async function loadArmies() {
             }
 
 
-            // ----------------------------------------------------
-            // The old icon field is no longer used for rendering.
-            //
-            // It is still read here for backward compatibility
-            // with existing armies.json files, but it will be
-            // ignored by drawArmies().
-            //
-            // ----------------------------------------------------
-
             armies.push({
 
                 id:
@@ -407,13 +416,6 @@ export async function loadArmies() {
 
 // ============================================================
 // CREATE ARMIES JSON
-// ============================================================
-//
-// Produces the structure used by data/armies.json.
-//
-// The old icon field is deliberately omitted because the flag
-// is now derived automatically from the country.
-//
 // ============================================================
 
 export function createArmiesJSON() {
