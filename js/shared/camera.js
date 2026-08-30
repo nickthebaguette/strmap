@@ -354,3 +354,103 @@ export function resizeCamera(
 // ============================================================
 
 export function zoomCamera(
+    canvas,
+    event
+) {
+
+    const rect =
+        canvas.getBoundingClientRect();
+
+
+    const mouseX =
+        event.clientX -
+        rect.left;
+
+    const mouseY =
+        event.clientY -
+        rect.top;
+
+
+    const before =
+        screenToWorld(
+            mouseX,
+            mouseY
+        );
+
+
+    if (
+        event.deltaY < 0
+    ) {
+
+        camera.zoom *=
+            1.1;
+
+    }
+
+    else {
+
+        camera.zoom *=
+            0.9;
+
+    }
+
+
+    camera.zoom =
+        Math.max(
+            MIN_ZOOM,
+            Math.min(
+                MAX_ZOOM,
+                camera.zoom
+            )
+        );
+
+
+    const after =
+        screenToWorld(
+            mouseX,
+            mouseY
+        );
+
+
+    camera.x +=
+        before.x -
+        after.x;
+
+
+    camera.y +=
+        before.y -
+        after.y;
+
+
+    clampCamera(
+        canvas
+    );
+
+}
+
+
+// ============================================================
+// PAN
+// ============================================================
+
+export function panCamera(
+    canvas,
+    dx,
+    dy
+) {
+
+    camera.x -=
+        dx /
+        camera.zoom;
+
+
+    camera.y -=
+        dy /
+        camera.zoom;
+
+
+    clampCamera(
+        canvas
+    );
+
+}
