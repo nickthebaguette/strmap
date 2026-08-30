@@ -5,46 +5,157 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Strategy Map</title>
+    <title>Strategy Map</title>
 
-<link rel="stylesheet" href="style.css">
-<link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="favicon.png">
 
 </head>
 
 <body>
 
-<canvas id="map"></canvas>
+    <canvas id="map"></canvas>
 
 
-<div id="territory-panel">
+    <div id="territory-panel">
 
-    <div id="territory-header">
+        <div id="territory-header">
 
-        <div id="territory-text">
+            <div id="territory-text">
 
-            <h2 id="territory-name">
-                No territory selected
-            </h2>
+                <h2 id="territory-name">
+                    No territory selected
+                </h2>
 
-            <p id="territory-owner"></p>
+                <p id="territory-owner"></p>
+
+            </div>
+
+
+            <img
+                id="territory-flag"
+                src=""
+                alt=""
+            >
 
         </div>
 
 
-        <img
-            id="territory-flag"
-            src=""
-            alt=""
+        <!-- ==================================================
+             MANPOWER DISPLAY
+             ================================================== -->
+
+        <div
+            id="territory-manpower"
+            class="manpower-section"
+            style="display: none;"
         >
+
+            <div class="manpower-label">
+                Manpower
+            </div>
+
+            <div
+                id="manpower-icons"
+                class="manpower-icons"
+            >
+
+                <span
+                    class="soldier-icon"
+                    data-index="0"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM6 8L7 10L9 8L9 15L11 15L11 22L13 22L13 15L15 15L15 8L17 10L18 8L12 5L6 8Z"
+                            fill="currentColor"
+                        />
+                    </svg>
+                </span>
+
+                <span
+                    class="soldier-icon"
+                    data-index="1"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM6 8L7 10L9 8L9 15L11 15L11 22L13 22L13 15L15 15L15 8L17 10L18 8L12 5L6 8Z"
+                            fill="currentColor"
+                        />
+                    </svg>
+                </span>
+
+                <span
+                    class="soldier-icon"
+                    data-index="2"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM6 8L7 10L9 8L9 15L11 15L11 22L13 22L13 15L15 15L15 8L17 10L18 8L12 5L6 8Z"
+                            fill="currentColor"
+                        />
+                    </svg>
+                </span>
+
+                <span
+                    class="soldier-icon"
+                    data-index="3"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM6 8L7 10L9 8L9 15L11 15L11 22L13 22L13 15L15 15L15 8L17 10L18 8L12 5L6 8Z"
+                            fill="currentColor"
+                        />
+                    </svg>
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             ARMY NAME DISPLAY
+             ================================================== -->
+
+        <div
+            id="territory-army"
+            class="army-section"
+            style="display: none;"
+        >
+
+            <div class="army-label">
+                Army
+            </div>
+
+            <div
+                id="army-name-display"
+                class="army-name-display"
+            ></div>
+
+            <div
+                id="army-strength-display"
+                class="army-strength-display"
+            ></div>
+
+        </div>
 
     </div>
 
-</div>
 
-
-<script type="module" src="js/main.js"></script>
-<script src="music.js"></script>
+    <script type="module" src="js/main.js"></script>
+    <script src="music.js"></script>
 
 </body>
 </html>
