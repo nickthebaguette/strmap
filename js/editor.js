@@ -38,7 +38,10 @@ import {
 import {
     armies,
     loadArmies,
-    createArmiesJSON
+    createArmiesJSON,
+    getSoldierIconCount,
+    MEN_PER_SOLDIER_ICON,
+    MAX_SOLDIER_ICONS
 } from "./shared/armies.js";
 
 import {
@@ -94,6 +97,9 @@ const armyCountry =
 
 const armyStrength =
     document.getElementById("army-strength");
+
+const armyManpower =
+    document.getElementById("army-manpower");
 
 const selectedTile =
     document.getElementById("selected-tile");
@@ -242,6 +248,9 @@ async function startEditor() {
 
 
     updateSelectionDisplay();
+
+
+    updateManpowerDisplay();
 
 
     setTool("select");
@@ -457,6 +466,108 @@ function setTool(tool) {
         `Tool: ${tool}`;
 
 }
+
+
+// ============================================================
+// UPDATE MANPOWER DISPLAY
+// ============================================================
+//
+// Updates the soldier silhouette icons based on the current
+// army strength value.
+//
+// Each filled icon represents 25,000 men.
+//
+// ============================================================
+
+function updateManpowerDisplay() {
+
+    const strength =
+        Number(
+            armyStrength.value
+        ) || 0;
+
+
+    const filledCount =
+        getSoldierIconCount(
+            strength
+        );
+
+
+    const soldierIcons =
+        armyManpower.querySelectorAll(
+            ".soldier-icon"
+        );
+
+
+    soldierIcons.forEach(
+        (
+            icon,
+            index
+        ) => {
+
+            const isFilled =
+                index < filledCount;
+
+
+            icon.classList.toggle(
+                "filled",
+                isFilled
+            );
+
+
+            // ------------------------------------------------
+            // Use country color for filled icons.
+            // ------------------------------------------------
+
+            const countryId =
+                armyCountry.value;
+
+
+            const country =
+                countries[countryId];
+
+
+            if (
+                isFilled &&
+                country
+            ) {
+
+                icon.style.color =
+                    country.color;
+
+            }
+
+            else {
+
+                icon.style.color =
+                    "";
+
+            }
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// ARMY STRENGTH INPUT
+// ============================================================
+
+armyStrength.addEventListener(
+    "input",
+    updateManpowerDisplay
+);
+
+
+// ============================================================
+// ARMY COUNTRY CHANGE
+// ============================================================
+
+armyCountry.addEventListener(
+    "change",
+    updateManpowerDisplay
+);
 
 
 // ============================================================
@@ -1012,6 +1123,9 @@ function placeArmy(tile) {
 
     selectTile(tile);
 
+
+    updateManpowerDisplay();
+
 }
 
 
@@ -1268,6 +1382,25 @@ canvas.addEventListener(
             selectTile(tile);
 
 
+            if (selectedArmy) {
+
+                armyName.value =
+                    selectedArmy.name;
+
+
+                armyCountry.value =
+                    selectedArmy.country;
+
+
+                armyStrength.value =
+                    selectedArmy.strength;
+
+            }
+
+
+            updateManpowerDisplay();
+
+
             status.textContent =
                 `Army position selected: ${
                     tile.col
@@ -1339,246 +1472,4 @@ canvas.addEventListener(
 
 
         lastY =
-            event.clientY;
-
-    }
-);
-
-
-canvas.addEventListener(
-    "mousemove",
-    event => {
-
-        if (!dragging) {
-
-            return;
-
-        }
-
-
-        const dx =
-            event.clientX -
-            lastX;
-
-
-        const dy =
-            event.clientY -
-            lastY;
-
-
-        if (
-            Math.abs(dx) > 2 ||
-            Math.abs(dy) > 2
-        ) {
-
-            wasDragging =
-                true;
-
-        }
-
-
-        panCamera(
-            canvas,
-            dx,
-            dy
-        );
-
-
-        lastX =
-            event.clientX;
-
-
-        lastY =
-            event.clientY;
-
-    }
-);
-
-
-window.addEventListener(
-    "mouseup",
-    () => {
-
-        dragging =
-            false;
-
-    }
-);
-
-
-window.addEventListener(
-    "blur",
-    () => {
-
-        dragging =
-            false;
-
-    }
-);
-
-
-// ============================================================
-// ZOOM
-// ============================================================
-
-canvas.addEventListener(
-    "wheel",
-    event => {
-
-        event.preventDefault();
-
-
-        zoomCamera(
-            canvas,
             event
-        );
-
-    },
-    {
-        passive: false
-    }
-);
-
-
-// ============================================================
-// DOWNLOAD JSON
-// ============================================================
-
-function downloadJSON(
-    filename,
-    data
-) {
-
-    const json =
-        JSON.stringify(
-            data,
-            null,
-            2
-        );
-
-
-    const blob =
-        new Blob(
-            [json],
-            {
-                type:
-                    "application/json"
-            }
-        );
-
-
-    const url =
-        URL.createObjectURL(blob);
-
-
-    const link =
-        document.createElement("a");
-
-
-    link.href =
-        url;
-
-
-    link.download =
-        filename;
-
-
-    document.body.appendChild(link);
-
-
-    link.click();
-
-
-    link.remove();
-
-
-    URL.revokeObjectURL(url);
-
-
-    status.textContent =
-        `Downloaded ${filename}`;
-
-}
-
-
-// ============================================================
-// DOWNLOAD MAP
-// ============================================================
-
-document
-    .getElementById("download-map")
-    .addEventListener(
-        "click",
-        () => {
-
-            downloadJSON(
-                "map.json",
-                createMapJSON()
-            );
-
-        }
-    );
-
-
-// ============================================================
-// DOWNLOAD TERRAIN
-// ============================================================
-
-document
-    .getElementById("download-terrain")
-    .addEventListener(
-        "click",
-        () => {
-
-            downloadJSON(
-                "terrain.json",
-                createTerrainJSON()
-            );
-
-        }
-    );
-
-
-// ============================================================
-// DOWNLOAD CITIES
-// ============================================================
-
-document
-    .getElementById("download-cities")
-    .addEventListener(
-        "click",
-        () => {
-
-            downloadJSON(
-                "cities.json",
-                createCitiesJSON()
-            );
-
-        }
-    );
-
-
-// ============================================================
-// DOWNLOAD ARMIES
-// ============================================================
-
-document
-    .getElementById("download-armies")
-    .addEventListener(
-        "click",
-        () => {
-
-            downloadJSON(
-                "armies.json",
-                createArmiesJSON()
-            );
-
-        }
-    );
-
-
-// ============================================================
-// START
-// ============================================================
-
-startEditor();
