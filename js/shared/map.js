@@ -143,7 +143,7 @@ export let ROWS = 60;
 //
 // ============================================================
 
-export const HEX_SIZE = 20;
+export const HEX_SIZE = 24;
 
 
 export const HEX_WIDTH =
