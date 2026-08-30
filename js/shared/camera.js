@@ -20,10 +20,10 @@ export const FRAME_OVERHANG =
     HEX_SIZE * 0.5;
 
 export const FRAME_WIDTH =
-    7;
+    8;
 
 export const FRAME_COLOR =
-    "#252522";
+    "#3a3a36";
 
 
 // Outer frame.
@@ -113,11 +113,6 @@ export function worldToScreen(
 
 // ============================================================
 // CAMERA BOUNDS
-// ============================================================
-//
-// The camera is allowed to see the outer frame, but cannot
-// move beyond it.
-//
 // ============================================================
 
 export function getCameraBounds() {
@@ -310,11 +305,22 @@ export function resizeCamera(
     canvas
 ) {
 
+    const DPR =
+        window.devicePixelRatio || 1;
+
+
     canvas.width =
-        window.innerWidth;
+        window.innerWidth * DPR;
 
     canvas.height =
-        window.innerHeight;
+        window.innerHeight * DPR;
+
+
+    canvas.style.width =
+        window.innerWidth + "px";
+
+    canvas.style.height =
+        window.innerHeight + "px";
 
 
     updateMinimumZoom(
@@ -348,103 +354,3 @@ export function resizeCamera(
 // ============================================================
 
 export function zoomCamera(
-    canvas,
-    event
-) {
-
-    const rect =
-        canvas.getBoundingClientRect();
-
-
-    const mouseX =
-        event.clientX -
-        rect.left;
-
-    const mouseY =
-        event.clientY -
-        rect.top;
-
-
-    const before =
-        screenToWorld(
-            mouseX,
-            mouseY
-        );
-
-
-    if (
-        event.deltaY < 0
-    ) {
-
-        camera.zoom *=
-            1.1;
-
-    }
-
-    else {
-
-        camera.zoom *=
-            0.9;
-
-    }
-
-
-    camera.zoom =
-        Math.max(
-            MIN_ZOOM,
-            Math.min(
-                MAX_ZOOM,
-                camera.zoom
-            )
-        );
-
-
-    const after =
-        screenToWorld(
-            mouseX,
-            mouseY
-        );
-
-
-    camera.x +=
-        before.x -
-        after.x;
-
-
-    camera.y +=
-        before.y -
-        after.y;
-
-
-    clampCamera(
-        canvas
-    );
-
-}
-
-
-// ============================================================
-// PAN
-// ============================================================
-
-export function panCamera(
-    canvas,
-    dx,
-    dy
-) {
-
-    camera.x -=
-        dx /
-        camera.zoom;
-
-
-    camera.y -=
-        dy /
-        camera.zoom;
-
-
-    clampCamera(
-        canvas
-    );
-
-}
