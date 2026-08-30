@@ -171,78 +171,6 @@ body {
 }
 
 /* ============================================================
-   MANPOWER SECTION
-   ============================================================ */
-
-.manpower-section {
-    margin-top: 18px;
-
-    padding-top: 14px;
-
-    border-top:
-        1px solid
-        rgba(255, 255, 255, 0.08);
-}
-
-.manpower-label {
-    font-size: 12px;
-
-    font-weight: 600;
-
-    letter-spacing:
-        1px;
-
-    text-transform:
-        uppercase;
-
-    color:
-        #a89f8a;
-
-    margin-bottom:
-        10px;
-}
-
-.manpower-icons {
-    display: flex;
-
-    gap: 12px;
-
-    align-items: center;
-}
-
-/* ============================================================
-   SOLDIER ICONS
-   ============================================================ */
-
-.soldier-icon {
-    display: inline-flex;
-
-    width: 32px;
-
-    height: 32px;
-
-    color:
-        rgba(0, 0, 0, 0.35);
-
-    transition:
-        color 0.25s ease;
-}
-
-.soldier-icon svg {
-    width: 100%;
-
-    height: 100%;
-}
-
-.soldier-icon.filled {
-    filter:
-        drop-shadow(
-            0 1px 3px
-            rgba(0, 0, 0, 0.4)
-        );
-}
-
-/* ============================================================
    ARMY SECTION
    ============================================================ */
 
@@ -291,6 +219,84 @@ body {
 
     color:
         #c9c0aa;
+}
+
+/* ============================================================
+   MANPOWER SECTION
+   ============================================================ */
+
+.manpower-section {
+    margin-top: 18px;
+
+    padding-top: 14px;
+
+    border-top:
+        1px solid
+        rgba(255, 255, 255, 0.08);
+}
+
+.manpower-label {
+    font-size: 12px;
+
+    font-weight: 600;
+
+    letter-spacing:
+        1px;
+
+    text-transform:
+        uppercase;
+
+    color:
+        #a89f8a;
+
+    margin-bottom:
+        10px;
+}
+
+.manpower-icons {
+    display: flex;
+
+    gap: 16px;
+
+    align-items: center;
+
+    padding: 2px 0;
+}
+
+/* ============================================================
+   SOLDIER ICONS
+   ============================================================ */
+
+.soldier-icon {
+    display: inline-flex;
+
+    width: 42px;
+
+    height: 42px;
+
+    color:
+        rgba(0, 0, 0, 0.45);
+
+    transition:
+        color 0.25s ease,
+        transform 0.15s ease;
+}
+
+.soldier-icon svg {
+    width: 100%;
+
+    height: 100%;
+}
+
+.soldier-icon.filled {
+    filter:
+        drop-shadow(
+            0 2px 4px
+            rgba(0, 0, 0, 0.5)
+        );
+
+    transform:
+        scale(1.05);
 }
 
 /* ============================================================
@@ -415,8 +421,12 @@ body {
     }
 
     .soldier-icon {
-        width: 24px;
+        width: 30px;
 
-        height: 24px;
+        height: 30px;
+    }
+
+    .manpower-icons {
+        gap: 10px;
     }
 }
