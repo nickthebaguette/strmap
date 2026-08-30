@@ -3,8 +3,13 @@
 // ============================================================
 
 import {
-    hexToWorld
+    hexToWorld,
+    HEX_SIZE
 } from "./map.js";
+
+import {
+    getCountryFlagPath
+} from "./countryFlags.js";
 
 
 // ============================================================
@@ -15,23 +20,49 @@ export const armies = [];
 
 
 // ============================================================
-// ARMY ICON CACHE
+// ARMY FLAG SIZE
+// ============================================================
+//
+// Square flag markers should fit neatly inside a hex.
+//
+// HEX_SIZE is the radius of a hex from centre to vertex.
+//
+// A square slightly larger than the hex's inner radius works
+// well visually without covering the entire hex.
+//
 // ============================================================
 
-const iconCache = {};
+const ARMY_FLAG_SIZE =
+    HEX_SIZE * 1.4;
 
 
 // ============================================================
-// LOAD ICON
+// FLAG CACHE
+// ============================================================
+//
+// Cache flag images by country ID so we don't create a new
+// Image object for every army on every frame.
+//
 // ============================================================
 
-function getArmyIcon(
-    path
+const flagCache = {};
+
+
+// ============================================================
+// GET COUNTRY FLAG IMAGE
+// ============================================================
+
+function getCountryFlagImage(
+    countryId
 ) {
 
-    if (
-        !path
-    ) {
+    const path =
+        getCountryFlagPath(
+            countryId
+        );
+
+
+    if (!path) {
 
         return null;
 
@@ -41,10 +72,10 @@ function getArmyIcon(
     // Already loaded / loading.
 
     if (
-        iconCache[path]
+        flagCache[path]
     ) {
 
-        return iconCache[path];
+        return flagCache[path];
 
     }
 
@@ -52,11 +83,12 @@ function getArmyIcon(
     const image =
         new Image();
 
+
     image.src =
         path;
 
 
-    iconCache[path] =
+    flagCache[path] =
         image;
 
 
@@ -84,40 +116,28 @@ export function drawArmies(
             );
 
 
-        const size =
-            22;
-
-
-        const icon =
-            getArmyIcon(
-                army.icon
+        const flag =
+            getCountryFlagImage(
+                army.country
             );
 
 
         // ----------------------------------------------------
-        // ICON
+        // FLAG
         // ----------------------------------------------------
 
         if (
-            icon &&
-            icon.complete &&
-            icon.naturalWidth > 0
+            flag &&
+            flag.complete &&
+            flag.naturalWidth > 0
         ) {
 
-            ctx.drawImage(
-
-                icon,
-
-                world.x -
-                size / 2,
-
-                world.y -
-                size / 2,
-
-                size,
-
-                size
-
+            drawFlagContain(
+                ctx,
+                flag,
+                world.x,
+                world.y,
+                ARMY_FLAG_SIZE
             );
 
         }
@@ -148,11 +168,113 @@ export function drawArmies(
             ctx.fillStyle =
                 "#ffffff";
 
+
             ctx.fill();
 
         }
 
     }
+
+}
+
+
+// ============================================================
+// DRAW FLAG WITH CONTAIN BEHAVIOUR
+// ============================================================
+//
+// Draws the flag inside a square destination box while
+// preserving the source image's aspect ratio.
+//
+// The flag is centred within the square.
+//
+// This is the canvas equivalent of:
+//
+//     object-fit: contain;
+//     object-position: center;
+//
+// ============================================================
+
+function drawFlagContain(
+    ctx,
+    image,
+    centerX,
+    centerY,
+    boxSize
+) {
+
+    const sourceWidth =
+        image.naturalWidth;
+
+
+    const sourceHeight =
+        image.naturalHeight;
+
+
+    if (
+        sourceWidth <= 0 ||
+        sourceHeight <= 0
+    ) {
+
+        return;
+
+    }
+
+
+    // --------------------------------------------------------
+    // Calculate scale to fit inside the box.
+    // --------------------------------------------------------
+
+    const scale =
+        Math.min(
+
+            boxSize /
+            sourceWidth,
+
+            boxSize /
+            sourceHeight
+
+        );
+
+
+    const drawWidth =
+        sourceWidth *
+        scale;
+
+
+    const drawHeight =
+        sourceHeight *
+        scale;
+
+
+    // --------------------------------------------------------
+    // Centre within the box.
+    // --------------------------------------------------------
+
+    const drawX =
+        centerX -
+        drawWidth / 2;
+
+
+    const drawY =
+        centerY -
+        drawHeight / 2;
+
+
+    // --------------------------------------------------------
+    // Draw.
+    // --------------------------------------------------------
+
+    ctx.drawImage(
+
+        image,
+
+        drawX,
+        drawY,
+
+        drawWidth,
+        drawHeight
+
+    );
 
 }
 
@@ -227,6 +349,15 @@ export async function loadArmies() {
             }
 
 
+            // ----------------------------------------------------
+            // The old icon field is no longer used for rendering.
+            //
+            // It is still read here for backward compatibility
+            // with existing armies.json files, but it will be
+            // ignored by drawArmies().
+            //
+            // ----------------------------------------------------
+
             armies.push({
 
                 id:
@@ -246,10 +377,6 @@ export async function loadArmies() {
                     Number(
                         armyData.strength
                     ) || 0,
-
-                icon:
-                    armyData.icon ||
-                    "icons/armies/army.png",
 
                 col:
                     col,
@@ -282,6 +409,9 @@ export async function loadArmies() {
 //
 // Produces the structure used by data/armies.json.
 //
+// The old icon field is deliberately omitted because the flag
+// is now derived automatically from the country.
+//
 // ============================================================
 
 export function createArmiesJSON() {
@@ -304,9 +434,6 @@ export function createArmiesJSON() {
                     strength:
                         army.strength,
 
-                    icon:
-                        army.icon,
-
                     col:
                         army.col,
 
@@ -319,4 +446,3 @@ export function createArmiesJSON() {
     };
 
 }
-
