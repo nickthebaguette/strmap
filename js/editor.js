@@ -469,14 +469,68 @@ function setTool(tool) {
 
 
 // ============================================================
-// UPDATE MANPOWER DISPLAY
+// COLORIZE ICON
 // ============================================================
-//
-// Updates the soldier silhouette icons based on the current
-// army strength value.
-//
-// Each filled icon represents 25,000 men.
-//
+
+function colorizeIcon(
+    icon,
+    hexColor
+) {
+
+    const value =
+        hexColor.replace(
+            "#",
+            ""
+        );
+
+
+    const r =
+        parseInt(
+            value.substring(0, 2),
+            16
+        );
+
+
+    const g =
+        parseInt(
+            value.substring(2, 4),
+            16
+        );
+
+
+    const b =
+        parseInt(
+            value.substring(4, 6),
+            16
+        );
+
+
+    icon.style.filter =
+
+        `brightness(0) ` +
+        `saturate(100%) ` +
+        `invert(${r / 255}) ` +
+        `sepia(100%) ` +
+        `saturate(200%) ` +
+        `hue-rotate(${
+            Math.round(
+                (
+                    (g / 255) * 360 +
+                    (b / 255) * 360
+                ) / 2
+            )
+        }deg) ` +
+        `brightness(${
+            Math.round(
+                (r / 255) * 100
+            ) / 100
+        })`;
+
+}
+
+
+// ============================================================
+// UPDATE MANPOWER DISPLAY
 // ============================================================
 
 function updateManpowerDisplay() {
@@ -499,6 +553,14 @@ function updateManpowerDisplay() {
         );
 
 
+    const countryId =
+        armyCountry.value;
+
+
+    const country =
+        countries[countryId];
+
+
     soldierIcons.forEach(
         (
             icon,
@@ -515,32 +577,22 @@ function updateManpowerDisplay() {
             );
 
 
-            // ------------------------------------------------
-            // Use country color for filled icons.
-            // ------------------------------------------------
-
-            const countryId =
-                armyCountry.value;
-
-
-            const country =
-                countries[countryId];
-
-
             if (
                 isFilled &&
                 country
             ) {
 
-                icon.style.color =
-                    country.color;
+                colorizeIcon(
+                    icon,
+                    country.color
+                );
 
             }
 
             else {
 
-                icon.style.color =
-                    "";
+                icon.style.filter =
+                    "brightness(0)";
 
             }
 
@@ -1416,14 +1468,6 @@ canvas.addEventListener(
 
 // ============================================================
 // PAN CAMERA
-// ============================================================
-//
-// Same basic behaviour as main.js:
-//
-// • Left mouse pans in Select mode.
-// • Shift + left mouse pans in editing modes.
-// • Space + left mouse also pans.
-//
 // ============================================================
 
 let dragging =
