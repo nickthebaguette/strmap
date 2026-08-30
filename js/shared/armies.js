@@ -276,6 +276,8 @@ function drawFlagContain(
 
     );
 
+    ctx.imageSmoothingEnabled = true
+
 }
 
 
