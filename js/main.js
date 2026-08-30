@@ -127,6 +127,26 @@ const tooltipManpower =
 
 
 // ============================================================
+// LOADING OVERLAY
+// ============================================================
+
+const loadingOverlay =
+    document.getElementById(
+        "loading-overlay"
+    );
+
+const dateDisplay =
+    document.getElementById(
+        "date-display"
+    );
+
+const compassRose =
+    document.getElementById(
+        "compass-rose"
+    );
+
+
+// ============================================================
 // INITIALIZE
 // ============================================================
 
@@ -209,6 +229,159 @@ async function start() {
 
     draw(ctx, canvas);
 
+
+    // --------------------------------------------------------
+    // LOADING SEQUENCE
+    // --------------------------------------------------------
+
+    runLoadingSequence();
+
+}
+
+
+// ============================================================
+// RUN LOADING SEQUENCE
+// ============================================================
+//
+// 1. Black overlay fades out.
+// 2. Date appears centered.
+// 3. Date floats to corner.
+// 4. Compass rose fades in.
+//
+// ============================================================
+
+function runLoadingSequence() {
+
+    // --------------------------------------------------------
+    // Show date in center position
+    // --------------------------------------------------------
+
+    dateDisplay.style.display =
+        "block";
+
+
+    dateDisplay.classList.add(
+        "center"
+    );
+
+
+    // --------------------------------------------------------
+    // Fade out black overlay
+    // --------------------------------------------------------
+
+    setTimeout(
+        () => {
+
+            loadingOverlay.classList.add(
+                "fade-out"
+            );
+
+        },
+        300
+    );
+
+
+    // --------------------------------------------------------
+    // Float date to corner
+    // --------------------------------------------------------
+
+    setTimeout(
+        () => {
+
+            dateDisplay.classList.remove(
+                "center"
+            );
+
+
+            dateDisplay.classList.add(
+                "corner"
+            );
+
+        },
+        1800
+    );
+
+
+    // --------------------------------------------------------
+    // Show compass rose
+    // --------------------------------------------------------
+
+    setTimeout(
+        () => {
+
+            compassRose.style.display =
+                "block";
+
+        },
+        2200
+    );
+
+
+    // --------------------------------------------------------
+    // Remove loading overlay from DOM
+    // --------------------------------------------------------
+
+    setTimeout(
+        () => {
+
+            loadingOverlay.style.display =
+                "none";
+
+        },
+        2200
+    );
+
+}
+
+
+// ============================================================
+// DRAW VIGNETTE
+// ============================================================
+//
+// Called after each draw to add atmospheric darkening
+// around the map edges.
+//
+// ============================================================
+
+function drawVignette() {
+
+    const gradient =
+        ctx.createRadialGradient(
+
+            canvas.width / 2,
+            canvas.height / 2,
+            canvas.width * 0.25,
+
+            canvas.width / 2,
+            canvas.height / 2,
+            canvas.width * 0.75
+
+        );
+
+
+    gradient.addColorStop(
+        0,
+        "rgba(0, 0, 0, 0)"
+    );
+
+
+    gradient.addColorStop(
+        1,
+        "rgba(0, 0, 0, 0.35)"
+    );
+
+
+    ctx.fillStyle =
+        gradient;
+
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
 }
 
 
@@ -279,77 +452,6 @@ function updateManpowerDisplay(
 
 
 // ============================================================
-// CREATE MANPOWER ICONS FOR TOOLTIP
-// ============================================================
-
-function createTooltipManpowerIcons(
-    army
-) {
-
-    tooltipManpower.innerHTML =
-        "";
-
-
-    const filledCount =
-        getSoldierIconCount(
-            army.strength
-        );
-
-
-    const country =
-        countries[
-            army.country
-        ];
-
-
-    for (
-        let i = 0;
-        i < 4;
-        i++
-    ) {
-
-        const icon =
-            document.createElement("div");
-
-
-        icon.classList.add(
-            "soldier-icon"
-        );
-
-
-        if (
-            i < filledCount &&
-            country
-        ) {
-
-            icon.classList.add(
-                "filled"
-            );
-
-
-            icon.style.backgroundColor =
-                country.color;
-
-        }
-
-        else {
-
-            icon.style.backgroundColor =
-                "rgba(0, 0, 0, 0.5)";
-
-        }
-
-
-        tooltipManpower.appendChild(
-            icon
-        );
-
-    }
-
-}
-
-
-// ============================================================
 // FIND CITY AT TILE
 // ============================================================
 
@@ -402,25 +504,13 @@ function updateTerritoryPanel(
     country
 ) {
 
-    // --------------------------------------------------------
-    // Territory name
-    // --------------------------------------------------------
-
     territoryName.textContent =
         country.name;
 
 
-    // --------------------------------------------------------
-    // Tile coordinates
-    // --------------------------------------------------------
-
     territoryOwner.textContent =
         `Tile: ${tile.col}, ${tile.row}`;
 
-
-    // --------------------------------------------------------
-    // Country flag
-    // --------------------------------------------------------
 
     setCountryFlag(
         territoryFlag,
@@ -428,19 +518,11 @@ function updateTerritoryPanel(
     );
 
 
-    // --------------------------------------------------------
-    // Find army on this tile
-    // --------------------------------------------------------
-
     const army =
         getArmyAtTile(tile);
 
 
     if (army) {
-
-        // ----------------------------------------------------
-        // Show army information
-        // ----------------------------------------------------
 
         territoryArmy.style.display =
             "block";
@@ -454,10 +536,6 @@ function updateTerritoryPanel(
             `${army.strength.toLocaleString()} men`;
 
 
-        // ----------------------------------------------------
-        // Show manpower
-        // ----------------------------------------------------
-
         territoryManpower.style.display =
             "block";
 
@@ -470,10 +548,6 @@ function updateTerritoryPanel(
     }
 
     else {
-
-        // ----------------------------------------------------
-        // Hide army information
-        // ----------------------------------------------------
 
         territoryArmy.style.display =
             "none";
@@ -511,10 +585,6 @@ function showHoverTooltip(
         getArmyAtTile(tile);
 
 
-    // --------------------------------------------------------
-    // Country
-    // --------------------------------------------------------
-
     if (country) {
 
         tooltipCountry.textContent =
@@ -533,10 +603,6 @@ function showHoverTooltip(
 
     }
 
-
-    // --------------------------------------------------------
-    // City
-    // --------------------------------------------------------
 
     if (city) {
 
@@ -557,10 +623,6 @@ function showHoverTooltip(
     }
 
 
-    // --------------------------------------------------------
-    // Army
-    // --------------------------------------------------------
-
     if (army) {
 
         tooltipArmy.textContent =
@@ -570,27 +632,6 @@ function showHoverTooltip(
         tooltipArmy.style.display =
             "block";
 
-
-        // ----------------------------------------------------
-        // Strength
-        // ----------------------------------------------------
-
-        const strengthText =
-            document.createElement("div");
-
-
-        strengthText.classList.add(
-            "tooltip-strength"
-        );
-
-
-        strengthText.textContent =
-            `${army.strength.toLocaleString()} men`;
-
-
-        // ----------------------------------------------------
-        // Manpower icons
-        // ----------------------------------------------------
 
         tooltipManpower.innerHTML =
             "";
@@ -651,6 +692,19 @@ function showHoverTooltip(
         }
 
 
+        const strengthText =
+            document.createElement("div");
+
+
+        strengthText.classList.add(
+            "tooltip-strength"
+        );
+
+
+        strengthText.textContent =
+            `${army.strength.toLocaleString()} men`;
+
+
         tooltipManpower.appendChild(
             strengthText
         );
@@ -668,10 +722,6 @@ function showHoverTooltip(
 
     }
 
-
-    // --------------------------------------------------------
-    // Position tooltip
-    // --------------------------------------------------------
 
     hoverTooltip.style.display =
         "block";
@@ -692,10 +742,6 @@ function showHoverTooltip(
     let tooltipY =
         mouseY + offsetY;
 
-
-    // --------------------------------------------------------
-    // Keep tooltip on screen
-    // --------------------------------------------------------
 
     const tooltipRect =
         hoverTooltip.getBoundingClientRect();
@@ -757,6 +803,8 @@ window.addEventListener(
 
         draw(ctx, canvas);
 
+        drawVignette();
+
     }
 );
 
@@ -772,10 +820,6 @@ canvas.addEventListener(
     "click",
     event => {
 
-        // ----------------------------------------------------
-        // Ignore click after dragging
-        // ----------------------------------------------------
-
         if (wasDragging) {
 
             wasDragging = false;
@@ -784,10 +828,6 @@ canvas.addEventListener(
 
         }
 
-
-        // ----------------------------------------------------
-        // SCREEN → WORLD
-        // ----------------------------------------------------
 
         const rect =
             canvas.getBoundingClientRect();
@@ -814,10 +854,6 @@ canvas.addEventListener(
         };
 
 
-        // ----------------------------------------------------
-        // FIND TILE
-        // ----------------------------------------------------
-
         const tile =
             getTileAt(
                 world.x,
@@ -832,10 +868,6 @@ canvas.addEventListener(
         }
 
 
-        // ----------------------------------------------------
-        // FIND COUNTRY
-        // ----------------------------------------------------
-
         const country =
             countries[
                 tile.owner
@@ -848,10 +880,6 @@ canvas.addEventListener(
 
         }
 
-
-        // ----------------------------------------------------
-        // UPDATE TERRITORY PANEL
-        // ----------------------------------------------------
 
         updateTerritoryPanel(
             tile,
@@ -870,10 +898,6 @@ canvas.addEventListener(
     "mousemove",
     event => {
 
-        // ----------------------------------------------------
-        // If dragging, don't show tooltip
-        // ----------------------------------------------------
-
         if (dragging) {
 
             hideHoverTooltip();
@@ -882,10 +906,6 @@ canvas.addEventListener(
 
         }
 
-
-        // ----------------------------------------------------
-        // SCREEN → WORLD
-        // ----------------------------------------------------
 
         const rect =
             canvas.getBoundingClientRect();
@@ -912,10 +932,6 @@ canvas.addEventListener(
         };
 
 
-        // ----------------------------------------------------
-        // FIND TILE
-        // ----------------------------------------------------
-
         const tile =
             getTileAt(
                 world.x,
@@ -931,10 +947,6 @@ canvas.addEventListener(
 
         }
 
-
-        // ----------------------------------------------------
-        // SHOW TOOLTIP
-        // ----------------------------------------------------
 
         showHoverTooltip(
             tile,
@@ -1044,6 +1056,9 @@ canvas.addEventListener(
             canvas
         );
 
+
+        drawVignette();
+
     }
 );
 
@@ -1083,6 +1098,9 @@ canvas.addEventListener(
             ctx,
             canvas
         );
+
+
+        drawVignette();
 
 
         hideHoverTooltip();
