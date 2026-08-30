@@ -74,7 +74,7 @@
     },
     {
       "id": 10,
-      "name": "SSLBSTAH",
+      "name": "family friendly name1",
       "country": "prussia",
       "strength": 75000,
       "col": 45,
@@ -82,7 +82,7 @@
     },
     {
       "id": 11,
-      "name": "SSVLKSTRM",
+      "name": "family friendly name2",
       "country": "prussia",
       "strength": 100000,
       "col": 51,
@@ -90,7 +90,7 @@
     },
     {
       "id": 12,
-      "name": "gory's vengeance",
+      "name": "nothing to see here gory",
       "country": "bavaria",
       "strength": 100000,
       "col": 44,
@@ -106,7 +106,7 @@
     },
     {
       "id": 14,
-      "name": "greetings all spanish fellers",
+      "name": "spanish people",
       "country": "spain",
       "strength": 75000,
       "col": 26,
