@@ -153,150 +153,6 @@ let selectedArmy =
 
 
 // ============================================================
-// SOLDIER ICON CACHE
-// ============================================================
-
-const soldierIconCache = {};
-
-let baseSoldierImage = null;
-
-
-function loadBaseSoldierImage() {
-
-    return new Promise(
-        (resolve) => {
-
-            const image =
-                new Image();
-
-
-            image.onload =
-                () => {
-
-                    baseSoldierImage =
-                        image;
-
-                    resolve();
-
-                };
-
-
-            image.onerror =
-                () => {
-
-                    console.warn(
-                        "Could not load soldier icon."
-                    );
-
-                    resolve();
-
-                };
-
-
-            image.src =
-                "icons/misc/strengthunit.png";
-
-        }
-    );
-
-}
-
-
-// ============================================================
-// GET SOLDIER ICON FOR COUNTRY
-// ============================================================
-
-function getSoldierIconForCountry(
-    countryId
-) {
-
-    if (
-        !baseSoldierImage ||
-        !baseSoldierImage.complete
-    ) {
-
-        return null;
-
-    }
-
-
-    const country =
-        countries[countryId];
-
-
-    if (!country) {
-
-        return null;
-
-    }
-
-
-    const cacheKey =
-        countryId;
-
-
-    if (
-        soldierIconCache[cacheKey]
-    ) {
-
-        return soldierIconCache[cacheKey];
-
-    }
-
-
-    // --------------------------------------------------------
-    // Create tinted version
-    // --------------------------------------------------------
-
-    const tintedCanvas =
-        document.createElement("canvas");
-
-
-    tintedCanvas.width =
-        baseSoldierImage.naturalWidth;
-
-
-    tintedCanvas.height =
-        baseSoldierImage.naturalHeight;
-
-
-    const tintedCtx =
-        tintedCanvas.getContext("2d");
-
-
-    tintedCtx.drawImage(
-        baseSoldierImage,
-        0,
-        0
-    );
-
-
-    tintedCtx.globalCompositeOperation =
-        "source-in";
-
-
-    tintedCtx.fillStyle =
-        country.color;
-
-
-    tintedCtx.fillRect(
-        0,
-        0,
-        tintedCanvas.width,
-        tintedCanvas.height
-    );
-
-
-    soldierIconCache[cacheKey] =
-        tintedCanvas;
-
-
-    return tintedCanvas;
-
-}
-
-
-// ============================================================
 // INITIALIZATION
 // ============================================================
 
@@ -306,13 +162,6 @@ async function startEditor() {
         "Loading map...";
 
     resizeCamera(canvas);
-
-
-    // --------------------------------------------------------
-    // LOAD SOLDIER ICON
-    // --------------------------------------------------------
-
-    await loadBaseSoldierImage();
 
 
     // --------------------------------------------------------
@@ -672,35 +521,15 @@ function updateManpowerDisplay() {
                 country
             ) {
 
-                const tintedCanvas =
-                    getSoldierIconForCountry(
-                        countryId
-                    );
-
-
-                if (
-                    tintedCanvas
-                ) {
-
-                    icon.src =
-                        tintedCanvas.toDataURL();
-
-                }
-
-
-                icon.style.opacity =
-                    "1";
+                icon.style.backgroundColor =
+                    country.color;
 
             }
 
             else {
 
-                icon.src =
-                    "icons/misc/strengthunit.png";
-
-
-                icon.style.opacity =
-                    "0.35";
+                icon.style.backgroundColor =
+                    "rgba(0, 0, 0, 0.45)";
 
             }
 
