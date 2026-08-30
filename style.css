@@ -256,7 +256,7 @@ body {
 .manpower-icons {
     display: flex;
 
-    gap: 16px;
+    gap: 14px;
 
     align-items: center;
 
@@ -266,34 +266,46 @@ body {
 /* ============================================================
    SOLDIER ICONS
    ============================================================ */
+   
+/* ============================================================
+   SOLDIER ICONS
+   ============================================================
+   
+   Empty icons use a dark silhouette.
+   Filled icons use the country color via CSS filter.
+   
+   The filter is applied from JavaScript to colorize the
+   PNG to match the country's color.
+   
+   ============================================================ */
 
 .soldier-icon {
-    display: inline-flex;
+    display: block;
 
     width: 42px;
 
     height: 42px;
 
-    color:
-        rgba(0, 0, 0, 0.45);
+    object-fit: contain;
+
+    object-position: center;
+
+    opacity: 0.35;
+
+    filter:
+        brightness(0) invert(0);
 
     transition:
-        color 0.25s ease,
+        opacity 0.25s ease,
+        filter 0.25s ease,
         transform 0.15s ease;
 }
 
-.soldier-icon svg {
-    width: 100%;
-
-    height: 100%;
-}
-
 .soldier-icon.filled {
+    opacity: 1;
+
     filter:
-        drop-shadow(
-            0 2px 4px
-            rgba(0, 0, 0, 0.5)
-        );
+        brightness(1);
 
     transform:
         scale(1.05);
