@@ -97,6 +97,36 @@ const armyStrengthDisplay =
 
 
 // ============================================================
+// HOVER TOOLTIP
+// ============================================================
+
+const hoverTooltip =
+    document.getElementById(
+        "hover-tooltip"
+    );
+
+const tooltipCountry =
+    document.getElementById(
+        "tooltip-country"
+    );
+
+const tooltipCity =
+    document.getElementById(
+        "tooltip-city"
+    );
+
+const tooltipArmy =
+    document.getElementById(
+        "tooltip-army"
+    );
+
+const tooltipManpower =
+    document.getElementById(
+        "tooltip-manpower"
+    );
+
+
+// ============================================================
 // INITIALIZE
 // ============================================================
 
@@ -187,7 +217,8 @@ async function start() {
 // ============================================================
 
 function updateManpowerDisplay(
-    army
+    army,
+    container
 ) {
 
     const filledCount =
@@ -197,7 +228,7 @@ function updateManpowerDisplay(
 
 
     const soldierIcons =
-        manpowerIcons.querySelectorAll(
+        container.querySelectorAll(
             ".soldier-icon"
         );
 
@@ -243,6 +274,99 @@ function updateManpowerDisplay(
 
         }
     );
+
+}
+
+
+// ============================================================
+// CREATE MANPOWER ICONS FOR TOOLTIP
+// ============================================================
+
+function createTooltipManpowerIcons(
+    army
+) {
+
+    tooltipManpower.innerHTML =
+        "";
+
+
+    const filledCount =
+        getSoldierIconCount(
+            army.strength
+        );
+
+
+    const country =
+        countries[
+            army.country
+        ];
+
+
+    for (
+        let i = 0;
+        i < 4;
+        i++
+    ) {
+
+        const icon =
+            document.createElement("div");
+
+
+        icon.classList.add(
+            "soldier-icon"
+        );
+
+
+        if (
+            i < filledCount &&
+            country
+        ) {
+
+            icon.classList.add(
+                "filled"
+            );
+
+
+            icon.style.backgroundColor =
+                country.color;
+
+        }
+
+        else {
+
+            icon.style.backgroundColor =
+                "rgba(0, 0, 0, 0.5)";
+
+        }
+
+
+        tooltipManpower.appendChild(
+            icon
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// FIND CITY AT TILE
+// ============================================================
+
+function getCityAtTile(tile) {
+
+    if (!tile) {
+
+        return null;
+
+    }
+
+
+    return cities.find(
+        city =>
+            city.col === tile.col &&
+            city.row === tile.row
+    ) || null;
 
 }
 
@@ -339,7 +463,8 @@ function updateTerritoryPanel(
 
 
         updateManpowerDisplay(
-            army
+            army,
+            manpowerIcons
         );
 
     }
@@ -358,6 +483,264 @@ function updateTerritoryPanel(
             "none";
 
     }
+
+}
+
+
+// ============================================================
+// SHOW HOVER TOOLTIP
+// ============================================================
+
+function showHoverTooltip(
+    tile,
+    mouseX,
+    mouseY
+) {
+
+    const country =
+        countries[
+            tile.owner
+        ];
+
+
+    const city =
+        getCityAtTile(tile);
+
+
+    const army =
+        getArmyAtTile(tile);
+
+
+    // --------------------------------------------------------
+    // Country
+    // --------------------------------------------------------
+
+    if (country) {
+
+        tooltipCountry.textContent =
+            country.name;
+
+
+        tooltipCountry.style.display =
+            "block";
+
+    }
+
+    else {
+
+        tooltipCountry.style.display =
+            "none";
+
+    }
+
+
+    // --------------------------------------------------------
+    // City
+    // --------------------------------------------------------
+
+    if (city) {
+
+        tooltipCity.textContent =
+            `🏛 ${city.name}`;
+
+
+        tooltipCity.style.display =
+            "block";
+
+    }
+
+    else {
+
+        tooltipCity.style.display =
+            "none";
+
+    }
+
+
+    // --------------------------------------------------------
+    // Army
+    // --------------------------------------------------------
+
+    if (army) {
+
+        tooltipArmy.textContent =
+            `⚔ ${army.name}`;
+
+
+        tooltipArmy.style.display =
+            "block";
+
+
+        // ----------------------------------------------------
+        // Strength
+        // ----------------------------------------------------
+
+        const strengthText =
+            document.createElement("div");
+
+
+        strengthText.classList.add(
+            "tooltip-strength"
+        );
+
+
+        strengthText.textContent =
+            `${army.strength.toLocaleString()} men`;
+
+
+        // ----------------------------------------------------
+        // Manpower icons
+        // ----------------------------------------------------
+
+        tooltipManpower.innerHTML =
+            "";
+
+
+        tooltipManpower.style.display =
+            "flex";
+
+
+        const filledCount =
+            getSoldierIconCount(
+                army.strength
+            );
+
+
+        for (
+            let i = 0;
+            i < 4;
+            i++
+        ) {
+
+            const icon =
+                document.createElement("div");
+
+
+            icon.classList.add(
+                "soldier-icon"
+            );
+
+
+            if (
+                i < filledCount &&
+                country
+            ) {
+
+                icon.classList.add(
+                    "filled"
+                );
+
+
+                icon.style.backgroundColor =
+                    country.color;
+
+            }
+
+            else {
+
+                icon.style.backgroundColor =
+                    "rgba(0, 0, 0, 0.5)";
+
+            }
+
+
+            tooltipManpower.appendChild(
+                icon
+            );
+
+        }
+
+
+        tooltipManpower.appendChild(
+            strengthText
+        );
+
+    }
+
+    else {
+
+        tooltipArmy.style.display =
+            "none";
+
+
+        tooltipManpower.style.display =
+            "none";
+
+    }
+
+
+    // --------------------------------------------------------
+    // Position tooltip
+    // --------------------------------------------------------
+
+    hoverTooltip.style.display =
+        "block";
+
+
+    const offsetX =
+        15;
+
+
+    const offsetY =
+        15;
+
+
+    let tooltipX =
+        mouseX + offsetX;
+
+
+    let tooltipY =
+        mouseY + offsetY;
+
+
+    // --------------------------------------------------------
+    // Keep tooltip on screen
+    // --------------------------------------------------------
+
+    const tooltipRect =
+        hoverTooltip.getBoundingClientRect();
+
+
+    if (
+        tooltipX + tooltipRect.width >
+        window.innerWidth - 10
+    ) {
+
+        tooltipX =
+            mouseX - tooltipRect.width - offsetX;
+
+    }
+
+
+    if (
+        tooltipY + tooltipRect.height >
+        window.innerHeight - 10
+    ) {
+
+        tooltipY =
+            mouseY - tooltipRect.height - offsetY;
+
+    }
+
+
+    hoverTooltip.style.left =
+        tooltipX + "px";
+
+
+    hoverTooltip.style.top =
+        tooltipY + "px";
+
+}
+
+
+// ============================================================
+// HIDE HOVER TOOLTIP
+// ============================================================
+
+function hideHoverTooltip() {
+
+    hoverTooltip.style.display =
+        "none";
 
 }
 
@@ -476,6 +859,100 @@ canvas.addEventListener(
         );
 
     }
+);
+
+
+// ============================================================
+// HOVER
+// ============================================================
+
+canvas.addEventListener(
+    "mousemove",
+    event => {
+
+        // ----------------------------------------------------
+        // If dragging, don't show tooltip
+        // ----------------------------------------------------
+
+        if (dragging) {
+
+            hideHoverTooltip();
+
+            return;
+
+        }
+
+
+        // ----------------------------------------------------
+        // SCREEN → WORLD
+        // ----------------------------------------------------
+
+        const rect =
+            canvas.getBoundingClientRect();
+
+
+        const world = {
+
+            x:
+                (
+                    event.clientX -
+                    rect.left
+                ) /
+                camera.zoom +
+                camera.x,
+
+            y:
+                (
+                    event.clientY -
+                    rect.top
+                ) /
+                camera.zoom +
+                camera.y
+
+        };
+
+
+        // ----------------------------------------------------
+        // FIND TILE
+        // ----------------------------------------------------
+
+        const tile =
+            getTileAt(
+                world.x,
+                world.y
+            );
+
+
+        if (!tile) {
+
+            hideHoverTooltip();
+
+            return;
+
+        }
+
+
+        // ----------------------------------------------------
+        // SHOW TOOLTIP
+        // ----------------------------------------------------
+
+        showHoverTooltip(
+            tile,
+            event.clientX,
+            event.clientY
+        );
+
+    }
+);
+
+
+// ============================================================
+// HIDE TOOLTIP WHEN MOUSE LEAVES
+// ============================================================
+
+canvas.addEventListener(
+    "mouseleave",
+    hideHoverTooltip
 );
 
 
@@ -606,6 +1083,9 @@ canvas.addEventListener(
             ctx,
             canvas
         );
+
+
+        hideHoverTooltip();
 
     }
 );
