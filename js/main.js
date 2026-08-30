@@ -17,12 +17,18 @@ import {
 } from "./shared/camera.js";
 
 import {
-    loadCities
+    cities
 } from "./shared/cities.js";
 
 import {
-    loadArmies
+    armies,
+    loadArmies,
+    getSoldierIconCount
 } from "./shared/armies.js";
+
+import {
+    loadCities
+} from "./shared/cities.js";
 
 import {
     rebuildMapCanvas,
@@ -62,6 +68,31 @@ const territoryOwner =
 const territoryFlag =
     document.getElementById(
         "territory-flag"
+    );
+
+const territoryManpower =
+    document.getElementById(
+        "territory-manpower"
+    );
+
+const manpowerIcons =
+    document.getElementById(
+        "manpower-icons"
+    );
+
+const territoryArmy =
+    document.getElementById(
+        "territory-army"
+    );
+
+const armyNameDisplay =
+    document.getElementById(
+        "army-name-display"
+    );
+
+const armyStrengthDisplay =
+    document.getElementById(
+        "army-strength-display"
     );
 
 
@@ -147,6 +178,194 @@ async function start() {
 
 
     draw(ctx, canvas);
+
+}
+
+
+// ============================================================
+// UPDATE MANPOWER DISPLAY
+// ============================================================
+//
+// Updates the soldier silhouette icons based on army strength.
+//
+// ============================================================
+
+function updateManpowerDisplay(
+    army
+) {
+
+    const filledCount =
+        getSoldierIconCount(
+            army.strength
+        );
+
+
+    const soldierIcons =
+        manpowerIcons.querySelectorAll(
+            ".soldier-icon"
+        );
+
+
+    soldierIcons.forEach(
+        (
+            icon,
+            index
+        ) => {
+
+            const isFilled =
+                index < filledCount;
+
+
+            icon.classList.toggle(
+                "filled",
+                isFilled
+            );
+
+
+            // ------------------------------------------------
+            // Use country color for filled icons.
+            // ------------------------------------------------
+
+            const country =
+                countries[
+                    army.country
+                ];
+
+
+            if (
+                isFilled &&
+                country
+            ) {
+
+                icon.style.color =
+                    country.color;
+
+            }
+
+            else {
+
+                icon.style.color =
+                    "";
+
+            }
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// FIND ARMY AT TILE
+// ============================================================
+
+function getArmyAtTile(tile) {
+
+    if (!tile) {
+
+        return null;
+
+    }
+
+
+    return armies.find(
+        army =>
+            army.col === tile.col &&
+            army.row === tile.row
+    ) || null;
+
+}
+
+
+// ============================================================
+// UPDATE TERRITORY PANEL
+// ============================================================
+
+function updateTerritoryPanel(
+    tile,
+    country
+) {
+
+    // --------------------------------------------------------
+    // Territory name
+    // --------------------------------------------------------
+
+    territoryName.textContent =
+        country.name;
+
+
+    // --------------------------------------------------------
+    // Tile coordinates
+    // --------------------------------------------------------
+
+    territoryOwner.textContent =
+        `Tile: ${tile.col}, ${tile.row}`;
+
+
+    // --------------------------------------------------------
+    // Country flag
+    // --------------------------------------------------------
+
+    setCountryFlag(
+        territoryFlag,
+        tile.owner
+    );
+
+
+    // --------------------------------------------------------
+    // Find army on this tile
+    // --------------------------------------------------------
+
+    const army =
+        getArmyAtTile(tile);
+
+
+    if (army) {
+
+        // ----------------------------------------------------
+        // Show army information
+        // ----------------------------------------------------
+
+        territoryArmy.style.display =
+            "block";
+
+
+        armyNameDisplay.textContent =
+            army.name;
+
+
+        armyStrengthDisplay.textContent =
+            `${army.strength.toLocaleString()} men`;
+
+
+        // ----------------------------------------------------
+        // Show manpower
+        // ----------------------------------------------------
+
+        territoryManpower.style.display =
+            "block";
+
+
+        updateManpowerDisplay(
+            army
+        );
+
+    }
+
+    else {
+
+        // ----------------------------------------------------
+        // Hide army information
+        // ----------------------------------------------------
+
+        territoryArmy.style.display =
+            "none";
+
+
+        territoryManpower.style.display =
+            "none";
+
+    }
 
 }
 
@@ -256,28 +475,12 @@ canvas.addEventListener(
 
 
         // ----------------------------------------------------
-        // UPDATE TERRITORY NAME
+        // UPDATE TERRITORY PANEL
         // ----------------------------------------------------
 
-        territoryName.textContent =
-            country.name;
-
-
-        // ----------------------------------------------------
-        // UPDATE TILE INFORMATION
-        // ----------------------------------------------------
-
-        territoryOwner.textContent =
-            `Tile: ${tile.col}, ${tile.row}`;
-
-
-        // ----------------------------------------------------
-        // UPDATE COUNTRY FLAG
-        // ----------------------------------------------------
-
-        setCountryFlag(
-            territoryFlag,
-            tile.owner
+        updateTerritoryPanel(
+            tile,
+            country
         );
 
     }
