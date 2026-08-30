@@ -35,6 +35,22 @@ import {
 
 
 // ============================================================
+// DEVICE PIXEL RATIO
+// ============================================================
+//
+// Higher DPR means crisper rendering on retina/high-DPI
+// displays.
+//
+// The map cache is rendered at DPR × resolution, then drawn
+// at logical size.
+//
+// ============================================================
+
+const DPR =
+    window.devicePixelRatio || 1;
+
+
+// ============================================================
 // CANVAS
 // ============================================================
 
@@ -491,7 +507,7 @@ function drawHexOnContext(
 
 
     context.lineWidth =
-        0.7;
+        1.0;
 
 
     context.stroke();
@@ -838,15 +854,15 @@ function drawPoliticalBorders() {
 
 
     const COUNTRY_BORDER_WIDTH =
-        1.5;
+        1.8;
 
 
     const COUNTRY_BORDER_SEPARATION =
-        1.7;
+        2.2;
 
 
     const OCEAN_BORDER_WIDTH =
-        1.8;
+        2.0;
 
 
     const OCEAN_BORDER_ALPHA =
@@ -1117,31 +1133,63 @@ function drawPoliticalBorders() {
 // ============================================================
 // MAP CACHE
 // ============================================================
+//
+// Renders the static map at device-pixel-ratio resolution
+// for crisp display on high-DPI screens.
+//
+// ============================================================
 
 export function rebuildMapCanvas() {
 
+    // --------------------------------------------------------
+    // Logical size in world coordinates
+    // --------------------------------------------------------
+
+    const logicalWidth =
+        MAP_WIDTH +
+        FRAME_OVERHANG * 2;
+
+
+    const logicalHeight =
+        MAP_HEIGHT +
+        FRAME_OVERHANG * 2;
+
+
+    // --------------------------------------------------------
+    // Physical size with DPR multiplier
+    // --------------------------------------------------------
+
     mapCanvas.width =
         Math.ceil(
-            MAP_WIDTH +
-            FRAME_OVERHANG * 2
+            logicalWidth * DPR
         );
 
 
     mapCanvas.height =
         Math.ceil(
-            MAP_HEIGHT +
-            FRAME_OVERHANG * 2
+            logicalHeight * DPR
         );
 
 
+    // --------------------------------------------------------
+    // Scale context to draw in logical coordinates
+    // --------------------------------------------------------
+
+    mapCtx.setTransform(
+        DPR,
+        0,
+        0,
+        DPR,
+        0,
+        0
+    );
+
+
     mapCtx.clearRect(
-
         0,
         0,
-
-        mapCanvas.width,
-        mapCanvas.height
-
+        logicalWidth,
+        logicalHeight
     );
 
 
@@ -1293,9 +1341,12 @@ export function rebuildMapCanvas() {
 // ============================================================
 // DRAW
 // ============================================================
-
-// ============================================================
-// DRAW
+//
+// Main drawing function called each frame.
+//
+// The map cache is drawn at its physical resolution, then
+// scaled by the camera transform.
+//
 // ============================================================
 
 export function draw(
@@ -1368,14 +1419,21 @@ export function draw(
     // ========================================================
     // MAP
     // ========================================================
+    //
+    // Draw the high-resolution map cache at logical size.
+    // The camera transform handles scaling.
+    //
+    // ========================================================
 
     ctx.drawImage(
 
         mapCanvas,
 
         -FRAME_OVERHANG,
+        -FRAME_OVERHANG,
 
-        -FRAME_OVERHANG
+        MAP_WIDTH + FRAME_OVERHANG * 2,
+        MAP_HEIGHT + FRAME_OVERHANG * 2
 
     );
 
