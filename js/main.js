@@ -183,11 +183,84 @@ async function start() {
 
 
 // ============================================================
-// UPDATE MANPOWER DISPLAY
+// COLORIZE ICON
 // ============================================================
 //
-// Updates the soldier silhouette icons based on army strength.
+// Applies a CSS filter to colorize a PNG icon to match a
+// target hex color.
 //
+// The icon should be a black silhouette on transparent
+// background for best results.
+//
+// ============================================================
+
+function colorizeIcon(
+    icon,
+    hexColor
+) {
+
+    // --------------------------------------------------------
+    // Convert hex to RGB
+    // --------------------------------------------------------
+
+    const value =
+        hexColor.replace(
+            "#",
+            ""
+        );
+
+
+    const r =
+        parseInt(
+            value.substring(0, 2),
+            16
+        );
+
+
+    const g =
+        parseInt(
+            value.substring(2, 4),
+            16
+        );
+
+
+    const b =
+        parseInt(
+            value.substring(4, 6),
+            16
+        );
+
+
+    // --------------------------------------------------------
+    // Apply filter to match target color
+    // --------------------------------------------------------
+
+    icon.style.filter =
+
+        `brightness(0) ` +
+        `saturate(100%) ` +
+        `invert(${r / 255}) ` +
+        `sepia(100%) ` +
+        `saturate(200%) ` +
+        `hue-rotate(${
+            Math.round(
+                (
+                    (g / 255) * 360 +
+                    (b / 255) * 360
+                ) / 2
+            )
+        }deg) ` +
+        `brightness(${
+            Math.round(
+                (r / 255) * 100
+            ) / 100
+        })`;
+
+}
+
+
+// ============================================================
+// UPDATE MANPOWER DISPLAY
 // ============================================================
 
 function updateManpowerDisplay(
@@ -206,6 +279,12 @@ function updateManpowerDisplay(
         );
 
 
+    const country =
+        countries[
+            army.country
+        ];
+
+
     soldierIcons.forEach(
         (
             icon,
@@ -222,30 +301,22 @@ function updateManpowerDisplay(
             );
 
 
-            // ------------------------------------------------
-            // Use country color for filled icons.
-            // ------------------------------------------------
-
-            const country =
-                countries[
-                    army.country
-                ];
-
-
             if (
                 isFilled &&
                 country
             ) {
 
-                icon.style.color =
-                    country.color;
+                colorizeIcon(
+                    icon,
+                    country.color
+                );
 
             }
 
             else {
 
-                icon.style.color =
-                    "";
+                icon.style.filter =
+                    "brightness(0)";
 
             }
 
@@ -317,310 +388,4 @@ function updateTerritoryPanel(
     // --------------------------------------------------------
 
     const army =
-        getArmyAtTile(tile);
-
-
-    if (army) {
-
-        // ----------------------------------------------------
-        // Show army information
-        // ----------------------------------------------------
-
-        territoryArmy.style.display =
-            "block";
-
-
-        armyNameDisplay.textContent =
-            army.name;
-
-
-        armyStrengthDisplay.textContent =
-            `${army.strength.toLocaleString()} men`;
-
-
-        // ----------------------------------------------------
-        // Show manpower
-        // ----------------------------------------------------
-
-        territoryManpower.style.display =
-            "block";
-
-
-        updateManpowerDisplay(
-            army
-        );
-
-    }
-
-    else {
-
-        // ----------------------------------------------------
-        // Hide army information
-        // ----------------------------------------------------
-
-        territoryArmy.style.display =
-            "none";
-
-
-        territoryManpower.style.display =
-            "none";
-
-    }
-
-}
-
-
-// ============================================================
-// RESIZE
-// ============================================================
-
-window.addEventListener(
-    "resize",
-    () => {
-
-        resizeCamera(canvas);
-
-        draw(ctx, canvas);
-
-    }
-);
-
-
-// ============================================================
-// CLICK
-// ============================================================
-
-let wasDragging = false;
-
-
-canvas.addEventListener(
-    "click",
-    event => {
-
-        // ----------------------------------------------------
-        // Ignore click after dragging
-        // ----------------------------------------------------
-
-        if (wasDragging) {
-
-            wasDragging = false;
-
-            return;
-
-        }
-
-
-        // ----------------------------------------------------
-        // SCREEN → WORLD
-        // ----------------------------------------------------
-
-        const rect =
-            canvas.getBoundingClientRect();
-
-
-        const world = {
-
-            x:
-                (
-                    event.clientX -
-                    rect.left
-                ) /
-                camera.zoom +
-                camera.x,
-
-            y:
-                (
-                    event.clientY -
-                    rect.top
-                ) /
-                camera.zoom +
-                camera.y
-
-        };
-
-
-        // ----------------------------------------------------
-        // FIND TILE
-        // ----------------------------------------------------
-
-        const tile =
-            getTileAt(
-                world.x,
-                world.y
-            );
-
-
-        if (!tile) {
-
-            return;
-
-        }
-
-
-        // ----------------------------------------------------
-        // FIND COUNTRY
-        // ----------------------------------------------------
-
-        const country =
-            countries[
-                tile.owner
-            ];
-
-
-        if (!country) {
-
-            return;
-
-        }
-
-
-        // ----------------------------------------------------
-        // UPDATE TERRITORY PANEL
-        // ----------------------------------------------------
-
-        updateTerritoryPanel(
-            tile,
-            country
-        );
-
-    }
-);
-
-
-// ============================================================
-// PAN
-// ============================================================
-
-let dragging = false;
-
-let lastX = 0;
-
-let lastY = 0;
-
-
-canvas.addEventListener(
-    "mousedown",
-    event => {
-
-        if (
-            event.button !== 0
-        ) {
-
-            return;
-
-        }
-
-
-        dragging = true;
-
-        wasDragging = false;
-
-
-        lastX =
-            event.clientX;
-
-        lastY =
-            event.clientY;
-
-    }
-);
-
-
-canvas.addEventListener(
-    "mousemove",
-    event => {
-
-        if (!dragging) {
-
-            return;
-
-        }
-
-
-        const dx =
-            event.clientX -
-            lastX;
-
-        const dy =
-            event.clientY -
-            lastY;
-
-
-        if (
-            Math.abs(dx) > 2 ||
-            Math.abs(dy) > 2
-        ) {
-
-            wasDragging = true;
-
-        }
-
-
-        panCamera(
-            canvas,
-            dx,
-            dy
-        );
-
-
-        lastX =
-            event.clientX;
-
-        lastY =
-            event.clientY;
-
-
-        draw(
-            ctx,
-            canvas
-        );
-
-    }
-);
-
-
-// ============================================================
-// STOP DRAGGING
-// ============================================================
-
-window.addEventListener(
-    "mouseup",
-    () => {
-
-        dragging = false;
-
-    }
-);
-
-
-// ============================================================
-// ZOOM
-// ============================================================
-
-canvas.addEventListener(
-    "wheel",
-    event => {
-
-        event.preventDefault();
-
-
-        zoomCamera(
-            canvas,
-            event
-        );
-
-
-        draw(
-            ctx,
-            canvas
-        );
-
-    }
-);
-
-
-// ============================================================
-// START
-// ============================================================
-
-start();
+        getArm
