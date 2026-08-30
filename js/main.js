@@ -242,19 +242,8 @@ async function start() {
 // ============================================================
 // RUN LOADING SEQUENCE
 // ============================================================
-//
-// 1. Black overlay fades out.
-// 2. Date appears centered.
-// 3. Date floats to corner.
-// 4. Compass rose fades in.
-//
-// ============================================================
 
 function runLoadingSequence() {
-
-    // --------------------------------------------------------
-    // Show date in center position
-    // --------------------------------------------------------
 
     dateDisplay.style.display =
         "block";
@@ -264,10 +253,6 @@ function runLoadingSequence() {
         "center"
     );
 
-
-    // --------------------------------------------------------
-    // Fade out black overlay
-    // --------------------------------------------------------
 
     setTimeout(
         () => {
@@ -280,10 +265,6 @@ function runLoadingSequence() {
         300
     );
 
-
-    // --------------------------------------------------------
-    // Float date to corner
-    // --------------------------------------------------------
 
     setTimeout(
         () => {
@@ -302,10 +283,6 @@ function runLoadingSequence() {
     );
 
 
-    // --------------------------------------------------------
-    // Show compass rose
-    // --------------------------------------------------------
-
     setTimeout(
         () => {
 
@@ -316,10 +293,6 @@ function runLoadingSequence() {
         2200
     );
 
-
-    // --------------------------------------------------------
-    // Remove loading overlay from DOM
-    // --------------------------------------------------------
 
     setTimeout(
         () => {
@@ -336,11 +309,6 @@ function runLoadingSequence() {
 
 // ============================================================
 // DRAW VIGNETTE
-// ============================================================
-//
-// Called after each draw to add atmospheric darkening
-// around the map edges.
-//
 // ============================================================
 
 function drawVignette() {
@@ -564,6 +532,10 @@ function updateTerritoryPanel(
 // ============================================================
 // SHOW HOVER TOOLTIP
 // ============================================================
+//
+// Only shows when there is a city or army on the tile.
+//
+// ============================================================
 
 function showHoverTooltip(
     tile,
@@ -585,6 +557,26 @@ function showHoverTooltip(
         getArmyAtTile(tile);
 
 
+    // --------------------------------------------------------
+    // If no city or army, don't show tooltip
+    // --------------------------------------------------------
+
+    if (
+        !city &&
+        !army
+    ) {
+
+        hideHoverTooltip();
+
+        return;
+
+    }
+
+
+    // --------------------------------------------------------
+    // Country
+    // --------------------------------------------------------
+
     if (country) {
 
         tooltipCountry.textContent =
@@ -604,6 +596,10 @@ function showHoverTooltip(
     }
 
 
+    // --------------------------------------------------------
+    // City
+    // --------------------------------------------------------
+
     if (city) {
 
         tooltipCity.textContent =
@@ -622,6 +618,10 @@ function showHoverTooltip(
 
     }
 
+
+    // --------------------------------------------------------
+    // Army
+    // --------------------------------------------------------
 
     if (army) {
 
@@ -722,6 +722,10 @@ function showHoverTooltip(
 
     }
 
+
+    // --------------------------------------------------------
+    // Position tooltip
+    // --------------------------------------------------------
 
     hoverTooltip.style.display =
         "block";
