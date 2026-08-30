@@ -97,6 +97,174 @@ const armyStrengthDisplay =
 
 
 // ============================================================
+// SOLDIER ICON CACHE
+// ============================================================
+//
+// We load the base soldier PNG once, then create tinted
+// versions for each country using canvas recoloring.
+//
+// This gives exact color matching instead of approximate
+// CSS filters.
+//
+// ============================================================
+
+const soldierIconCache = {};
+
+let baseSoldierImage = null;
+
+
+function loadBaseSoldierImage() {
+
+    return new Promise(
+        (resolve) => {
+
+            const image =
+                new Image();
+
+
+            image.onload =
+                () => {
+
+                    baseSoldierImage =
+                        image;
+
+                    resolve();
+
+                };
+
+
+            image.onerror =
+                () => {
+
+                    console.warn(
+                        "Could not load soldier icon."
+                    );
+
+                    resolve();
+
+                };
+
+
+            image.src =
+                "icons/misc/strengthunit.png";
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// GET SOLDIER ICON FOR COUNTRY
+// ============================================================
+//
+// Creates a tinted version of the soldier icon matching the
+// country's color.
+//
+// The base image should be a black silhouette on a
+// transparent background.
+//
+// ============================================================
+
+function getSoldierIconForCountry(
+    countryId
+) {
+
+    if (
+        !baseSoldierImage ||
+        !baseSoldierImage.complete
+    ) {
+
+        return null;
+
+    }
+
+
+    const country =
+        countries[countryId];
+
+
+    if (!country) {
+
+        return null;
+
+    }
+
+
+    const cacheKey =
+        countryId;
+
+
+    if (
+        soldierIconCache[cacheKey]
+    ) {
+
+        return soldierIconCache[cacheKey];
+
+    }
+
+
+    // --------------------------------------------------------
+    // Create tinted version
+    // --------------------------------------------------------
+
+    const tintedCanvas =
+        document.createElement("canvas");
+
+
+    tintedCanvas.width =
+        baseSoldierImage.naturalWidth;
+
+
+    tintedCanvas.height =
+        baseSoldierImage.naturalHeight;
+
+
+    const tintedCtx =
+        tintedCanvas.getContext("2d");
+
+
+    // Draw the base silhouette
+
+    tintedCtx.drawImage(
+        baseSoldierImage,
+        0,
+        0
+    );
+
+
+    // Apply color tint using composite operation
+
+    tintedCtx.globalCompositeOperation =
+        "source-in";
+
+
+    tintedCtx.fillStyle =
+        country.color;
+
+
+    tintedCtx.fillRect(
+        0,
+        0,
+        tintedCanvas.width,
+        tintedCanvas.height
+    );
+
+
+    // --------------------------------------------------------
+    // Cache and return
+    // --------------------------------------------------------
+
+    soldierIconCache[cacheKey] =
+        tintedCanvas;
+
+
+    return tintedCanvas;
+
+}
+
+
+// ============================================================
 // INITIALIZE
 // ============================================================
 
@@ -109,6 +277,13 @@ async function start() {
     rebuildMapCanvas();
 
     draw(ctx, canvas);
+
+
+    // --------------------------------------------------------
+    // LOAD SOLDIER ICON
+    // --------------------------------------------------------
+
+    await loadBaseSoldierImage();
 
 
     // --------------------------------------------------------
@@ -183,83 +358,6 @@ async function start() {
 
 
 // ============================================================
-// COLORIZE ICON
-// ============================================================
-//
-// Applies a CSS filter to colorize a PNG icon to match a
-// target hex color.
-//
-// The icon should be a black silhouette on transparent
-// background for best results.
-//
-// ============================================================
-
-function colorizeIcon(
-    icon,
-    hexColor
-) {
-
-    // --------------------------------------------------------
-    // Convert hex to RGB
-    // --------------------------------------------------------
-
-    const value =
-        hexColor.replace(
-            "#",
-            ""
-        );
-
-
-    const r =
-        parseInt(
-            value.substring(0, 2),
-            16
-        );
-
-
-    const g =
-        parseInt(
-            value.substring(2, 4),
-            16
-        );
-
-
-    const b =
-        parseInt(
-            value.substring(4, 6),
-            16
-        );
-
-
-    // --------------------------------------------------------
-    // Apply filter to match target color
-    // --------------------------------------------------------
-
-    icon.style.filter =
-
-        `brightness(0) ` +
-        `saturate(100%) ` +
-        `invert(${r / 255}) ` +
-        `sepia(100%) ` +
-        `saturate(200%) ` +
-        `hue-rotate(${
-            Math.round(
-                (
-                    (g / 255) * 360 +
-                    (b / 255) * 360
-                ) / 2
-            )
-        }deg) ` +
-        `brightness(${
-            Math.round(
-                (r / 255) * 100
-            ) / 100
-        })`;
-
-}
-
-
-// ============================================================
 // UPDATE MANPOWER DISPLAY
 // ============================================================
 
@@ -306,17 +404,43 @@ function updateManpowerDisplay(
                 country
             ) {
 
-                colorizeIcon(
-                    icon,
-                    country.color
-                );
+                // ------------------------------------------------
+                // Set to tinted canvas data URL
+                // ------------------------------------------------
+
+                const tintedCanvas =
+                    getSoldierIconForCountry(
+                        army.country
+                    );
+
+
+                if (
+                    tintedCanvas
+                ) {
+
+                    icon.src =
+                        tintedCanvas.toDataURL();
+
+                }
+
+
+                icon.style.opacity =
+                    "1";
 
             }
 
             else {
 
-                icon.style.filter =
-                    "brightness(0)";
+                // ------------------------------------------------
+                // Reset to base silhouette
+                // ------------------------------------------------
+
+                icon.src =
+                    "icons/misc/strengthunit.png";
+
+
+                icon.style.opacity =
+                    "0.35";
 
             }
 
