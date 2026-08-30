@@ -265,15 +265,6 @@ body {
 
 /* ============================================================
    SOLDIER ICONS
-   ============================================================
-   
-   Uses CSS mask to shape the soldier silhouette.
-   
-   The background-color is set via JavaScript:
-   
-   Empty  → dark silhouette (rgba(0, 0, 0, 0.5))
-   Filled → country color (exact hex)
-   
    ============================================================ */
 
 .soldier-icon {
@@ -304,6 +295,109 @@ body {
 .soldier-icon.filled {
     transform:
         scale(1.05);
+}
+
+/* ============================================================
+   HOVER TOOLTIP
+   ============================================================ */
+
+#hover-tooltip {
+    position: absolute;
+
+    pointer-events: none;
+
+    z-index: 100;
+
+    min-width: 160px;
+
+    max-width: 220px;
+
+    padding: 12px 14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(45, 40, 33, 0.97) 0%,
+            rgba(35, 31, 26, 0.97) 100%
+        );
+
+    border:
+        1px solid #8a7f6a;
+
+    border-radius:
+        4px;
+
+    box-shadow:
+        0 4px 16px
+        rgba(0, 0, 0, 0.55),
+        inset 0 1px 0
+        rgba(255, 255, 255, 0.08);
+
+    color:
+        #eee8d8;
+
+    font-family: Georgia, serif;
+}
+
+.tooltip-country {
+    font-size: 16px;
+
+    font-weight: 600;
+
+    color:
+        #f5efe0;
+
+    letter-spacing:
+        0.3px;
+
+    margin-bottom:
+        6px;
+}
+
+.tooltip-city {
+    font-size: 13px;
+
+    color:
+        #d8c9a0;
+
+    margin-bottom:
+        3px;
+}
+
+.tooltip-army {
+    font-size: 14px;
+
+    font-weight: 600;
+
+    color:
+        #f5efe0;
+
+    margin-bottom:
+    3px;
+}
+
+.tooltip-manpower {
+    display: flex;
+
+    gap: 8px;
+
+    align-items: center;
+
+    margin-top:
+        8px;
+
+    padding-top:
+        8px;
+
+    border-top:
+        1px solid
+        rgba(255, 255, 255, 0.08);
+}
+
+.tooltip-manpower .soldier-icon {
+    width: 26px;
+
+    height: 26px;
 }
 
 /* ============================================================
@@ -435,5 +529,13 @@ body {
 
     .manpower-icons {
         gap: 10px;
+    }
+
+    #hover-tooltip {
+        min-width: 130px;
+
+        max-width: 180px;
+
+        padding: 10px 12px;
     }
 }
