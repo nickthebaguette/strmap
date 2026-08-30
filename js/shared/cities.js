@@ -3,7 +3,8 @@
 // ============================================================
 
 import {
-    hexToWorld
+    hexToWorld,
+    HEX_SIZE
 } from "./map.js";
 
 
@@ -17,6 +18,22 @@ const cityImage =
 
 cityImage.src =
     "icons/cities/city.png";
+
+
+// ============================================================
+// CITY MARKER SIZE
+// ============================================================
+//
+// Cities should feel substantial but not overwhelm the hex.
+//
+// A city marker slightly smaller than the full hex width
+// reads as a major settlement without hiding the terrain
+// underneath.
+//
+// ============================================================
+
+const CITY_SIZE =
+    HEX_SIZE * 1.6;
 
 
 // ============================================================
@@ -176,7 +193,8 @@ export function drawCities(
             );
 
 
-        const size = 22;
+        const size =
+            CITY_SIZE;
 
 
         if (
@@ -184,30 +202,36 @@ export function drawCities(
             cityImage.naturalWidth > 0
         ) {
 
-            ctx.drawImage(
+            // ----------------------------------------------------
+            // Draw city image with contain behaviour.
+            //
+            // This prevents stretching if the source image is
+            // not perfectly square.
+            //
+            // ----------------------------------------------------
 
+            drawImageContain(
+                ctx,
                 cityImage,
-
-                world.x - size / 2,
-
-                world.y - size / 2,
-
-                size,
-
+                world.x,
+                world.y,
                 size
-
             );
 
         }
 
         else {
 
+            // ----------------------------------------------------
+            // Fallback: simple circle marker
+            // ----------------------------------------------------
+
             ctx.beginPath();
 
             ctx.arc(
                 world.x,
                 world.y,
-                5,
+                size * 0.25,
                 0,
                 Math.PI * 2
             );
@@ -220,6 +244,105 @@ export function drawCities(
         }
 
     }
+
+}
+
+
+// ============================================================
+// DRAW IMAGE WITH CONTAIN BEHAVIOUR
+// ============================================================
+//
+// Draws an image inside a square box while preserving its
+// aspect ratio. The image is centred within the box.
+//
+// This is the canvas equivalent of:
+//
+//     object-fit: contain;
+//     object-position: center;
+//
+// ============================================================
+
+function drawImageContain(
+    ctx,
+    image,
+    centerX,
+    centerY,
+    boxSize
+) {
+
+    const sourceWidth =
+        image.naturalWidth;
+
+
+    const sourceHeight =
+        image.naturalHeight;
+
+
+    if (
+        sourceWidth <= 0 ||
+        sourceHeight <= 0
+    ) {
+
+        return;
+
+    }
+
+
+    // --------------------------------------------------------
+    // Calculate scale to fit inside the box.
+    // --------------------------------------------------------
+
+    const scale =
+        Math.min(
+
+            boxSize /
+            sourceWidth,
+
+            boxSize /
+            sourceHeight
+
+        );
+
+
+    const drawWidth =
+        sourceWidth *
+        scale;
+
+
+    const drawHeight =
+        sourceHeight *
+        scale;
+
+
+    // --------------------------------------------------------
+    // Centre within the box.
+    // --------------------------------------------------------
+
+    const drawX =
+        centerX -
+        drawWidth / 2;
+
+
+    const drawY =
+        centerY -
+        drawHeight / 2;
+
+
+    // --------------------------------------------------------
+    // Draw.
+    // --------------------------------------------------------
+
+    ctx.drawImage(
+
+        image,
+
+        drawX,
+        drawY,
+
+        drawWidth,
+        drawHeight
+
+    );
 
 }
 
