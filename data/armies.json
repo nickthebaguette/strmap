@@ -1,4 +1,116 @@
 {
   "armies": [
+    {
+      "id": 1,
+      "name": "I Corps",
+      "country": "france",
+      "strength": 25000,
+      "col": 37,
+      "row": 46
+    },
+    {
+      "id": 2,
+      "name": "II Corps",
+      "country": "france",
+      "strength": 75000,
+      "col": 38,
+      "row": 44
+    },
+    {
+      "id": 3,
+      "name": "III Corps",
+      "country": "france",
+      "strength": 50000,
+      "col": 36,
+      "row": 45
+    },
+    {
+      "id": 4,
+      "name": "IV Corps",
+      "country": "france",
+      "strength": 50000,
+      "col": 30,
+      "row": 58
+    },
+    {
+      "id": 5,
+      "name": "V Corps",
+      "country": "france",
+      "strength": 100000,
+      "col": 39,
+      "row": 54
+    },
+    {
+      "id": 6,
+      "name": "MackDonalds",
+      "country": "austria",
+      "strength": 100000,
+      "col": 46,
+      "row": 48
+    },
+    {
+      "id": 7,
+      "name": "Balls",
+      "country": "russia",
+      "strength": 100000,
+      "col": 78,
+      "row": 28
+    },
+    {
+      "id": 8,
+      "name": "Balls2",
+      "country": "russia",
+      "strength": 75000,
+      "col": 65,
+      "row": 29
+    },
+    {
+      "id": 9,
+      "name": "Balls3",
+      "country": "russia",
+      "strength": 75000,
+      "col": 71,
+      "row": 38
+    },
+    {
+      "id": 10,
+      "name": "SSLBSTAH",
+      "country": "prussia",
+      "strength": 75000,
+      "col": 45,
+      "row": 34
+    },
+    {
+      "id": 11,
+      "name": "SSVLKSTRM",
+      "country": "prussia",
+      "strength": 100000,
+      "col": 51,
+      "row": 37
+    },
+    {
+      "id": 12,
+      "name": "gory's vengeance",
+      "country": "bavaria",
+      "strength": 100000,
+      "col": 44,
+      "row": 45
+    },
+    {
+      "id": 13,
+      "name": "wurttemballs",
+      "country": "badenwurttemberg",
+      "strength": 25000,
+      "col": 40,
+      "row": 45
+    },
+    {
+      "id": 14,
+      "name": "greetings all spanish fellers",
+      "country": "spain",
+      "strength": 75000,
+      "col": 26,
+      "row": 61
+    }
   ]
 }
