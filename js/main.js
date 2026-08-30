@@ -29,6 +29,14 @@ import {
     draw
 } from "./shared/renderer.js";
 
+import {
+    setCountryFlag
+} from "./shared/countryFlags.js";
+
+
+// ============================================================
+// CANVAS
+// ============================================================
 
 const canvas =
     document.getElementById("map");
@@ -36,6 +44,10 @@ const canvas =
 const ctx =
     canvas.getContext("2d");
 
+
+// ============================================================
+// TERRITORY PANEL
+// ============================================================
 
 const territoryName =
     document.getElementById(
@@ -45,6 +57,11 @@ const territoryName =
 const territoryOwner =
     document.getElementById(
         "territory-owner"
+    );
+
+const territoryFlag =
+    document.getElementById(
+        "territory-flag"
     );
 
 
@@ -62,6 +79,10 @@ async function start() {
 
     draw(ctx, canvas);
 
+
+    // --------------------------------------------------------
+    // LOAD MAP
+    // --------------------------------------------------------
 
     try {
 
@@ -111,7 +132,16 @@ async function start() {
     }
 
 
+    // --------------------------------------------------------
+    // LOAD CITIES
+    // --------------------------------------------------------
+
     await loadCities();
+
+
+    // --------------------------------------------------------
+    // LOAD ARMIES
+    // --------------------------------------------------------
 
     await loadArmies();
 
@@ -148,37 +178,51 @@ canvas.addEventListener(
     "click",
     event => {
 
+        // ----------------------------------------------------
+        // Ignore click after dragging
+        // ----------------------------------------------------
+
         if (wasDragging) {
+
+            wasDragging = false;
 
             return;
 
         }
 
 
+        // ----------------------------------------------------
+        // SCREEN → WORLD
+        // ----------------------------------------------------
+
         const rect =
             canvas.getBoundingClientRect();
 
 
-        const world =
-            {
-                x:
-                    (
-                        event.clientX -
-                        rect.left
-                    ) /
-                    camera.zoom +
-                    camera.x,
+        const world = {
 
-                y:
-                    (
-                        event.clientY -
-                        rect.top
-                    ) /
-                    camera.zoom +
-                    camera.y
+            x:
+                (
+                    event.clientX -
+                    rect.left
+                ) /
+                camera.zoom +
+                camera.x,
 
-            };
+            y:
+                (
+                    event.clientY -
+                    rect.top
+                ) /
+                camera.zoom +
+                camera.y
 
+        };
+
+
+        // ----------------------------------------------------
+        // FIND TILE
+        // ----------------------------------------------------
 
         const tile =
             getTileAt(
@@ -194,6 +238,10 @@ canvas.addEventListener(
         }
 
 
+        // ----------------------------------------------------
+        // FIND COUNTRY
+        // ----------------------------------------------------
+
         const country =
             countries[
                 tile.owner
@@ -207,11 +255,30 @@ canvas.addEventListener(
         }
 
 
+        // ----------------------------------------------------
+        // UPDATE TERRITORY NAME
+        // ----------------------------------------------------
+
         territoryName.textContent =
             country.name;
 
+
+        // ----------------------------------------------------
+        // UPDATE TILE INFORMATION
+        // ----------------------------------------------------
+
         territoryOwner.textContent =
             `Tile: ${tile.col}, ${tile.row}`;
+
+
+        // ----------------------------------------------------
+        // UPDATE COUNTRY FLAG
+        // ----------------------------------------------------
+
+        setCountryFlag(
+            territoryFlag,
+            tile.owner
+        );
 
     }
 );
@@ -224,6 +291,7 @@ canvas.addEventListener(
 let dragging = false;
 
 let lastX = 0;
+
 let lastY = 0;
 
 
@@ -231,7 +299,9 @@ canvas.addEventListener(
     "mousedown",
     event => {
 
-        if (event.button !== 0) {
+        if (
+            event.button !== 0
+        ) {
 
             return;
 
@@ -297,11 +367,18 @@ canvas.addEventListener(
             event.clientY;
 
 
-        draw(ctx, canvas);
+        draw(
+            ctx,
+            canvas
+        );
 
     }
 );
 
+
+// ============================================================
+// STOP DRAGGING
+// ============================================================
 
 window.addEventListener(
     "mouseup",
@@ -323,12 +400,17 @@ canvas.addEventListener(
 
         event.preventDefault();
 
+
         zoomCamera(
             canvas,
             event
         );
 
-        draw(ctx, canvas);
+
+        draw(
+            ctx,
+            canvas
+        );
 
     }
 );
