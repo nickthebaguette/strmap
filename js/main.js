@@ -388,4 +388,310 @@ function updateTerritoryPanel(
     // --------------------------------------------------------
 
     const army =
-        getArm
+        getArmyAtTile(tile);
+
+
+    if (army) {
+
+        // ----------------------------------------------------
+        // Show army information
+        // ----------------------------------------------------
+
+        territoryArmy.style.display =
+            "block";
+
+
+        armyNameDisplay.textContent =
+            army.name;
+
+
+        armyStrengthDisplay.textContent =
+            `${army.strength.toLocaleString()} men`;
+
+
+        // ----------------------------------------------------
+        // Show manpower
+        // ----------------------------------------------------
+
+        territoryManpower.style.display =
+            "block";
+
+
+        updateManpowerDisplay(
+            army
+        );
+
+    }
+
+    else {
+
+        // ----------------------------------------------------
+        // Hide army information
+        // ----------------------------------------------------
+
+        territoryArmy.style.display =
+            "none";
+
+
+        territoryManpower.style.display =
+            "none";
+
+    }
+
+}
+
+
+// ============================================================
+// RESIZE
+// ============================================================
+
+window.addEventListener(
+    "resize",
+    () => {
+
+        resizeCamera(canvas);
+
+        draw(ctx, canvas);
+
+    }
+);
+
+
+// ============================================================
+// CLICK
+// ============================================================
+
+let wasDragging = false;
+
+
+canvas.addEventListener(
+    "click",
+    event => {
+
+        // ----------------------------------------------------
+        // Ignore click after dragging
+        // ----------------------------------------------------
+
+        if (wasDragging) {
+
+            wasDragging = false;
+
+            return;
+
+        }
+
+
+        // ----------------------------------------------------
+        // SCREEN → WORLD
+        // ----------------------------------------------------
+
+        const rect =
+            canvas.getBoundingClientRect();
+
+
+        const world = {
+
+            x:
+                (
+                    event.clientX -
+                    rect.left
+                ) /
+                camera.zoom +
+                camera.x,
+
+            y:
+                (
+                    event.clientY -
+                    rect.top
+                ) /
+                camera.zoom +
+                camera.y
+
+        };
+
+
+        // ----------------------------------------------------
+        // FIND TILE
+        // ----------------------------------------------------
+
+        const tile =
+            getTileAt(
+                world.x,
+                world.y
+            );
+
+
+        if (!tile) {
+
+            return;
+
+        }
+
+
+        // ----------------------------------------------------
+        // FIND COUNTRY
+        // ----------------------------------------------------
+
+        const country =
+            countries[
+                tile.owner
+            ];
+
+
+        if (!country) {
+
+            return;
+
+        }
+
+
+        // ----------------------------------------------------
+        // UPDATE TERRITORY PANEL
+        // ----------------------------------------------------
+
+        updateTerritoryPanel(
+            tile,
+            country
+        );
+
+    }
+);
+
+
+// ============================================================
+// PAN
+// ============================================================
+
+let dragging = false;
+
+let lastX = 0;
+
+let lastY = 0;
+
+
+canvas.addEventListener(
+    "mousedown",
+    event => {
+
+        if (
+            event.button !== 0
+        ) {
+
+            return;
+
+        }
+
+
+        dragging = true;
+
+        wasDragging = false;
+
+
+        lastX =
+            event.clientX;
+
+        lastY =
+            event.clientY;
+
+    }
+);
+
+
+canvas.addEventListener(
+    "mousemove",
+    event => {
+
+        if (!dragging) {
+
+            return;
+
+        }
+
+
+        const dx =
+            event.clientX -
+            lastX;
+
+        const dy =
+            event.clientY -
+            lastY;
+
+
+        if (
+            Math.abs(dx) > 2 ||
+            Math.abs(dy) > 2
+        ) {
+
+            wasDragging = true;
+
+        }
+
+
+        panCamera(
+            canvas,
+            dx,
+            dy
+        );
+
+
+        lastX =
+            event.clientX;
+
+        lastY =
+            event.clientY;
+
+
+        draw(
+            ctx,
+            canvas
+        );
+
+    }
+);
+
+
+// ============================================================
+// STOP DRAGGING
+// ============================================================
+
+window.addEventListener(
+    "mouseup",
+    () => {
+
+        dragging = false;
+
+    }
+);
+
+
+// ============================================================
+// ZOOM
+// ============================================================
+
+canvas.addEventListener(
+    "wheel",
+    event => {
+
+        event.preventDefault();
+
+
+        zoomCamera(
+            canvas,
+            event
+        );
+
+
+        draw(
+            ctx,
+            canvas
+        );
+
+    }
+);
+
+
+// ============================================================
+// START
+// ============================================================
+
+start();
