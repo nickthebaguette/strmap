@@ -1472,4 +1472,246 @@ canvas.addEventListener(
 
 
         lastY =
+            event.clientY;
+
+    }
+);
+
+
+canvas.addEventListener(
+    "mousemove",
+    event => {
+
+        if (!dragging) {
+
+            return;
+
+        }
+
+
+        const dx =
+            event.clientX -
+            lastX;
+
+
+        const dy =
+            event.clientY -
+            lastY;
+
+
+        if (
+            Math.abs(dx) > 2 ||
+            Math.abs(dy) > 2
+        ) {
+
+            wasDragging =
+                true;
+
+        }
+
+
+        panCamera(
+            canvas,
+            dx,
+            dy
+        );
+
+
+        lastX =
+            event.clientX;
+
+
+        lastY =
+            event.clientY;
+
+    }
+);
+
+
+window.addEventListener(
+    "mouseup",
+    () => {
+
+        dragging =
+            false;
+
+    }
+);
+
+
+window.addEventListener(
+    "blur",
+    () => {
+
+        dragging =
+            false;
+
+    }
+);
+
+
+// ============================================================
+// ZOOM
+// ============================================================
+
+canvas.addEventListener(
+    "wheel",
+    event => {
+
+        event.preventDefault();
+
+
+        zoomCamera(
+            canvas,
             event
+        );
+
+    },
+    {
+        passive: false
+    }
+);
+
+
+// ============================================================
+// DOWNLOAD JSON
+// ============================================================
+
+function downloadJSON(
+    filename,
+    data
+) {
+
+    const json =
+        JSON.stringify(
+            data,
+            null,
+            2
+        );
+
+
+    const blob =
+        new Blob(
+            [json],
+            {
+                type:
+                    "application/json"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    const link =
+        document.createElement("a");
+
+
+    link.href =
+        url;
+
+
+    link.download =
+        filename;
+
+
+    document.body.appendChild(link);
+
+
+    link.click();
+
+
+    link.remove();
+
+
+    URL.revokeObjectURL(url);
+
+
+    status.textContent =
+        `Downloaded ${filename}`;
+
+}
+
+
+// ============================================================
+// DOWNLOAD MAP
+// ============================================================
+
+document
+    .getElementById("download-map")
+    .addEventListener(
+        "click",
+        () => {
+
+            downloadJSON(
+                "map.json",
+                createMapJSON()
+            );
+
+        }
+    );
+
+
+// ============================================================
+// DOWNLOAD TERRAIN
+// ============================================================
+
+document
+    .getElementById("download-terrain")
+    .addEventListener(
+        "click",
+        () => {
+
+            downloadJSON(
+                "terrain.json",
+                createTerrainJSON()
+            );
+
+        }
+    );
+
+
+// ============================================================
+// DOWNLOAD CITIES
+// ============================================================
+
+document
+    .getElementById("download-cities")
+    .addEventListener(
+        "click",
+        () => {
+
+            downloadJSON(
+                "cities.json",
+                createCitiesJSON()
+            );
+
+        }
+    );
+
+
+// ============================================================
+// DOWNLOAD ARMIES
+// ============================================================
+
+document
+    .getElementById("download-armies")
+    .addEventListener(
+        "click",
+        () => {
+
+            downloadJSON(
+                "armies.json",
+                createArmiesJSON()
+            );
+
+        }
+    );
+
+
+// ============================================================
+// START
+// ============================================================
+
+startEditor();
