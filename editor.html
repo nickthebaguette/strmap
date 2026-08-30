@@ -251,15 +251,96 @@
 
 
             <label for="army-strength">
-                Strength
+                Strength (men)
             </label>
 
             <input
                 id="army-strength"
                 type="number"
                 min="0"
+                step="25000"
                 value="0"
             >
+
+
+            <!-- ==============================================
+                 MANPOWER DISPLAY
+                 ============================================== -->
+
+            <div class="manpower-section">
+
+                <label>
+                    Manpower
+                </label>
+
+                <div
+                    id="army-manpower"
+                    class="manpower-icons"
+                >
+
+                    <span
+                        class="soldier-icon"
+                        data-index="0"
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM6 8L7 10L9 8L9 15L11 15L11 22L13 22L13 15L15 15L15 8L17 10L18 8L12 5L6 8Z"
+                                fill="currentColor"
+                            />
+                        </svg>
+                    </span>
+
+                    <span
+                        class="soldier-icon"
+                        data-index="1"
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM6 8L7 10L9 8L9 15L11 15L11 22L13 22L13 15L15 15L15 8L17 10L18 8L12 5L6 8Z"
+                                fill="currentColor"
+                            />
+                        </svg>
+                    </span>
+
+                    <span
+                        class="soldier-icon"
+                        data-index="2"
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM6 8L7 10L9 8L9 15L11 15L11 22L13 22L13 15L15 15L15 8L17 10L18 8L12 5L6 8Z"
+                                fill="currentColor"
+                            />
+                        </svg>
+                    </span>
+
+                    <span
+                        class="soldier-icon"
+                        data-index="3"
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM6 8L7 10L9 8L9 15L11 15L11 22L13 22L13 15L15 15L15 8L17 10L18 8L12 5L6 8Z"
+                                fill="currentColor"
+                            />
+                        </svg>
+                    </span>
+
+                </div>
+
+            </div>
 
 
             <div class="panel-buttons">
