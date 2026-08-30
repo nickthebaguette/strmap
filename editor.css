@@ -582,3 +582,70 @@ body {
             ellipsis;
     }
 }
+
+/* ============================================================
+   MANPOWER SECTION
+   ============================================================ */
+
+.manpower-section {
+    margin-top: 15px;
+}
+
+.manpower-section label {
+    display: block;
+
+    margin:
+        0 0 8px 0;
+
+    font-size: 13px;
+
+    color:
+        #c8c8c2;
+}
+
+.manpower-icons {
+    display: flex;
+
+    gap: 10px;
+
+    align-items: center;
+}
+
+/* ============================================================
+   SOLDIER ICONS
+   ============================================================
+   
+   Empty silhouettes are dark/black.
+   Filled silhouettes use the country color (set via inline
+   style from JavaScript).
+   
+   ============================================================ */
+
+.soldier-icon {
+    display: inline-flex;
+
+    width: 28px;
+
+    height: 28px;
+
+    color:
+        rgba(0, 0, 0, 0.35);
+
+    transition:
+        color 0.2s ease;
+}
+
+.soldier-icon svg {
+    width: 100%;
+
+    height: 100%;
+}
+
+.soldier-icon.filled {
+    /* Color is set via JavaScript from the country color */
+    filter:
+        drop-shadow(
+            0 1px 2px
+            rgba(0, 0, 0, 0.3)
+        );
+}
