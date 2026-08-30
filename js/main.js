@@ -603,7 +603,7 @@ function showHoverTooltip(
     if (city) {
 
         tooltipCity.textContent =
-            `🏛 ${city.name}`;
+            city.name;
 
 
         tooltipCity.style.display =
@@ -626,7 +626,7 @@ function showHoverTooltip(
     if (army) {
 
         tooltipArmy.textContent =
-            `⚔ ${army.name}`;
+            army.name;
 
 
         tooltipArmy.style.display =
