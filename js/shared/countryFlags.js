@@ -2,85 +2,125 @@
 // COUNTRYFLAGS.JS
 // ============================================================
 //
-// Handles country flag paths and flag loading.
+// Handles country flag paths.
 //
-// Flags are currently stored alongside army assets:
+// Flags currently use the army icon directory:
 //
 //     assets/icons/armies/france.png
 //     assets/icons/armies/austria.png
 //     assets/icons/armies/prussia.png
 //
-// The filename must match the country ID from map.js.
+// The filename must match the country ID used by map.js.
 //
 // ============================================================
-
 
 // ============================================================
 // FLAG DIRECTORY
 // ============================================================
 
 const FLAG_DIRECTORY =
-    "assets/icons/armies/";
-
+"assets/icons/armies/";
 
 // ============================================================
-// GET FLAG PATH
+// GET COUNTRY FLAG PATH
 // ============================================================
 
 export function getCountryFlagPath(
-    countryId
+countryId
 ) {
 
-    if (
-        !countryId ||
-        countryId === "ocean"
-    ) {
+if (
+    !countryId ||
+    countryId === "ocean"
+) {
 
-        return null;
-
-    }
-
-
-    return (
-        FLAG_DIRECTORY +
-        countryId.toLowerCase() +
-        ".png"
-    );
+    return null;
 
 }
 
 
+return (
+    FLAG_DIRECTORY +
+    countryId.toLowerCase() +
+    ".png"
+);
+
+}
+
 // ============================================================
-// APPLY FLAG TO IMAGE
+// SET COUNTRY FLAG
 // ============================================================
 //
-// Sets the image source and handles missing flags.
+// Updates an <img> element with the appropriate country flag.
+//
+// If the flag doesn't exist, the image is hidden instead of
+// showing a broken-image icon.
 //
 // ============================================================
 
 export function setCountryFlag(
-    image,
-    countryId
+image,
+countryId
 ) {
 
-    if (
-        !image
-    ) {
+if (
+    !image
+) {
 
-        return;
+    return;
 
-    }
+}
 
 
-    const path =
-        getCountryFlagPath(
-            countryId
+const path =
+    getCountryFlagPath(
+        countryId
+    );
+
+
+// --------------------------------------------------------
+// No flag
+// --------------------------------------------------------
+
+if (
+    !path
+) {
+
+    image.removeAttribute(
+        "src"
+    );
+
+    image.style.display =
+        "none";
+
+    return;
+
+}
+
+
+// --------------------------------------------------------
+// Loading
+// --------------------------------------------------------
+
+image.onload =
+    () => {
+
+        image.style.display =
+            "block";
+
+    };
+
+
+// --------------------------------------------------------
+// Failed loading
+// --------------------------------------------------------
+
+image.onerror =
+    () => {
+
+        console.warn(
+            `Could not load country flag: ${path}`
         );
-
-
-    if (
-        !path
-    ) {
 
         image.removeAttribute(
             "src"
@@ -89,38 +129,10 @@ export function setCountryFlag(
         image.style.display =
             "none";
 
-        return;
-
-    }
+    };
 
 
-    image.onload =
-        () => {
-
-            image.style.display =
-                "block";
-
-        };
-
-
-    image.onerror =
-        () => {
-
-            console.warn(
-                `Could not load flag for country: ${countryId}`
-            );
-
-            image.removeAttribute(
-                "src"
-            );
-
-            image.style.display =
-                "none";
-
-        };
-
-
-    image.src =
-        path;
+image.src =
+    path;
 
 }
