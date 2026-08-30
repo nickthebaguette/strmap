@@ -128,7 +128,22 @@ export let COLS = 100;
 export let ROWS = 60;
 
 
-export const HEX_SIZE = 14;
+// ============================================================
+// HEX SIZE
+// ============================================================
+//
+// Increased from 14 to 20 for better rendering quality.
+//
+// Larger hexes mean:
+//
+//     • More pixels per hex
+//     • Crisper grid lines
+//     • Better texture detail
+//     • Easier to see borders and ownership
+//
+// ============================================================
+
+export const HEX_SIZE = 20;
 
 
 export const HEX_WIDTH =
