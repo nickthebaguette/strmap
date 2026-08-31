@@ -139,6 +139,11 @@ const loadingOverlay =
         "loading-overlay"
     );
 
+const loadingPainting =
+    document.getElementById(
+        "loading-painting"
+    );
+
 const dateDisplay =
     document.getElementById(
         "date-display"
@@ -148,6 +153,220 @@ const compassRose =
     document.getElementById(
         "compass-rose"
     );
+
+const cinematicSound =
+    document.getElementById(
+        "cinematic-sound"
+    );
+
+
+// ============================================================
+// PAINTINGS
+// ============================================================
+
+const paintings = [
+    "assets/paintings/painting1.jpg",
+    "assets/paintings/painting2.jpg",
+    "assets/paintings/painting3.jpg"
+];
+
+
+// ============================================================
+// RUN LOADING SEQUENCE
+// ============================================================
+//
+// 1. Random painting fades in with heavy vignette.
+// 2. Title "January 1805" appears.
+// 3. "Click to begin" prompt pulses.
+// 4. Click or auto-advance after 8 seconds.
+// 5. Cinematic sound plays.
+// 6. Fade to map.
+//
+// ============================================================
+
+function runLoadingSequence() {
+
+    // --------------------------------------------------------
+    // Select random painting
+    // --------------------------------------------------------
+
+    const randomIndex =
+        Math.floor(
+            Math.random() *
+            paintings.length
+        );
+
+
+    const paintingPath =
+        paintings[randomIndex];
+
+
+    loadingPainting.src =
+        paintingPath;
+
+
+    loadingPainting.onload =
+        () => {
+
+            loadingPainting.classList.add(
+                "loaded"
+            );
+
+        };
+
+
+    loadingPainting.onerror =
+        () => {
+
+            console.warn(
+                `Could not load painting: ${paintingPath}`
+            );
+
+        };
+
+
+    // --------------------------------------------------------
+    // Advance function
+    // --------------------------------------------------------
+
+    let hasAdvanced = false;
+
+
+    function advanceToMap() {
+
+        if (
+            hasAdvanced
+        ) {
+
+            return;
+
+        }
+
+
+        hasAdvanced =
+            true;
+
+
+        // ----------------------------------------------------
+        // Play cinematic sound
+        // ----------------------------------------------------
+
+        if (
+            cinematicSound
+        ) {
+
+            cinematicSound.volume =
+                0.6;
+
+
+            cinematicSound.play().catch(
+                () => {
+
+                    console.warn(
+                        "Could not play cinematic sound."
+                    );
+
+                }
+            );
+
+        }
+
+
+        // ----------------------------------------------------
+        // Fade out loading overlay
+        // ----------------------------------------------------
+
+        loadingOverlay.classList.add(
+            "fade-out"
+        );
+
+
+        // ----------------------------------------------------
+        // Show date display
+        // ----------------------------------------------------
+
+        dateDisplay.style.display =
+            "block";
+
+
+        dateDisplay.classList.add(
+            "center"
+        );
+
+
+        // ----------------------------------------------------
+        // Float date to corner
+        // ----------------------------------------------------
+
+        setTimeout(
+            () => {
+
+                dateDisplay.classList.remove(
+                    "center"
+                );
+
+
+                dateDisplay.classList.add(
+                    "corner"
+                );
+
+            },
+            1800
+        );
+
+
+        // ----------------------------------------------------
+        // Show compass rose
+        // ----------------------------------------------------
+
+        setTimeout(
+            () => {
+
+                compassRose.style.display =
+                    "block";
+
+            },
+            2200
+        );
+
+
+        // ----------------------------------------------------
+        // Remove loading overlay
+        // ----------------------------------------------------
+
+        setTimeout(
+            () => {
+
+                loadingOverlay.style.display =
+                    "none";
+
+            },
+            2200
+        );
+
+    }
+
+
+    // --------------------------------------------------------
+    // Click to advance
+    // --------------------------------------------------------
+
+    loadingOverlay.addEventListener(
+        "click",
+        advanceToMap
+    );
+
+
+    // --------------------------------------------------------
+    // Auto-advance after 8 seconds
+    // --------------------------------------------------------
+
+    setTimeout(
+        advanceToMap,
+        8000
+    );
+
+}
 
 
 // ============================================================
