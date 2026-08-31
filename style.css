@@ -93,10 +93,6 @@ body {
 
 /* ============================================================
    LOADING VIGNETTE
-   ============================================================
-   
-   Heavy darkening around the edges of the painting.
-   
    ============================================================ */
 
 #loading-vignette {
@@ -130,7 +126,8 @@ body {
 #loading-content {
     position: absolute;
 
-    top: 50%;
+    top: 55%;
+
     left: 50%;
 
     transform:
@@ -141,6 +138,10 @@ body {
     pointer-events: none;
 
     z-index: 10;
+
+    width: 70%;
+
+    max-width: 600px;
 }
 
 /* ============================================================
@@ -182,11 +183,60 @@ body {
 }
 
 /* ============================================================
+   LOADING QUOTE
+   ============================================================ */
+
+.loading-quote {
+    margin-top: 35px;
+
+    opacity: 0;
+
+    transition:
+        opacity 1.5s ease 0.8s;
+}
+
+.loading-quote.visible {
+    opacity: 1;
+}
+
+.loading-quote-text {
+    font-family: Georgia, serif;
+
+    font-size: 20px;
+
+    font-style: italic;
+
+    line-height: 1.6;
+
+    color: #f5efe0;
+
+    text-shadow:
+        0 2px 6px
+        rgba(0, 0, 0, 0.9);
+
+    margin-bottom: 12px;
+}
+
+.loading-quote-author {
+    font-family: Georgia, serif;
+
+    font-size: 15px;
+
+    letter-spacing: 1.5px;
+
+    color: #c9c0aa;
+
+    text-shadow:
+        0 2px 4px
+        rgba(0, 0, 0, 0.9);
+}
+
+/* ============================================================
    LOADING PROMPT
    ============================================================ */
 
 .loading-prompt {
-    margin-top: 20px;
+    margin-top: 60px;
 
     font-family: Georgia, serif;
 
@@ -218,6 +268,63 @@ body {
 }
 
 /* ============================================================
+   LOADING PAINTING INFO
+   ============================================================ */
+
+.loading-painting-info {
+    position: absolute;
+
+    bottom: 35px;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    text-align: center;
+
+    pointer-events: none;
+
+    z-index: 10;
+
+    opacity: 0;
+
+    transition:
+        opacity 1.5s ease 1s;
+}
+
+.loading-painting-info.visible {
+    opacity: 1;
+}
+
+.loading-painting-title {
+    font-family: Georgia, serif;
+
+    font-size: 18px;
+
+    font-weight: 600;
+
+    color: #f5efe0;
+
+    text-shadow:
+        0 2px 4px
+        rgba(0, 0, 0, 0.9);
+
+    margin-bottom: 5px;
+}
+
+.loading-painting-artist {
+    font-family: Georgia, serif;
+
+    font-size: 14px;
+
+    color: #c9c0aa;
+
+    text-shadow:
+        0 2px 4px
+        rgba(0, 0, 0, 0.9);
+}
+
+/* ============================================================
    DATE DISPLAY
    ============================================================ */
 
@@ -245,29 +352,13 @@ body {
     pointer-events: none;
 
     transition:
-        all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.date-display.center {
-    left: 50%;
-
-    top: 50%;
-
-    transform:
-        translate(-50%, -50%);
-
-    font-size: 48px;
-
-    letter-spacing: 2px;
+        all 0.5s ease;
 }
 
 .date-display.corner {
     left: 24px;
 
     top: 20px;
-
-    transform:
-        none;
 
     font-size: 22px;
 
@@ -904,10 +995,6 @@ body {
         font-size: 32px;
     }
 
-    .date-display.center {
-        font-size: 32px;
-    }
-
     .date-display.corner {
         font-size: 18px;
         left: 15px;
@@ -922,5 +1009,21 @@ body {
     .compass-circle {
         width: 50px;
         height: 50px;
+    }
+
+    .loading-quote-text {
+        font-size: 16px;
+    }
+
+    .loading-quote-author {
+        font-size: 13px;
+    }
+
+    .loading-painting-title {
+        font-size: 15px;
+    }
+
+    .loading-painting-artist {
+        font-size: 12px;
     }
 }
