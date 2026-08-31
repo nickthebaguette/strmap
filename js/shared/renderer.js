@@ -1783,21 +1783,51 @@ function drawOuterFrame(ctx) {
 // DRAW
 // ============================================================
 
+// ============================================================
+// DRAW
+// ============================================================
+
 export function draw(
     ctx,
     canvas
 ) {
 
+    const DPR =
+        window.devicePixelRatio || 1;
+
+
+    // --------------------------------------------------------
+    // Set DPR transform so drawing works in CSS pixels
+    // --------------------------------------------------------
+
+    ctx.setTransform(
+        DPR,
+        0,
+        0,
+        DPR,
+        0,
+        0
+    );
+
+
+    // --------------------------------------------------------
+    // Clear canvas (in CSS pixel space)
+    // --------------------------------------------------------
+
     ctx.clearRect(
         0,
         0,
-        canvas.width,
-        canvas.height
+        window.innerWidth,
+        window.innerHeight
     );
 
 
     ctx.save();
 
+
+    // --------------------------------------------------------
+    // Apply camera transform
+    // --------------------------------------------------------
 
     ctx.translate(
 
