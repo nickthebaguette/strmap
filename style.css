@@ -120,35 +120,10 @@ body {
 }
 
 /* ============================================================
-   LOADING CONTENT
-   ============================================================ */
-
-#loading-content {
-    position: absolute;
-
-    top: 50%;
-
-    left: 50%;
-
-    transform:
-        translate(-50%, -50%);
-
-    text-align: center;
-
-    pointer-events: none;
-
-    z-index: 10;
-
-    width: 70%;
-
-    max-width: 600px;
-}
-
-/* ============================================================
    LOADING DATE
    ============================================================
    
-   Positioned at the top of the loading screen.
+   Fixed at the top of the screen.
    
    ============================================================ */
 
@@ -199,15 +174,31 @@ body {
 }
 
 /* ============================================================
-   LOADING QUOTE
+   LOADING QUOTE CONTAINER
    ============================================================
    
-   Centered in the loading screen.
+   Centered in the middle of the screen.
    
    ============================================================ */
 
-.loading-quote {
-    margin-top: 0;
+#loading-quote {
+    position: fixed;
+
+    top: 50%;
+
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    text-align: center;
+
+    pointer-events: none;
+
+    z-index: 10;
+
+    width: 70%;
+
+    max-width: 600px;
 
     opacity: 0;
 
@@ -215,7 +206,7 @@ body {
         opacity 1.5s ease 0.8s;
 }
 
-.loading-quote.visible {
+#loading-quote.visible {
     opacity: 1;
 }
 
@@ -251,14 +242,24 @@ body {
 
 /* ============================================================
    LOADING PROMPT
+   ============================================================
+   
+   Positioned near the bottom of the screen.
+   
    ============================================================ */
 
 .loading-prompt {
-    margin-top: 70px;
+    position: fixed;
+
+    bottom: 80px;
+
+    left: 50%;
+
+    transform: translateX(-50%);
 
     font-family: Georgia, serif;
 
-    font-size: 18px;
+    font-size: 16px;
 
     letter-spacing: 2px;
 
@@ -272,6 +273,10 @@ body {
 
     animation:
         promptPulse 2.5s ease-in-out infinite;
+
+    pointer-events: none;
+
+    z-index: 10;
 }
 
 @keyframes promptPulse {
@@ -290,7 +295,7 @@ body {
    ============================================================
    
    Positioned at bottom right, like a museum placard.
-   Uses Georgia font (not cursive).
+   Uses Georgia font.
    
    ============================================================ */
 
@@ -1015,7 +1020,8 @@ body {
     }
 
     .loading-date {
-        font-size: 48px;
+        font-size: 40px;
+        top: 25px;
     }
 
     .date-display.corner {
@@ -1035,23 +1041,28 @@ body {
     }
 
     .loading-quote-text {
-        font-size: 28px;
+        font-size: 30px;
     }
 
     .loading-quote-author {
-        font-size: 20px;
+        font-size: 22px;
     }
 
     .loading-painting-title {
-        font-size: 24px;
+        font-size: 18px;
     }
 
     .loading-painting-artist {
-        font-size: 18px;
+        font-size: 14px;
     }
 
     .loading-painting-info {
         right: 20px;
         bottom: 20px;
+    }
+
+    .loading-prompt {
+        bottom: 50px;
+        font-size: 14px;
     }
 }
