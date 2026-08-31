@@ -124,6 +124,7 @@ body {
    ============================================================
    
    Fixed at the top of the screen.
+   Uses Quintessential font.
    
    ============================================================ */
 
@@ -136,13 +137,13 @@ body {
 
     transform: translateX(-50%);
 
-    font-family: 'Great Vibes', cursive;
+    font-family: 'Quintessential', cursive;
 
-    font-size: 56px;
+    font-size: 44px;
 
     font-weight: 400;
 
-    letter-spacing: 2px;
+    letter-spacing: 3px;
 
     color: #d8c9a0;
 
@@ -174,10 +175,11 @@ body {
 }
 
 /* ============================================================
-   LOADING QUOTE CONTAINER
+   LOADING QUOTE
    ============================================================
    
    Centered in the middle of the screen.
+   Uses Quintessential font.
    
    ============================================================ */
 
@@ -211,9 +213,9 @@ body {
 }
 
 .loading-quote-text {
-    font-family: 'Great Vibes', cursive;
+    font-family: 'Quintessential', cursive;
 
-    font-size: 40px;
+    font-size: 32px;
 
     line-height: 1.5;
 
@@ -227,11 +229,11 @@ body {
 }
 
 .loading-quote-author {
-    font-family: 'Great Vibes', cursive;
+    font-family: 'Quintessential', cursive;
 
-    font-size: 26px;
+    font-size: 22px;
 
-    letter-spacing: 1px;
+    letter-spacing: 2px;
 
     color: #c9c0aa;
 
@@ -244,7 +246,8 @@ body {
    LOADING PROMPT
    ============================================================
    
-   Positioned near the bottom of the screen.
+   Near the bottom of the screen.
+   Uses Georgia font.
    
    ============================================================ */
 
@@ -354,7 +357,7 @@ body {
    DATE DISPLAY
    ============================================================
    
-   Great Vibes font for the corner date.
+   Quintessential font for the corner date.
    
    ============================================================ */
 
@@ -363,11 +366,11 @@ body {
 
     z-index: 50;
 
-    font-family: 'Great Vibes', cursive;
+    font-family: 'Quintessential', cursive;
 
     font-weight: 400;
 
-    letter-spacing: 1.5px;
+    letter-spacing: 2px;
 
     color: #d8c9a0;
 
@@ -388,9 +391,9 @@ body {
 
     top: 20px;
 
-    font-size: 32px;
+    font-size: 28px;
 
-    letter-spacing: 1.5px;
+    letter-spacing: 2px;
 }
 
 /* ============================================================
@@ -1020,12 +1023,12 @@ body {
     }
 
     .loading-date {
-        font-size: 40px;
+        font-size: 34px;
         top: 25px;
     }
 
     .date-display.corner {
-        font-size: 24px;
+        font-size: 22px;
         left: 15px;
         top: 15px;
     }
@@ -1041,11 +1044,11 @@ body {
     }
 
     .loading-quote-text {
-        font-size: 30px;
+        font-size: 24px;
     }
 
     .loading-quote-author {
-        font-size: 22px;
+        font-size: 18px;
     }
 
     .loading-painting-title {
