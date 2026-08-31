@@ -14,8 +14,6 @@ import {
 // FRAME
 // ============================================================
 
-// Inner frame around the actual map.
-
 export const FRAME_OVERHANG =
     HEX_SIZE * 0.5;
 
@@ -25,11 +23,6 @@ export const FRAME_WIDTH =
 export const FRAME_COLOR =
     "#3a3a36";
 
-
-// Outer frame.
-//
-// This covers one full hex worth of empty space around the
-// complete map footprint.
 
 export const OUTER_FRAME_OVERHANG =
     HEX_SIZE;
@@ -58,7 +51,23 @@ export const MAX_ZOOM =
 
 
 // ============================================================
+// GET DPR
+// ============================================================
+
+export function getDPR() {
+
+    return window.devicePixelRatio || 1;
+
+}
+
+
+// ============================================================
 // SCREEN → WORLD
+// ============================================================
+//
+// Converts screen (CSS pixel) coordinates to world
+// coordinates.
+//
 // ============================================================
 
 export function screenToWorld(
@@ -139,45 +148,16 @@ export function getCameraBounds() {
 
 
 // ============================================================
-// GET LOGICAL SIZE
-// ============================================================
-//
-// Returns the logical (CSS pixel) dimensions of the canvas.
-//
-// We use logical dimensions for all camera calculations
-// because mouse coordinates are in CSS pixels.
-//
-// The canvas backing store (canvas.width/height) uses
-// physical pixels, which can vary between monitors.
-//
-// ============================================================
-
-function getLogicalSize(
-    canvas
-) {
-
-    return {
-
-        width:
-            canvas.logicalWidth ||
-            canvas.width,
-
-        height:
-            canvas.logicalHeight ||
-            canvas.height
-
-    };
-
-}
-
-
-// ============================================================
 // MINIMUM ZOOM
 // ============================================================
+//
+// Uses window.innerWidth/innerHeight (CSS pixels) since
+// mouse coordinates and canvas display size are in CSS
+// pixels.
+//
+// ============================================================
 
-export function updateMinimumZoom(
-    canvas
-) {
+export function updateMinimumZoom() {
 
     const bounds =
         getCameraBounds();
@@ -193,17 +173,13 @@ export function updateMinimumZoom(
         bounds.top;
 
 
-    const logical =
-        getLogicalSize(canvas);
-
-
     const zoomX =
-        logical.width /
+        window.innerWidth /
         frameWidth;
 
 
     const zoomY =
-        logical.height /
+        window.innerHeight /
         frameHeight;
 
 
@@ -226,22 +202,20 @@ export function updateMinimumZoom(
 // ============================================================
 // CLAMP CAMERA
 // ============================================================
+//
+// Uses window.innerWidth/innerHeight (CSS pixels).
+//
+// ============================================================
 
-export function clampCamera(
-    canvas
-) {
-
-    const logical =
-        getLogicalSize(canvas);
-
+export function clampCamera() {
 
     const visibleWidth =
-        logical.width /
+        window.innerWidth /
         camera.zoom;
 
 
     const visibleHeight =
-        logical.height /
+        window.innerHeight /
         camera.zoom;
 
 
@@ -342,18 +316,13 @@ export function clampCamera(
 // ============================================================
 // RESIZE
 // ============================================================
-//
-// Called when the window resizes or when the device pixel
-// ratio changes (e.g., moving between monitors).
-//
-// ============================================================
 
 export function resizeCamera(
     canvas
 ) {
 
     const DPR =
-        window.devicePixelRatio || 1;
+        getDPR();
 
 
     const logicalWidth =
@@ -365,7 +334,7 @@ export function resizeCamera(
 
 
     // --------------------------------------------------------
-    // Set canvas backing store size (physical pixels)
+    // Set canvas backing store (physical pixels)
     // --------------------------------------------------------
 
     canvas.width =
@@ -393,24 +362,10 @@ export function resizeCamera(
 
 
     // --------------------------------------------------------
-    // Store logical dimensions for camera calculations
-    // --------------------------------------------------------
-
-    canvas.logicalWidth =
-        logicalWidth;
-
-
-    canvas.logicalHeight =
-        logicalHeight;
-
-
-    // --------------------------------------------------------
     // Update camera
     // --------------------------------------------------------
 
-    updateMinimumZoom(
-        canvas
-    );
+    updateMinimumZoom();
 
 
     camera.zoom =
@@ -427,9 +382,7 @@ export function resizeCamera(
         );
 
 
-    clampCamera(
-        canvas
-    );
+    clampCamera();
 
 }
 
@@ -508,9 +461,7 @@ export function zoomCamera(
         after.y;
 
 
-    clampCamera(
-        canvas
-    );
+    clampCamera();
 
 }
 
@@ -535,8 +486,6 @@ export function panCamera(
         camera.zoom;
 
 
-    clampCamera(
-        canvas
-    );
+    clampCamera();
 
 }
