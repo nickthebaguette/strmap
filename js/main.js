@@ -13,7 +13,10 @@ import {
     camera,
     resizeCamera,
     panCamera,
-    zoomCamera
+    zoomCamera,
+    clampCamera,
+    MIN_ZOOM,
+    MAX_ZOOM
 } from "./shared/camera.js";
 
 import {
@@ -326,10 +329,6 @@ async function runLoadingSequence() {
     await loadQuotes();
 
 
-    // --------------------------------------------------------
-    // Select random painting
-    // --------------------------------------------------------
-
     if (
         paintings.length > 0
     ) {
@@ -395,10 +394,6 @@ async function runLoadingSequence() {
     }
 
 
-    // --------------------------------------------------------
-    // Select random quote
-    // --------------------------------------------------------
-
     if (
         quotes.length > 0
     ) {
@@ -440,10 +435,6 @@ async function runLoadingSequence() {
     }
 
 
-    // --------------------------------------------------------
-    // Show date at top
-    // --------------------------------------------------------
-
     dateDisplay.style.display =
         "block";
 
@@ -452,10 +443,6 @@ async function runLoadingSequence() {
         "corner"
     );
 
-
-    // --------------------------------------------------------
-    // Advance function
-    // --------------------------------------------------------
 
     let hasAdvanced = false;
 
@@ -554,10 +541,6 @@ async function start() {
     draw(ctx, canvas);
 
 
-    // --------------------------------------------------------
-    // LOAD MAP
-    // --------------------------------------------------------
-
     try {
 
         const response =
@@ -606,26 +589,13 @@ async function start() {
     }
 
 
-    // --------------------------------------------------------
-    // LOAD CITIES
-    // --------------------------------------------------------
-
     await loadCities();
-
-
-    // --------------------------------------------------------
-    // LOAD ARMIES
-    // --------------------------------------------------------
 
     await loadArmies();
 
 
     draw(ctx, canvas);
 
-
-    // --------------------------------------------------------
-    // LOADING SEQUENCE
-    // --------------------------------------------------------
 
     runLoadingSequence();
 
@@ -765,7 +735,7 @@ function updateManpowerDisplay(
             else {
 
                 icon.style.backgroundColor =
-                    "rgba(0, 0, 0, 0.5)";
+                    "rgba(0, 0, 0, 0.45)";
 
             }
 
@@ -1044,7 +1014,7 @@ function showHoverTooltip(
             else {
 
                 icon.style.backgroundColor =
-                    "rgba(0, 0, 0, 0.5)";
+                    "rgba(0, 0, 0, 0.45)";
 
             }
 
@@ -1536,6 +1506,337 @@ canvas.addEventListener(
 
 
         redraw();
+
+    }
+);
+
+
+// ============================================================
+// TOUCH SUPPORT
+// ============================================================
+//
+// Mobile/tablet touch handling:
+//
+//     • Single finger drag → pan
+//     • Two finger pinch → zoom
+//     • Single tap → select
+//
+// ============================================================
+
+let touchDragging = false;
+
+let touchWasDragging = false;
+
+let lastTouchX = 0;
+
+let lastTouchY = 0;
+
+let pinchStartDistance = 0;
+
+let pinchStartZoom = 0;
+
+
+// ============================================================
+// GET TOUCH DISTANCE
+// ============================================================
+
+function getTouchDistance(
+    touches
+) {
+
+    if (
+        touches.length < 2
+    ) {
+
+        return 0;
+
+    }
+
+
+    const dx =
+        touches[0].clientX -
+        touches[1].clientX;
+
+
+    const dy =
+        touches[0].clientY -
+        touches[1].clientY;
+
+
+    return Math.sqrt(
+        dx * dx +
+        dy * dy
+    );
+
+}
+
+
+// ============================================================
+// GET TOUCH CENTER
+// ============================================================
+
+function getTouchCenter(
+    touches
+) {
+
+    let centerX = 0;
+
+    let centerY = 0;
+
+
+    for (
+        const touch of touches
+    ) {
+
+        centerX += touch.clientX;
+
+        centerY += touch.clientY;
+
+    }
+
+
+    return {
+
+        x:
+            centerX / touches.length,
+
+        y:
+            centerY / touches.length
+
+    };
+
+}
+
+
+// ============================================================
+// TOUCH START
+// ============================================================
+
+canvas.addEventListener(
+    "touchstart",
+    event => {
+
+        event.preventDefault();
+
+
+        const touches =
+            event.touches;
+
+
+        if (
+            touches.length === 1
+        ) {
+
+            touchDragging = true;
+
+            touchWasDragging = false;
+
+
+            lastTouchX =
+                touches[0].clientX;
+
+
+            lastTouchY =
+                touches[0].clientY;
+
+        }
+
+        else if (
+            touches.length === 2
+        ) {
+
+            touchDragging = false;
+
+
+            pinchStartDistance =
+                getTouchDistance(touches);
+
+
+            pinchStartZoom =
+                camera.zoom;
+
+        }
+
+    },
+    {
+        passive: false
+    }
+);
+
+
+// ============================================================
+// TOUCH MOVE
+// ============================================================
+
+canvas.addEventListener(
+    "touchmove",
+    event => {
+
+        event.preventDefault();
+
+
+        const touches =
+            event.touches;
+
+
+        if (
+            touches.length === 1 &&
+            touchDragging
+        ) {
+
+            const dx =
+                touches[0].clientX -
+                lastTouchX;
+
+
+            const dy =
+                touches[0].clientY -
+                lastTouchY;
+
+
+            if (
+                Math.abs(dx) > 3 ||
+                Math.abs(dy) > 3
+            ) {
+
+                touchWasDragging = true;
+
+            }
+
+
+            panCamera(
+                canvas,
+                dx,
+                dy
+            );
+
+
+            lastTouchX =
+                touches[0].clientX;
+
+
+            lastTouchY =
+                touches[0].clientY;
+
+
+            setHoveredTile(null);
+
+            hideHoverTooltip();
+
+
+            redraw();
+
+        }
+
+        else if (
+            touches.length === 2
+        ) {
+
+            const currentDistance =
+                getTouchDistance(touches);
+
+
+            if (
+                pinchStartDistance > 0 &&
+                currentDistance > 0
+            ) {
+
+                const scale =
+                    currentDistance /
+                    pinchStartDistance;
+
+
+                const newZoom =
+                    pinchStartZoom *
+                    scale;
+
+
+                camera.zoom =
+                    Math.max(
+                        MIN_ZOOM,
+                        Math.min(
+                            MAX_ZOOM,
+                            newZoom
+                        )
+                    );
+
+
+                clampCamera();
+
+
+                setHoveredTile(null);
+
+                hideHoverTooltip();
+
+
+                redraw();
+
+            }
+
+        }
+
+    },
+    {
+        passive: false
+    }
+);
+
+
+// ============================================================
+// TOUCH END
+// ============================================================
+
+canvas.addEventListener(
+    "touchend",
+    event => {
+
+        event.preventDefault();
+
+
+        if (
+            event.touches.length === 0
+        ) {
+
+            touchDragging = false;
+
+            pinchStartDistance = 0;
+
+        }
+
+        else if (
+            event.touches.length === 1
+        ) {
+
+            lastTouchX =
+                event.touches[0].clientX;
+
+
+            lastTouchY =
+                event.touches[0].clientY;
+
+
+            pinchStartDistance = 0;
+
+        }
+
+    },
+    {
+        passive: false
+    }
+);
+
+
+// ============================================================
+// TOUCH CANCEL
+// ============================================================
+
+canvas.addEventListener(
+    "touchcancel",
+    event => {
+
+        touchDragging = false;
+
+        pinchStartDistance = 0;
 
     }
 );
