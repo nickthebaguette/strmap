@@ -1,7 +1,7 @@
 {
     "quotes": [
         {
-            "text": "An army marches on its stomach.",
+            "text": "In politics, stupidity is not a handicap.",
             "author": "Napoleon Bonaparte"
         },
         {
@@ -9,23 +9,11 @@
             "author": "Napoleon Bonaparte"
         },
         {
-            "text": "Courage is like love; it must have hope for nourishment.",
+            "text": "History is written by the winners.",
             "author": "Napoleon Bonaparte"
         },
         {
-            "text": "The battlefield is a scene of constant chaos. The winner will be the one who controls that chaos, both his own and the enemies.",
-            "author": "Napoleon Bonaparte"
-        },
-        {
-            "text": "In war, the moral is to the physical as three is to one.",
-            "author": "Napoleon Bonaparte"
-        },
-        {
-            "text": "Ten people who speak make more noise than ten thousand who are silent.",
-            "author": "Napoleon Bonaparte"
-        },
-        {
-            "text": "History is a set of lies agreed upon.",
+            "text": "Impossible is a word to be found only in the dictionary of fools",
             "author": "Napoleon Bonaparte"
         },
         {
@@ -37,15 +25,7 @@
             "author": "Napoleon Bonaparte"
         },
         {
-            "text": "The strong man is the one who is able to intercept at will the communication between the senses and the mind.",
-            "author": "Napoleon Bonaparte"
-        },
-        {
             "text": "In war, there is but one favorable moment; the great art is to seize it.",
-            "author": "Napoleon Bonaparte"
-        },
-        {
-            "text": "The surest way to remain poor is to be an honest man.",
             "author": "Napoleon Bonaparte"
         },
         {
@@ -53,12 +33,16 @@
             "author": "Napoleon Bonaparte"
         },
         {
-            "text": "I am sometimes a fox and sometimes a lion. The whole secret of government lies in knowing when to be the one or the other.",
+            "text": "If you want a thing done well, do it yourself.",
             "author": "Napoleon Bonaparte"
         },
         {
-            "text": "If you want a thing done well, do it yourself.",
-            "author": "Napoleon Bonaparte"
-        }
+            "text": "I used to say of Napoleon that his presence on the field made the difference of forty thousand men.",
+            "author": "Arthur Wellesley"
+        },
+        {
+            "text": "I am more afraid of an army of 100 sheep led by a lion than an army of 100 lions led by a sheep",
+            "author": "Talleyrand"
+        },
     ]
 }
