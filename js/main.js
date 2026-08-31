@@ -144,6 +144,36 @@ const loadingPainting =
         "loading-painting"
     );
 
+const loadingQuote =
+    document.getElementById(
+        "loading-quote"
+    );
+
+const loadingQuoteText =
+    document.getElementById(
+        "loading-quote-text"
+    );
+
+const loadingQuoteAuthor =
+    document.getElementById(
+        "loading-quote-author"
+    );
+
+const loadingPaintingInfo =
+    document.getElementById(
+        "loading-painting-info"
+    );
+
+const loadingPaintingTitle =
+    document.getElementById(
+        "loading-painting-title"
+    );
+
+const loadingPaintingArtist =
+    document.getElementById(
+        "loading-painting-artist"
+    );
+
 const dateDisplay =
     document.getElementById(
         "date-display"
@@ -161,68 +191,286 @@ const cinematicSound =
 
 
 // ============================================================
-// PAINTINGS
+// PAINTINGS & QUOTES
 // ============================================================
 
-const paintings = [
-    "assets/paintings/painting1.jpg",
-    "assets/paintings/painting2.jpg",
-    "assets/paintings/painting3.jpg"
-];
+let paintings = [];
+
+let quotes = [];
+
+
+// ============================================================
+// LOAD PAINTINGS MANIFEST
+// ============================================================
+
+async function loadPaintings() {
+
+    try {
+
+        const response =
+            await fetch(
+                "data/paintings.json"
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `HTTP ${response.status}`
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            Array.isArray(
+                data.paintings
+            )
+        ) {
+
+            paintings =
+                data.paintings;
+
+        }
+
+
+        return true;
+
+    }
+
+    catch (error) {
+
+        console.warn(
+            "Could not load paintings.json:",
+            error
+        );
+
+
+        return false;
+
+    }
+
+}
+
+
+// ============================================================
+// LOAD QUOTES
+// ============================================================
+
+async function loadQuotes() {
+
+    try {
+
+        const response =
+            await fetch(
+                "data/quotes.json"
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `HTTP ${response.status}`
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            Array.isArray(
+                data.quotes
+            )
+        ) {
+
+            quotes =
+                data.quotes;
+
+        }
+
+
+        return true;
+
+    }
+
+    catch (error) {
+
+        console.warn(
+            "Could not load quotes.json:",
+            error
+        );
+
+
+        return false;
+
+    }
+
+}
 
 
 // ============================================================
 // RUN LOADING SEQUENCE
 // ============================================================
 //
-// 1. Random painting fades in with heavy vignette.
-// 2. Title "January 1805" appears.
-// 3. "Click to begin" prompt pulses.
-// 4. Click or auto-advance after 8 seconds.
-// 5. Cinematic sound plays.
-// 6. Fade to map.
+// 1. Load paintings and quotes.
+// 2. Select random painting and quote.
+// 3. Painting fades in with heavy vignette.
+// 4. Date shows at top.
+// 5. Quote fades in.
+// 6. Painting info fades in at bottom.
+// 7. Click or auto-advance after 8 seconds.
+// 8. Cinematic sound plays.
+// 9. Fade to map.
 //
 // ============================================================
 
-function runLoadingSequence() {
+async function runLoadingSequence() {
+
+    // --------------------------------------------------------
+    // Load paintings and quotes
+    // --------------------------------------------------------
+
+    await loadPaintings();
+
+    await loadQuotes();
+
 
     // --------------------------------------------------------
     // Select random painting
     // --------------------------------------------------------
 
-    const randomIndex =
-        Math.floor(
-            Math.random() *
-            paintings.length
+    if (
+        paintings.length > 0
+    ) {
+
+        const randomIndex =
+            Math.floor(
+                Math.random() *
+                paintings.length
+            );
+
+
+        const painting =
+            paintings[randomIndex];
+
+
+        loadingPainting.src =
+            painting.file;
+
+
+        loadingPainting.onload =
+            () => {
+
+                loadingPainting.classList.add(
+                    "loaded"
+                );
+
+            };
+
+
+        loadingPainting.onerror =
+            () => {
+
+                console.warn(
+                    `Could not load painting: ${painting.file}`
+                );
+
+            };
+
+
+        // ----------------------------------------------------
+        // Show painting info
+        // ----------------------------------------------------
+
+        loadingPaintingTitle.textContent =
+            painting.title;
+
+
+        loadingPaintingArtist.textContent =
+            `${painting.artist} — ${painting.year}`;
+
+
+        loadingPaintingInfo.style.display =
+            "block";
+
+
+        setTimeout(
+            () => {
+
+                loadingPaintingInfo.classList.add(
+                    "visible"
+                );
+
+            },
+            1500
         );
 
-
-    const paintingPath =
-        paintings[randomIndex];
+    }
 
 
-    loadingPainting.src =
-        paintingPath;
+    // --------------------------------------------------------
+    // Select random quote
+    // --------------------------------------------------------
 
+    if (
+        quotes.length > 0
+    ) {
 
-    loadingPainting.onload =
-        () => {
-
-            loadingPainting.classList.add(
-                "loaded"
+        const randomIndex =
+            Math.floor(
+                Math.random() *
+                quotes.length
             );
 
-        };
+
+        const quote =
+            quotes[randomIndex];
 
 
-    loadingPainting.onerror =
-        () => {
+        loadingQuoteText.textContent =
+            `"${quote.text}"`;
 
-            console.warn(
-                `Could not load painting: ${paintingPath}`
-            );
 
-        };
+        loadingQuoteAuthor.textContent =
+            `— ${quote.author}`;
+
+
+        loadingQuote.style.display =
+            "block";
+
+
+        setTimeout(
+            () => {
+
+                loadingQuote.classList.add(
+                    "visible"
+                );
+
+            },
+            1200
+        );
+
+    }
+
+
+    // --------------------------------------------------------
+    // Show date at top
+    // --------------------------------------------------------
+
+    dateDisplay.style.display =
+        "block";
+
+
+    dateDisplay.classList.add(
+        "corner"
+    );
 
 
     // --------------------------------------------------------
@@ -282,40 +530,6 @@ function runLoadingSequence() {
 
 
         // ----------------------------------------------------
-        // Show date display
-        // ----------------------------------------------------
-
-        dateDisplay.style.display =
-            "block";
-
-
-        dateDisplay.classList.add(
-            "center"
-        );
-
-
-        // ----------------------------------------------------
-        // Float date to corner
-        // ----------------------------------------------------
-
-        setTimeout(
-            () => {
-
-                dateDisplay.classList.remove(
-                    "center"
-                );
-
-
-                dateDisplay.classList.add(
-                    "corner"
-                );
-
-            },
-            1800
-        );
-
-
-        // ----------------------------------------------------
         // Show compass rose
         // ----------------------------------------------------
 
@@ -326,7 +540,7 @@ function runLoadingSequence() {
                     "block";
 
             },
-            2200
+            1200
         );
 
 
@@ -1039,10 +1253,6 @@ canvas.addEventListener(
             );
 
 
-        // ----------------------------------------------------
-        // Clicked empty area — clear selection
-        // ----------------------------------------------------
-
         if (!tile) {
 
             setSelectedTile(null);
@@ -1055,10 +1265,6 @@ canvas.addEventListener(
 
         }
 
-
-        // ----------------------------------------------------
-        // Clicked selected tile again — deselect
-        // ----------------------------------------------------
 
         if (
             selectedTileRef &&
@@ -1089,10 +1295,6 @@ canvas.addEventListener(
 
         }
 
-
-        // ----------------------------------------------------
-        // Select new tile
-        // ----------------------------------------------------
 
         setSelectedTile(
             tile
