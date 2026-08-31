@@ -14,7 +14,22 @@
 
 <body>
 
-    <canvas id="map"></canvas>
+    <!-- ==================================================
+         OUTER RIM
+         ================================================== -->
+
+    <div id="outer-rim"></div>
+
+
+    <!-- ==================================================
+         MAP WRAPPER
+         ================================================== -->
+
+    <div id="map-wrapper">
+
+        <canvas id="map"></canvas>
+
+    </div>
 
 
     <!-- ==================================================
@@ -23,11 +38,30 @@
 
     <div id="loading-overlay">
 
-        <div
-            id="loading-date"
-            class="loading-date"
+        <img
+            id="loading-painting"
+            src=""
+            alt=""
         >
-            January 1805
+
+        <div id="loading-vignette"></div>
+
+        <div id="loading-content">
+
+            <div
+                id="loading-date"
+                class="loading-date"
+            >
+                January 1805
+            </div>
+
+            <div
+                id="loading-prompt"
+                class="loading-prompt"
+            >
+                Click to begin
+            </div>
+
         </div>
 
     </div>
@@ -208,6 +242,17 @@
         ></div>
 
     </div>
+
+
+    <!-- ==================================================
+         CINEMATIC SOUND
+         ================================================== -->
+
+    <audio
+        id="cinematic-sound"
+        src="assets/sounds/cinematic.mp3"
+        preload="auto"
+    ></audio>
 
 
     <script type="module" src="js/main.js"></script>
