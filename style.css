@@ -126,7 +126,7 @@ body {
 #loading-content {
     position: absolute;
 
-    top: 55%;
+    top: 50%;
 
     left: 50%;
 
@@ -146,12 +146,24 @@ body {
 
 /* ============================================================
    LOADING DATE
+   ============================================================
+   
+   Positioned at the top of the loading screen.
+   
    ============================================================ */
 
 .loading-date {
+    position: fixed;
+
+    top: 40px;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
     font-family: 'Great Vibes', cursive;
 
-    font-size: 70px;
+    font-size: 56px;
 
     font-weight: 400;
 
@@ -169,6 +181,10 @@ body {
 
     animation:
         datePulse 2.5s ease-in-out infinite;
+
+    pointer-events: none;
+
+    z-index: 10;
 }
 
 @keyframes datePulse {
@@ -184,10 +200,14 @@ body {
 
 /* ============================================================
    LOADING QUOTE
+   ============================================================
+   
+   Centered in the loading screen.
+   
    ============================================================ */
 
 .loading-quote {
-    margin-top: 40px;
+    margin-top: 0;
 
     opacity: 0;
 
@@ -202,7 +222,7 @@ body {
 .loading-quote-text {
     font-family: 'Great Vibes', cursive;
 
-    font-size: 36px;
+    font-size: 40px;
 
     line-height: 1.5;
 
@@ -212,13 +232,13 @@ body {
         0 2px 8px
         rgba(0, 0, 0, 0.9);
 
-    margin-bottom: 15px;
+    margin-bottom: 18px;
 }
 
 .loading-quote-author {
     font-family: 'Great Vibes', cursive;
 
-    font-size: 24px;
+    font-size: 26px;
 
     letter-spacing: 1px;
 
@@ -234,7 +254,7 @@ body {
    ============================================================ */
 
 .loading-prompt {
-    margin-top: 60px;
+    margin-top: 70px;
 
     font-family: Georgia, serif;
 
@@ -270,6 +290,7 @@ body {
    ============================================================
    
    Positioned at bottom right, like a museum placard.
+   Uses Georgia font (not cursive).
    
    ============================================================ */
 
@@ -297,9 +318,11 @@ body {
 }
 
 .loading-painting-title {
-    font-family: 'Great Vibes', cursive;
+    font-family: Georgia, serif;
 
-    font-size: 32px;
+    font-size: 22px;
+
+    font-weight: 600;
 
     color: #f5efe0;
 
@@ -311,9 +334,9 @@ body {
 }
 
 .loading-painting-artist {
-    font-family: 'Great Vibes', cursive;
+    font-family: Georgia, serif;
 
-    font-size: 22px;
+    font-size: 16px;
 
     color: #c9c0aa;
 
@@ -324,6 +347,10 @@ body {
 
 /* ============================================================
    DATE DISPLAY
+   ============================================================
+   
+   Great Vibes font for the corner date.
+   
    ============================================================ */
 
 .date-display {
