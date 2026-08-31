@@ -18,7 +18,7 @@ export const countries = {
 
     spain: {
         name: "Spain",
-        color: "#fbe868"
+        color: "#CD9B23"
     },
 
     portugal: {
@@ -28,7 +28,7 @@ export const countries = {
 
     britain: {
         name: "Great Britain",
-        color: "#e94263"
+        color: "#C8102E"
     },
 
     batavia: {
@@ -43,7 +43,7 @@ export const countries = {
 
     prussia: {
         name: "Prussia",
-        color: "#000000"
+        color: "#383838"
     },
 
     austria: {
@@ -58,7 +58,7 @@ export const countries = {
 
     sweden: {
         name: "Sweden",
-        color: "#2121FF"
+        color: "#006AA7"
     },
 
     denmark: {
@@ -88,7 +88,7 @@ export const countries = {
 
     saxony: {
         name: "Saxony",
-        color: "#BAF17B"
+        color: "#5F7A3F"
     },
 
     naples: {
