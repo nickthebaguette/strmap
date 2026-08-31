@@ -1,0 +1,34 @@
+{
+    "paintings": [
+        {
+            "file": "assets/paintings/painting1.jpg",
+            "title": "Napoleon Crossing the Alps",
+            "artist": "Jacques-Louis David",
+            "year": "1801"
+        },
+        {
+            "file": "assets/paintings/painting2.jpg",
+            "title": "The Battle of Austerlitz",
+            "artist": "François Gérard",
+            "year": "1810"
+        },
+        {
+            "file": "assets/paintings/painting3.jpg",
+            "title": "The Coronation of Napoleon",
+            "artist": "Jacques-Louis David",
+            "year": "1807"
+        },
+        {
+            "file": "assets/paintings/painting4.jpg",
+            "title": "Bonaparte at the Pont d'Arcole",
+            "artist": "Antoine-Jean Gros",
+            "year": "1796"
+        },
+        {
+            "file": "assets/paintings/painting5.jpg",
+            "title": "The Retreat from Moscow",
+            "artist": "Adolph Northen",
+            "year": "1853"
+        }
+    ]
+}
