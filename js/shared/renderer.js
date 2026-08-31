@@ -1447,11 +1447,7 @@ function drawHexHighlight(
 // DRAW OUTER FRAME
 // ============================================================
 //
-// Draws a leather/wood textured frame around the map edge.
-//
-// The frame is 1 hex wide (OUTER_FRAME_OVERHANG).
-//
-// It scrolls and zooms with the map.
+// Solid dark frame around the map edge.
 //
 // ============================================================
 
@@ -1471,7 +1467,7 @@ function drawOuterFrame(ctx) {
 
 
     // --------------------------------------------------------
-    // Base color
+    // Solid dark frame
     // --------------------------------------------------------
 
     ctx.fillStyle =
@@ -1486,104 +1482,7 @@ function drawOuterFrame(ctx) {
 
 
     // --------------------------------------------------------
-    // Leather texture overlay
-    // --------------------------------------------------------
-    //
-    // Subtle horizontal bands to simulate leather grain.
-    //
-    // --------------------------------------------------------
-
-    ctx.save();
-
-    ctx.beginPath();
-
-    ctx.rect(
-        frameX,
-        frameY,
-        frameWidth,
-        frameHeight
-    );
-
-    ctx.clip();
-
-
-    // Subtle vertical gradient
-
-    const gradient =
-        ctx.createLinearGradient(
-            0,
-            frameY,
-            0,
-            frameY + frameHeight
-        );
-
-
-    gradient.addColorStop(
-        0,
-        "rgba(60, 50, 40, 0.3)"
-    );
-
-
-    gradient.addColorStop(
-        0.5,
-        "rgba(30, 25, 20, 0.1)"
-    );
-
-
-    gradient.addColorStop(
-        1,
-        "rgba(60, 50, 40, 0.3)"
-    );
-
-
-    ctx.fillStyle =
-        gradient;
-
-    ctx.fillRect(
-        frameX,
-        frameY,
-        frameWidth,
-        frameHeight
-    );
-
-
-    // Horizontal leather grain lines
-
-    for (
-        let y = frameY;
-        y < frameY + frameHeight;
-        y += 3
-    ) {
-
-        const alpha =
-            Math.sin(
-                y * 0.5
-            ) * 0.015 + 0.02;
-
-
-        ctx.fillStyle =
-            `rgba(255, 255, 255, ${alpha})`;
-
-
-        ctx.fillRect(
-            frameX,
-            y,
-            frameWidth,
-            1
-        );
-
-    }
-
-
-    ctx.restore();
-
-
-    // --------------------------------------------------------
     // Inner edge highlight
-    // --------------------------------------------------------
-    //
-    // A subtle line where the frame meets the map.
-    //
     // --------------------------------------------------------
 
     ctx.strokeStyle =
