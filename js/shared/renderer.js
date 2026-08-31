@@ -265,6 +265,216 @@ export function setHoveredTile(
 
 
 // ============================================================
+// SATURATE COLOR
+// ============================================================
+//
+// Boosts the saturation of a hex color so countries pop
+// more on the map, without changing the original country
+// definitions in map.js.
+//
+// ============================================================
+
+function saturateColor(
+    hex,
+    amount = 0.35
+) {
+
+    const value =
+        hex.replace(
+            "#",
+            ""
+        );
+
+
+    const r =
+        parseInt(
+            value.substring(0, 2),
+            16
+        );
+
+
+    const g =
+        parseInt(
+            value.substring(2, 4),
+            16
+        );
+
+
+    const b =
+        parseInt(
+            value.substring(4, 6),
+            16
+        );
+
+
+    // Convert RGB to HSL.
+
+    const rNorm = r / 255;
+    const gNorm = g / 255;
+    const bNorm = b / 255;
+
+
+    const max = Math.max(rNorm, gNorm, bNorm);
+    const min = Math.min(rNorm, gNorm, bNorm);
+
+
+    const lightness = (max + min) / 2;
+
+
+    let saturation = 0;
+
+
+    if (max !== min) {
+
+        const delta = max - min;
+
+
+        saturation =
+            lightness > 0.5
+                ? delta / (2 - max - min)
+                : delta / (max + min);
+
+    }
+
+
+    // Boost saturation.
+
+    saturation =
+        Math.min(
+            1,
+            saturation * (1 + amount)
+        );
+
+
+    // Convert back to RGB.
+
+    const hue =
+        getHue(rNorm, gNorm, bNorm, max, min);
+
+
+    const [newR, newG, newB] =
+        hslToRgb(hue, saturation, lightness);
+
+
+    return `rgb(${newR}, ${newG}, ${newB})`;
+
+}
+
+
+// ============================================================
+// GET HUE
+// ============================================================
+
+function getHue(r, g, b, max, min) {
+
+    if (max === min) {
+
+        return 0;
+
+    }
+
+
+    const delta = max - min;
+
+
+    let hue = 0;
+
+
+    if (max === r) {
+
+        hue =
+            ((g - b) / delta) % 6;
+
+    }
+
+    else if (max === g) {
+
+        hue =
+            (b - r) / delta + 2;
+
+    }
+
+    else {
+
+        hue =
+            (r - g) / delta + 4;
+
+    }
+
+
+    hue *= 60;
+
+
+    if (hue < 0) {
+
+        hue += 360;
+
+    }
+
+
+    return hue;
+
+}
+
+
+// ============================================================
+// HSL TO RGB
+// ============================================================
+
+function hslToRgb(h, s, l) {
+
+    const c =
+        (1 - Math.abs(2 * l - 1)) * s;
+
+
+    const x =
+        c * (1 - Math.abs((h / 60) % 2 - 1));
+
+
+    const m =
+        l - c / 2;
+
+
+    let r = 0;
+    let g = 0;
+    let b = 0;
+
+
+    if (h < 60) {
+        r = c; g = x; b = 0;
+    }
+
+    else if (h < 120) {
+        r = x; g = c; b = 0;
+    }
+
+    else if (h < 180) {
+        r = 0; g = c; b = x;
+    }
+
+    else if (h < 240) {
+        r = 0; g = x; b = c;
+    }
+
+    else if (h < 300) {
+        r = x; g = 0; b = c;
+    }
+
+    else {
+        r = c; g = 0; b = x;
+    }
+
+
+    return [
+        Math.round((r + m) * 255),
+        Math.round((g + m) * 255),
+        Math.round((b + m) * 255)
+    ];
+
+}
+
+
+// ============================================================
 // HEX PATH
 // ============================================================
 
@@ -394,7 +604,8 @@ function drawHexOnContext(
     size,
     color,
     baseTexture,
-    terrainTexture
+    terrainTexture,
+    isOcean = false
 ) {
 
     createHexPath(
@@ -405,12 +616,26 @@ function drawHexOnContext(
     );
 
 
+    // ========================================================
+    // BASE COLOR (with saturation boost for land)
+    // ========================================================
+
+    const fillColor =
+        isOcean
+            ? color
+            : saturateColor(color);
+
+
     context.fillStyle =
-        color;
+        fillColor;
 
 
     context.fill();
 
+
+    // ========================================================
+    // BASE TEXTURE
+    // ========================================================
 
     if (
         baseTexture
@@ -419,50 +644,6 @@ function drawHexOnContext(
         const pattern =
             context.createPattern(
                 baseTexture,
-                "repeat"
-            );
-
-
-        if (
-            pattern
-        ) {
-
-            createHexPath(
-                context,
-                x,
-                y,
-                size
-            );
-
-
-            context.save();
-
-
-            context.globalAlpha =
-                0.55;
-
-
-            context.fillStyle =
-                pattern;
-
-
-            context.fill();
-
-
-            context.restore();
-
-        }
-
-    }
-
-
-    if (
-        terrainTexture
-    ) {
-
-        const pattern =
-            context.createPattern(
-                terrainTexture,
                 "repeat"
             );
 
@@ -499,6 +680,58 @@ function drawHexOnContext(
 
     }
 
+
+    // ========================================================
+    // TERRAIN TEXTURE
+    // ========================================================
+
+    if (
+        terrainTexture
+    ) {
+
+        const pattern =
+            context.createPattern(
+                terrainTexture,
+                "repeat"
+            );
+
+
+        if (
+            pattern
+        ) {
+
+            createHexPath(
+                context,
+                x,
+                y,
+                size
+            );
+
+
+            context.save();
+
+
+            context.globalAlpha =
+                0.35;
+
+
+            context.fillStyle =
+                pattern;
+
+
+            context.fill();
+
+
+            context.restore();
+
+        }
+
+    }
+
+
+    // ========================================================
+    // NORMAL HEX GRID
+    // ========================================================
 
     createHexPath(
         context,
@@ -838,7 +1071,7 @@ function drawOffsetBorder(
 
         darkenColor(
             color,
-            0.50
+            0.35
         ),
 
         width,
@@ -851,7 +1084,17 @@ function drawOffsetBorder(
 
 
 // ============================================================
-// POLITICAL BORDERS WITH GLOW
+// POLITICAL BORDERS WITH DOUBLE-LINE SYSTEM
+// ============================================================
+//
+// Country borders now use a double-line system:
+//
+//     1. Dark outline line (behind everything)
+//     2. Colored offset lines for each country
+//
+// Ocean borders are thicker and darker for a coastline
+// effect.
+//
 // ============================================================
 
 function drawPoliticalBorders() {
@@ -859,28 +1102,44 @@ function drawPoliticalBorders() {
     mapCtx.save();
 
 
+    // ========================================================
+    // BORDER CONSTANTS
+    // ========================================================
+
     const COUNTRY_BORDER_WIDTH =
-        1.8;
+        2.8;
 
 
     const COUNTRY_BORDER_SEPARATION =
-        2.2;
+        3.0;
+
+
+    const DARK_OUTLINE_WIDTH =
+        3.5;
+
+
+    const DARK_OUTLINE_ALPHA =
+        0.5;
 
 
     const OCEAN_BORDER_WIDTH =
-        2.0;
+        3.5;
 
 
     const OCEAN_BORDER_ALPHA =
-        0.45;
+        0.65;
+
+
+    const OCEAN_BORDER_COLOR =
+        "#151512";
 
 
     const GLOW_ALPHA =
-        0.25;
+        0.40;
 
 
     const GLOW_WIDTH =
-        4.0;
+        5.0;
 
 
     for (
@@ -955,6 +1214,10 @@ function drawPoliticalBorders() {
                 ];
 
 
+            // =================================================
+            // LAND → OCEAN (coastline)
+            // =================================================
+
             if (
                 neighbour.owner ===
                 "ocean"
@@ -967,7 +1230,7 @@ function drawPoliticalBorders() {
                     cornerA,
                     cornerB,
 
-                    "#20201d",
+                    OCEAN_BORDER_COLOR,
 
                     OCEAN_BORDER_WIDTH,
 
@@ -980,6 +1243,10 @@ function drawPoliticalBorders() {
 
             }
 
+
+            // =================================================
+            // LAND → LAND
+            // =================================================
 
             const currentCountry =
                 countries[
@@ -1082,7 +1349,7 @@ function drawPoliticalBorders() {
 
 
             // -------------------------------------------------
-            // COUNTRY GLOW (behind borders)
+            // COUNTRY GLOW (behind everything)
             // -------------------------------------------------
 
             drawBorderSegment(
@@ -1118,7 +1385,27 @@ function drawPoliticalBorders() {
 
 
             // -------------------------------------------------
-            // CURRENT COUNTRY
+            // DARK OUTLINE (center line)
+            // -------------------------------------------------
+
+            drawBorderSegment(
+
+                mapCtx,
+
+                cornerA,
+                cornerB,
+
+                "#151512",
+
+                DARK_OUTLINE_WIDTH,
+
+                DARK_OUTLINE_ALPHA
+
+            );
+
+
+            // -------------------------------------------------
+            // CURRENT COUNTRY COLORED LINE
             // -------------------------------------------------
 
             drawOffsetBorder(
@@ -1141,7 +1428,7 @@ function drawPoliticalBorders() {
 
 
             // -------------------------------------------------
-            // NEIGHBOUR COUNTRY
+            // NEIGHBOUR COUNTRY COLORED LINE
             // -------------------------------------------------
 
             drawOffsetBorder(
@@ -1264,13 +1551,16 @@ export function rebuildMapCanvas() {
             );
 
 
+        const isOcean =
+            tile.owner === "ocean";
+
+
         let baseTexture =
             null;
 
 
         if (
-            tile.owner ===
-            "ocean"
+            isOcean
         ) {
 
             if (
@@ -1328,7 +1618,9 @@ export function rebuildMapCanvas() {
 
             baseTexture,
 
-            terrainTexture
+            terrainTexture,
+
+            isOcean
 
         );
 
@@ -1442,6 +1734,7 @@ function drawHexHighlight(
     ctx.restore();
 
 }
+
 
 // ============================================================
 // DRAW OUTER FRAME
@@ -1561,7 +1854,7 @@ export function draw(
 
 
     // ========================================================
-    // OUTER FRAME (leather/wood rim)
+    // OUTER FRAME
     // ========================================================
 
     drawOuterFrame(
