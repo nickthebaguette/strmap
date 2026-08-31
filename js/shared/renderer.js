@@ -357,7 +357,8 @@ function saturateColor(
         hslToRgb(hue, saturation, lightness);
 
 
-    return `rgb(${newR}, ${newG}, ${newB})`;
+//  return `rgb(${newR}, ${newG}, ${newB})`; - REDUNDANT
+    return hex
 
 }
 
