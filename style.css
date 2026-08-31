@@ -149,13 +149,13 @@ body {
    ============================================================ */
 
 .loading-date {
-    font-family: Georgia, serif;
+    font-family: 'Great Vibes', cursive;
 
-    font-size: 52px;
+    font-size: 70px;
 
-    font-weight: 600;
+    font-weight: 400;
 
-    letter-spacing: 3px;
+    letter-spacing: 2px;
 
     color: #d8c9a0;
 
@@ -187,7 +187,7 @@ body {
    ============================================================ */
 
 .loading-quote {
-    margin-top: 35px;
+    margin-top: 40px;
 
     opacity: 0;
 
@@ -200,34 +200,32 @@ body {
 }
 
 .loading-quote-text {
-    font-family: Georgia, serif;
+    font-family: 'Great Vibes', cursive;
 
-    font-size: 20px;
+    font-size: 36px;
 
-    font-style: italic;
-
-    line-height: 1.6;
+    line-height: 1.5;
 
     color: #f5efe0;
 
     text-shadow:
-        0 2px 6px
+        0 2px 8px
         rgba(0, 0, 0, 0.9);
 
-    margin-bottom: 12px;
+    margin-bottom: 15px;
 }
 
 .loading-quote-author {
-    font-family: Georgia, serif;
+    font-family: 'Great Vibes', cursive;
 
-    font-size: 15px;
+    font-size: 24px;
 
-    letter-spacing: 1.5px;
+    letter-spacing: 1px;
 
     color: #c9c0aa;
 
     text-shadow:
-        0 2px 4px
+        0 2px 6px
         rgba(0, 0, 0, 0.9);
 }
 
@@ -269,6 +267,10 @@ body {
 
 /* ============================================================
    LOADING PAINTING INFO
+   ============================================================
+   
+   Positioned at bottom right, like a museum placard.
+   
    ============================================================ */
 
 .loading-painting-info {
@@ -276,11 +278,9 @@ body {
 
     bottom: 35px;
 
-    left: 50%;
+    right: 40px;
 
-    transform: translateX(-50%);
-
-    text-align: center;
+    text-align: right;
 
     pointer-events: none;
 
@@ -297,30 +297,28 @@ body {
 }
 
 .loading-painting-title {
-    font-family: Georgia, serif;
+    font-family: 'Great Vibes', cursive;
 
-    font-size: 18px;
-
-    font-weight: 600;
+    font-size: 32px;
 
     color: #f5efe0;
 
     text-shadow:
-        0 2px 4px
+        0 2px 8px
         rgba(0, 0, 0, 0.9);
 
-    margin-bottom: 5px;
+    margin-bottom: 6px;
 }
 
 .loading-painting-artist {
-    font-family: Georgia, serif;
+    font-family: 'Great Vibes', cursive;
 
-    font-size: 14px;
+    font-size: 22px;
 
     color: #c9c0aa;
 
     text-shadow:
-        0 2px 4px
+        0 2px 6px
         rgba(0, 0, 0, 0.9);
 }
 
@@ -333,11 +331,9 @@ body {
 
     z-index: 50;
 
-    font-family: Georgia, serif;
+    font-family: 'Great Vibes', cursive;
 
-    font-size: 22px;
-
-    font-weight: 600;
+    font-weight: 400;
 
     letter-spacing: 1.5px;
 
@@ -360,7 +356,7 @@ body {
 
     top: 20px;
 
-    font-size: 22px;
+    font-size: 32px;
 
     letter-spacing: 1.5px;
 }
@@ -992,11 +988,11 @@ body {
     }
 
     .loading-date {
-        font-size: 32px;
+        font-size: 48px;
     }
 
     .date-display.corner {
-        font-size: 18px;
+        font-size: 24px;
         left: 15px;
         top: 15px;
     }
@@ -1012,18 +1008,23 @@ body {
     }
 
     .loading-quote-text {
-        font-size: 16px;
+        font-size: 28px;
     }
 
     .loading-quote-author {
-        font-size: 13px;
+        font-size: 20px;
     }
 
     .loading-painting-title {
-        font-size: 15px;
+        font-size: 24px;
     }
 
     .loading-painting-artist {
-        font-size: 12px;
+        font-size: 18px;
+    }
+
+    .loading-painting-info {
+        right: 20px;
+        bottom: 20px;
     }
 }
