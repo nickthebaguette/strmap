@@ -139,6 +139,39 @@ export function getCameraBounds() {
 
 
 // ============================================================
+// GET LOGICAL SIZE
+// ============================================================
+//
+// Returns the logical (CSS pixel) dimensions of the canvas.
+//
+// We use logical dimensions for all camera calculations
+// because mouse coordinates are in CSS pixels.
+//
+// The canvas backing store (canvas.width/height) uses
+// physical pixels, which can vary between monitors.
+//
+// ============================================================
+
+function getLogicalSize(
+    canvas
+) {
+
+    return {
+
+        width:
+            canvas.logicalWidth ||
+            canvas.width,
+
+        height:
+            canvas.logicalHeight ||
+            canvas.height
+
+    };
+
+}
+
+
+// ============================================================
 // MINIMUM ZOOM
 // ============================================================
 
@@ -160,13 +193,17 @@ export function updateMinimumZoom(
         bounds.top;
 
 
+    const logical =
+        getLogicalSize(canvas);
+
+
     const zoomX =
-        canvas.width /
+        logical.width /
         frameWidth;
 
 
     const zoomY =
-        canvas.height /
+        logical.height /
         frameHeight;
 
 
@@ -194,12 +231,17 @@ export function clampCamera(
     canvas
 ) {
 
+    const logical =
+        getLogicalSize(canvas);
+
+
     const visibleWidth =
-        canvas.width /
+        logical.width /
         camera.zoom;
 
+
     const visibleHeight =
-        canvas.height /
+        logical.height /
         camera.zoom;
 
 
@@ -300,6 +342,11 @@ export function clampCamera(
 // ============================================================
 // RESIZE
 // ============================================================
+//
+// Called when the window resizes or when the device pixel
+// ratio changes (e.g., moving between monitors).
+//
+// ============================================================
 
 export function resizeCamera(
     canvas
@@ -309,19 +356,57 @@ export function resizeCamera(
         window.devicePixelRatio || 1;
 
 
+    const logicalWidth =
+        window.innerWidth;
+
+
+    const logicalHeight =
+        window.innerHeight;
+
+
+    // --------------------------------------------------------
+    // Set canvas backing store size (physical pixels)
+    // --------------------------------------------------------
+
     canvas.width =
-        window.innerWidth * DPR;
+        Math.round(
+            logicalWidth * DPR
+        );
+
 
     canvas.height =
-        window.innerHeight * DPR;
+        Math.round(
+            logicalHeight * DPR
+        );
 
+
+    // --------------------------------------------------------
+    // Set canvas CSS size (logical pixels)
+    // --------------------------------------------------------
 
     canvas.style.width =
-        window.innerWidth + "px";
+        logicalWidth + "px";
+
 
     canvas.style.height =
-        window.innerHeight + "px";
+        logicalHeight + "px";
 
+
+    // --------------------------------------------------------
+    // Store logical dimensions for camera calculations
+    // --------------------------------------------------------
+
+    canvas.logicalWidth =
+        logicalWidth;
+
+
+    canvas.logicalHeight =
+        logicalHeight;
+
+
+    // --------------------------------------------------------
+    // Update camera
+    // --------------------------------------------------------
 
     updateMinimumZoom(
         canvas
@@ -365,6 +450,7 @@ export function zoomCamera(
     const mouseX =
         event.clientX -
         rect.left;
+
 
     const mouseY =
         event.clientY -
