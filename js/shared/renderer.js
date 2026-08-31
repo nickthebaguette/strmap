@@ -265,26 +265,6 @@ export function setHoveredTile(
 
 
 // ============================================================
-// HOVER ENTITY STATE
-// ============================================================
-//
-// Tracks whether the hovered tile has a city or army so
-// we can enlarge the icon.
-//
-// ============================================================
-
-export let hoveredEntityType = null;
-
-export function setHoveredEntityType(
-    type
-) {
-
-    hoveredEntityType = type;
-
-}
-
-
-// ============================================================
 // HEX PATH
 // ============================================================
 
@@ -1584,7 +1564,8 @@ export function draw(
     // ========================================================
 
     drawCities(
-        ctx
+        ctx,
+        hoveredTileRef
     );
 
 
@@ -1593,7 +1574,8 @@ export function draw(
     // ========================================================
 
     drawArmies(
-        ctx
+        ctx,
+        hoveredTileRef
     );
 
 
