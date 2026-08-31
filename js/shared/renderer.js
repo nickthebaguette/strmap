@@ -37,14 +37,6 @@ import {
 // ============================================================
 // DEVICE PIXEL RATIO
 // ============================================================
-//
-// Higher DPR means crisper rendering on retina/high-DPI
-// displays.
-//
-// The map cache is rendered at DPR × resolution, then drawn
-// at logical size.
-//
-// ============================================================
 
 const DPR =
     window.devicePixelRatio || 1;
@@ -238,6 +230,44 @@ for (
             );
 
         };
+
+}
+
+
+// ============================================================
+// SELECTION STATE
+// ============================================================
+//
+// Used by main.js to highlight the selected tile.
+//
+// ============================================================
+
+export let selectedTileRef = null;
+
+export function setSelectedTile(
+    tile
+) {
+
+    selectedTileRef = tile;
+
+}
+
+
+// ============================================================
+// HOVER STATE
+// ============================================================
+//
+// Used by main.js to highlight the hovered tile.
+//
+// ============================================================
+
+export let hoveredTileRef = null;
+
+export function setHoveredTile(
+    tile
+) {
+
+    hoveredTileRef = tile;
 
 }
 
@@ -845,7 +875,7 @@ function drawOffsetBorder(
 
 
 // ============================================================
-// POLITICAL BORDERS
+// POLITICAL BORDERS WITH GLOW
 // ============================================================
 
 function drawPoliticalBorders() {
@@ -867,6 +897,14 @@ function drawPoliticalBorders() {
 
     const OCEAN_BORDER_ALPHA =
         0.45;
+
+
+    const GLOW_ALPHA =
+        0.25;
+
+
+    const GLOW_WIDTH =
+        4.0;
 
 
     for (
@@ -1076,6 +1114,42 @@ function drawPoliticalBorders() {
 
 
             // -------------------------------------------------
+            // COUNTRY GLOW (behind borders)
+            // -------------------------------------------------
+
+            drawBorderSegment(
+
+                mapCtx,
+
+                cornerA,
+                cornerB,
+
+                currentCountry.color,
+
+                GLOW_WIDTH,
+
+                GLOW_ALPHA
+
+            );
+
+
+            drawBorderSegment(
+
+                mapCtx,
+
+                cornerA,
+                cornerB,
+
+                neighbourCountry.color,
+
+                GLOW_WIDTH,
+
+                GLOW_ALPHA
+
+            );
+
+
+            // -------------------------------------------------
             // CURRENT COUNTRY
             // -------------------------------------------------
 
@@ -1133,17 +1207,8 @@ function drawPoliticalBorders() {
 // ============================================================
 // MAP CACHE
 // ============================================================
-//
-// Renders the static map at device-pixel-ratio resolution
-// for crisp display on high-DPI screens.
-//
-// ============================================================
 
 export function rebuildMapCanvas() {
-
-    // --------------------------------------------------------
-    // Logical size in world coordinates
-    // --------------------------------------------------------
 
     const logicalWidth =
         MAP_WIDTH +
@@ -1154,10 +1219,6 @@ export function rebuildMapCanvas() {
         MAP_HEIGHT +
         FRAME_OVERHANG * 2;
 
-
-    // --------------------------------------------------------
-    // Physical size with DPR multiplier
-    // --------------------------------------------------------
 
     mapCanvas.width =
         Math.ceil(
@@ -1170,10 +1231,6 @@ export function rebuildMapCanvas() {
             logicalHeight * DPR
         );
 
-
-    // --------------------------------------------------------
-    // Scale context to draw in logical coordinates
-    // --------------------------------------------------------
 
     mapCtx.setTransform(
         DPR,
@@ -1233,19 +1290,11 @@ export function rebuildMapCanvas() {
         }
 
 
-        // ====================================================
-        // TERRAIN
-        // ====================================================
-
         const terrain =
             getTerrain(
                 tile
             );
 
-
-        // ====================================================
-        // BASE TEXTURE
-        // ====================================================
 
         let baseTexture =
             null;
@@ -1281,10 +1330,6 @@ export function rebuildMapCanvas() {
         }
 
 
-        // ====================================================
-        // TERRAIN TEXTURE
-        // ====================================================
-
         let terrainTexture =
             null;
 
@@ -1301,10 +1346,6 @@ export function rebuildMapCanvas() {
 
         }
 
-
-        // ====================================================
-        // DRAW TILE
-        // ====================================================
 
         drawHexOnContext(
 
@@ -1339,14 +1380,191 @@ export function rebuildMapCanvas() {
 
 
 // ============================================================
-// DRAW
+// DRAW HEX HIGHLIGHT
 // ============================================================
 //
-// Main drawing function called each frame.
+// Draws a glowing outline around a hex.
 //
-// The map cache is drawn at its physical resolution, then
-// scaled by the camera transform.
+// Used for both selection and hover highlights.
 //
+// ============================================================
+
+function drawHexHighlight(
+    ctx,
+    tile,
+    color,
+    alpha = 0.6,
+    lineWidth = 2.5
+) {
+
+    if (!tile) {
+
+        return;
+
+    }
+
+
+    const world =
+        hexToWorld(
+            tile.col,
+            tile.row
+        );
+
+
+    const size =
+        HEX_SIZE +
+        1;
+
+
+    ctx.save();
+
+
+    createHexPath(
+        ctx,
+        world.x,
+        world.y,
+        size
+    );
+
+
+    ctx.strokeStyle =
+        color;
+
+
+    ctx.lineWidth =
+        lineWidth;
+
+
+    ctx.globalAlpha =
+        alpha;
+
+
+    ctx.shadowColor =
+        color;
+
+
+    ctx.shadowBlur =
+        12;
+
+
+    ctx.stroke();
+
+
+    ctx.shadowBlur =
+        0;
+
+
+    createHexPath(
+        ctx,
+        world.x,
+        world.y,
+        size
+    );
+
+
+    ctx.strokeStyle =
+        color;
+
+
+    ctx.lineWidth =
+        lineWidth * 0.6;
+
+
+    ctx.globalAlpha =
+        alpha * 0.8;
+
+
+    ctx.stroke();
+
+
+    ctx.restore();
+
+}
+
+
+// ============================================================
+// DRAW WATER SHIMMER
+// ============================================================
+//
+// Subtle animated effect on ocean tiles.
+//
+// Called after the map cache is drawn.
+//
+// ============================================================
+
+let shimmerPhase = 0;
+
+function drawWaterShimmer(
+    ctx,
+    canvas
+) {
+
+    shimmerPhase += 0.008;
+
+
+    ctx.save();
+
+
+    for (
+        const tile of tiles
+    ) {
+
+        if (
+            tile.owner !== "ocean"
+        ) {
+
+            continue;
+
+        }
+
+
+        const world =
+            hexToWorld(
+                tile.col,
+                tile.row
+            );
+
+
+        const shimmer =
+
+            Math.sin(
+
+                shimmerPhase +
+                world.x * 0.08 +
+                world.y * 0.06
+
+            ) * 0.5 + 0.5;
+
+
+        const alpha =
+            0.03 +
+            shimmer * 0.04;
+
+
+        createHexPath(
+            ctx,
+            world.x,
+            world.y,
+            HEX_SIZE - 0.5
+        );
+
+
+        ctx.fillStyle =
+            `rgba(255, 255, 255, ${alpha})`;
+
+
+        ctx.fill();
+
+    }
+
+
+    ctx.restore();
+
+}
+
+
+// ============================================================
+// DRAW
 // ============================================================
 
 export function draw(
@@ -1389,13 +1607,6 @@ export function draw(
     // ========================================================
     // OUTER FRAME
     // ========================================================
-    //
-    // This covers the empty hex-space surrounding the actual
-    // map.
-    //
-    // It is deliberately behind everything else.
-    //
-    // ========================================================
 
     ctx.fillStyle =
         FRAME_COLOR;
@@ -1419,11 +1630,6 @@ export function draw(
     // ========================================================
     // MAP
     // ========================================================
-    //
-    // Draw the high-resolution map cache at logical size.
-    // The camera transform handles scaling.
-    //
-    // ========================================================
 
     ctx.drawImage(
 
@@ -1436,6 +1642,54 @@ export function draw(
         MAP_HEIGHT + FRAME_OVERHANG * 2
 
     );
+
+
+    // ========================================================
+    // WATER SHIMMER
+    // ========================================================
+
+    drawWaterShimmer(
+        ctx,
+        canvas
+    );
+
+
+    // ========================================================
+    // HOVER HIGHLIGHT
+    // ========================================================
+
+    if (
+        hoveredTileRef
+    ) {
+
+        drawHexHighlight(
+            ctx,
+            hoveredTileRef,
+            "#f5efe0",
+            0.45,
+            2.0
+        );
+
+    }
+
+
+    // ========================================================
+    // SELECTION HIGHLIGHT
+    // ========================================================
+
+    if (
+        selectedTileRef
+    ) {
+
+        drawHexHighlight(
+            ctx,
+            selectedTileRef,
+            "#f5c542",
+            0.8,
+            2.8
+        );
+
+    }
 
 
     // ========================================================
@@ -1486,11 +1740,6 @@ export function draw(
 
     // ========================================================
     // OUTER FRAME BORDER
-    // ========================================================
-    //
-    // A subtle outer edge makes the additional space read as
-    // intentional framing rather than empty canvas.
-    //
     // ========================================================
 
     ctx.strokeStyle =
