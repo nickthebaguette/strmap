@@ -21,6 +21,64 @@ body {
 }
 
 /* ============================================================
+   OUTER RIM
+   ============================================================
+   
+   A dark leather/wood frame around the entire map.
+   
+   Takes up approximately 1.5 hexes worth of space.
+   
+   ============================================================ */
+
+#outer-rim {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    z-index: 60;
+
+    pointer-events: none;
+
+    border:
+        30px solid
+        #2a241e;
+
+    box-shadow:
+        inset 0 0 40px
+        rgba(0, 0, 0, 0.7),
+        inset 0 0 8px
+        rgba(0, 0, 0, 0.5),
+        0 0 20px
+        rgba(0, 0, 0, 0.6);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(45, 35, 28, 0.08) 0%,
+            rgba(30, 24, 20, 0.12) 50%,
+            rgba(45, 35, 28, 0.08) 100%
+        );
+}
+
+/* ============================================================
+   MAP WRAPPER
+   ============================================================ */
+
+#map-wrapper {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+}
+
+/* ============================================================
    MAP CANVAS
    ============================================================ */
 
@@ -52,13 +110,9 @@ body {
 
     background: #000000;
 
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
     z-index: 1000;
+
+    cursor: pointer;
 
     transition:
         opacity 1.5s ease;
@@ -71,28 +125,107 @@ body {
 }
 
 /* ============================================================
+   LOADING PAINTING
+   ============================================================ */
+
+#loading-painting {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    opacity: 0;
+
+    transition:
+        opacity 1.2s ease;
+}
+
+#loading-painting.loaded {
+    opacity: 1;
+}
+
+/* ============================================================
+   LOADING VIGNETTE
+   ============================================================
+   
+   Heavy darkening around the edges of the painting.
+   
+   ============================================================ */
+
+#loading-vignette {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background:
+        radial-gradient(
+
+            ellipse at center,
+
+            rgba(0, 0, 0, 0.15) 0%,
+            rgba(0, 0, 0, 0.45) 35%,
+            rgba(0, 0, 0, 0.75) 65%,
+            rgba(0, 0, 0, 0.95) 100%
+
+        );
+
+    pointer-events: none;
+}
+
+/* ============================================================
+   LOADING CONTENT
+   ============================================================ */
+
+#loading-content {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    text-align: center;
+
+    pointer-events: none;
+
+    z-index: 10;
+}
+
+/* ============================================================
    LOADING DATE
    ============================================================ */
 
 .loading-date {
     font-family: Georgia, serif;
 
-    font-size: 48px;
+    font-size: 52px;
 
     font-weight: 600;
 
-    letter-spacing: 2px;
+    letter-spacing: 3px;
 
     color: #d8c9a0;
 
     text-shadow:
-        0 0 40px
-        rgba(216, 201, 160, 0.4),
-        0 0 20px
-        rgba(216, 201, 160, 0.2);
+        0 0 50px
+        rgba(216, 201, 160, 0.5),
+        0 0 25px
+        rgba(216, 201, 160, 0.3),
+        0 2px 4px
+        rgba(0, 0, 0, 0.8);
 
     animation:
-        datePulse 2s ease-in-out infinite;
+        datePulse 2.5s ease-in-out infinite;
 }
 
 @keyframes datePulse {
@@ -107,11 +240,43 @@ body {
 }
 
 /* ============================================================
+   LOADING PROMPT
+   ============================================================ */
+
+.loading-prompt {
+    margin-top: 20px;
+
+    font-family: Georgia, serif;
+
+    font-size: 18px;
+
+    letter-spacing: 2px;
+
+    color: #c9c0aa;
+
+    text-shadow:
+        0 2px 4px
+        rgba(0, 0, 0, 0.8);
+
+    opacity: 0.6;
+
+    animation:
+        promptPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes promptPulse {
+    0%,
+    100% {
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+}
+
+/* ============================================================
    DATE DISPLAY
-   ============================================================
-   
-   Starts centered, then floats to the top-left corner.
-   
    ============================================================ */
 
 .date-display {
@@ -815,5 +980,9 @@ body {
     .compass-circle {
         width: 50px;
         height: 50px;
+    }
+
+    #outer-rim {
+        border-width: 18px;
     }
 }
