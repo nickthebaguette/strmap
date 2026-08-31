@@ -173,9 +173,15 @@ export function addCity(
 // ============================================================
 // DRAW
 // ============================================================
+//
+// hoveredTile is optional. When provided, the city on that
+// tile is drawn larger.
+//
+// ============================================================
 
 export function drawCities(
-    ctx
+    ctx,
+    hoveredTile = null
 ) {
 
     for (
@@ -189,8 +195,17 @@ export function drawCities(
             );
 
 
+        const isHovered =
+
+            hoveredTile !== null &&
+            hoveredTile.col === city.col &&
+            hoveredTile.row === city.row;
+
+
         const size =
-            CITY_SIZE;
+            isHovered
+                ? CITY_SIZE * 1.25
+                : CITY_SIZE;
 
 
         ctx.save();
@@ -205,7 +220,7 @@ export function drawCities(
 
 
         ctx.shadowBlur =
-            8;
+            isHovered ? 12 : 8;
 
 
         ctx.shadowOffsetX =
