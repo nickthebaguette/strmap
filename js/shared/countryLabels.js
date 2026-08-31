@@ -62,10 +62,6 @@ const MIN_TILES_FOR_LABEL = 20;
 // ============================================================
 // GET COUNTRY TILES
 // ============================================================
-//
-// Returns all land tiles belonging to a country.
-//
-// ============================================================
 
 function getCountryLandTiles(
     countryId
@@ -96,7 +92,7 @@ function getCountryLandTiles(
 
 
 // ============================================================
-// GET NEIGHBOURS
+// GET NEIGHBOURING TILES
 // ============================================================
 
 function getNeighbouringTiles(
@@ -112,25 +108,25 @@ function getNeighbouringTiles(
 
     const directions = [
 
-        { col: 1, row: 0 },   // edge 0
+        { col: 1, row: 0 },
 
         even
             ? { col: 0, row: 1 }
-            : { col: 1, row: 1 },  // edge 1
+            : { col: 1, row: 1 },
 
         even
             ? { col: -1, row: 1 }
-            : { col: 0, row: 1 },  // edge 2
+            : { col: 0, row: 1 },
 
-        { col: -1, row: 0 },  // edge 3
+        { col: -1, row: 0 },
 
         even
             ? { col: -1, row: -1 }
-            : { col: 0, row: -1 },  // edge 4
+            : { col: 0, row: -1 },
 
         even
             ? { col: 0, row: -1 }
-            : { col: 1, row: -1 }   // edge 5
+            : { col: 1, row: -1 }
 
     ];
 
@@ -184,11 +180,6 @@ function getNeighbouringTiles(
 // ============================================================
 // FIND LARGEST CONTIGUOUS REGION
 // ============================================================
-//
-// Uses flood-fill to find all contiguous land regions.
-// Returns the largest region.
-//
-// ============================================================
 
 function findLargestRegion(
     countryTiles
@@ -227,10 +218,6 @@ function findLargestRegion(
 
         }
 
-
-        // ----------------------------------------------------
-        // Flood-fill from startTile
-        // ----------------------------------------------------
 
         const region = [];
 
@@ -280,10 +267,6 @@ function findLargestRegion(
         }
 
 
-        // ----------------------------------------------------
-        // Track largest
-        // ----------------------------------------------------
-
         if (
             region.length > largestSize
         ) {
@@ -304,10 +287,6 @@ function findLargestRegion(
 
 // ============================================================
 // CALCULATE CENTER
-// ============================================================
-//
-// Average position of all tiles in the region.
-//
 // ============================================================
 
 function calculateCenter(
@@ -403,11 +382,6 @@ function calculateBoundingBox(
 // ============================================================
 // GET LABEL INFO
 // ============================================================
-//
-// Returns label data for a country or null if it shouldn't
-// be labeled.
-//
-// ============================================================
 
 function getLabelInfo(
     countryId
@@ -442,10 +416,6 @@ function getLabelInfo(
     }
 
 
-    // --------------------------------------------------------
-    // Skip if country is too fragmented
-    // --------------------------------------------------------
-
     const fragmentationRatio =
         largestRegion.length /
         countryTiles.length;
@@ -468,10 +438,6 @@ function getLabelInfo(
         calculateBoundingBox(largestRegion);
 
 
-    // --------------------------------------------------------
-    // Font size scales with bounding box width
-    // --------------------------------------------------------
-
     const fontSize =
         Math.max(
 
@@ -480,7 +446,7 @@ function getLabelInfo(
             Math.min(
                 48,
                 boundingBox.width *
-                HEX_WIDTH *
+                HEX_SIZE *
                 0.12
             )
 
@@ -517,10 +483,6 @@ export function drawCountryLabels(
     ctx
 ) {
 
-    // --------------------------------------------------------
-    // Only show when zoomed out
-    // --------------------------------------------------------
-
     if (
         camera.zoom >=
         LABEL_MAX_ZOOM
@@ -551,10 +513,6 @@ export function drawCountryLabels(
 
         }
 
-
-        // ----------------------------------------------------
-        // Text shadow for readability
-        // ----------------------------------------------------
 
         ctx.save();
 
