@@ -732,24 +732,51 @@ body {
 .manpower-icons {
     display: flex;
 
-    gap: 14px;
+    gap: 10px;
 
     align-items: center;
 
-    padding: 2px 0;
+    padding: 6px 8px;
 }
 
 /* ============================================================
-   SOLDIER ICONS
+   SOLDIER ICON WRAPPER
+   ============================================================
+   
+   Allows the gold ring to appear around filled icons.
+   
+   ============================================================ */
+
+.soldier-icon-wrapper {
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 48px;
+
+    height: 48px;
+}
+
+/* ============================================================
+   SOLDIER ICON
+   ============================================================
+   
+   Empty: small, dark silhouette
+   Filled: large, country color with gold ring
+   
    ============================================================ */
 
 .soldier-icon {
-    width: 42px;
+    width: 30px;
 
-    height: 42px;
+    height: 30px;
 
     background-color:
-        rgba(0, 0, 0, 0.5);
+        rgba(0, 0, 0, 0.45);
 
     -webkit-mask:
         url("icons/misc/strengthunit.png")
@@ -765,12 +792,57 @@ body {
 
     transition:
         background-color 0.25s ease,
-        transform 0.15s ease;
+        width 0.25s ease,
+        height 0.25s ease,
+        transform 0.25s ease;
 }
 
 .soldier-icon.filled {
+    width: 42px;
+
+    height: 42px;
+
     transform:
         scale(1.05);
+}
+
+/* ============================================================
+   GOLD RING (only on filled)
+   ============================================================
+   
+   The ring is on the wrapper, shown when the inner icon
+   has the .filled class.
+   
+   ============================================================ */
+
+.soldier-icon-wrapper::after {
+    content: '';
+
+    position: absolute;
+
+    inset: 0;
+
+    border:
+        2px solid
+        rgba(216, 201, 160, 0.9);
+
+    border-radius:
+        50%;
+
+    box-shadow:
+        0 0 8px
+        rgba(216, 201, 160, 0.5);
+
+    opacity: 0;
+
+    transition:
+        opacity 0.25s ease;
+
+    pointer-events: none;
+}
+
+.soldier-icon-wrapper:has(.soldier-icon.filled)::after {
+    opacity: 1;
 }
 
 /* ============================================================
@@ -871,9 +943,21 @@ body {
 }
 
 .tooltip-manpower .soldier-icon {
+    width: 22px;
+
+    height: 22px;
+}
+
+.tooltip-manpower .soldier-icon.filled {
     width: 26px;
 
     height: 26px;
+}
+
+.tooltip-manpower .soldier-icon-wrapper {
+    width: 32px;
+
+    height: 32px;
 }
 
 .tooltip-strength {
@@ -1006,13 +1090,25 @@ body {
     }
 
     .soldier-icon {
-        width: 30px;
+        width: 24px;
 
-        height: 30px;
+        height: 24px;
+    }
+
+    .soldier-icon.filled {
+        width: 32px;
+
+        height: 32px;
+    }
+
+    .soldier-icon-wrapper {
+        width: 38px;
+
+        height: 38px;
     }
 
     .manpower-icons {
-        gap: 10px;
+        gap: 6px;
     }
 
     #hover-tooltip {
