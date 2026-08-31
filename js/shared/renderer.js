@@ -268,9 +268,8 @@ export function setHoveredTile(
 // SATURATE COLOR
 // ============================================================
 //
-// Boosts the saturation of a hex color so countries pop
-// more on the map, without changing the original country
-// definitions in map.js.
+// Boosts saturation and darkens lightness so countries pop
+// while maintaining a moody, historical atmosphere.
 //
 // ============================================================
 
@@ -281,46 +280,85 @@ function saturateColor(
 ) {
 
     const value =
-        hex.replace("#", "");
+        hex.replace(
+            "#",
+            ""
+        );
 
-    const r = parseInt(value.substring(0, 2), 16);
-    const g = parseInt(value.substring(2, 4), 16);
-    const b = parseInt(value.substring(4, 6), 16);
+
+    const r =
+        parseInt(
+            value.substring(0, 2),
+            16
+        );
+
+
+    const g =
+        parseInt(
+            value.substring(2, 4),
+            16
+        );
+
+
+    const b =
+        parseInt(
+            value.substring(4, 6),
+            16
+        );
+
 
     const rNorm = r / 255;
     const gNorm = g / 255;
     const bNorm = b / 255;
 
+
     const max = Math.max(rNorm, gNorm, bNorm);
     const min = Math.min(rNorm, gNorm, bNorm);
 
+
     let lightness = (max + min) / 2;
+
 
     let saturation = 0;
 
+
     if (max !== min) {
+
         const delta = max - min;
+
+
         saturation =
             lightness > 0.5
                 ? delta / (2 - max - min)
                 : delta / (max + min);
+
     }
 
-    // Boost saturation
-    saturation =
-        Math.min(1, saturation * (1 + saturationBoost));
 
-    // Darken lightness
+    saturation =
+        Math.min(
+            1,
+            saturation * (1 + saturationBoost)
+        );
+
+
     lightness =
-        Math.max(0, lightness * (1 - lightnessReduction));
+        Math.max(
+            0,
+            lightness * (1 - lightnessReduction)
+        );
+
 
     const hue =
         getHue(rNorm, gNorm, bNorm, max, min);
 
+
     const [newR, newG, newB] =
         hslToRgb(hue, saturation, lightness);
 
+
     return `rgb(${newR}, ${newG}, ${newB})`;
+
 }
 
 
@@ -579,10 +617,6 @@ function drawHexOnContext(
     );
 
 
-    // ========================================================
-    // BASE COLOR (with saturation boost for land)
-    // ========================================================
-
     const fillColor =
         isOcean
             ? color
@@ -595,10 +629,6 @@ function drawHexOnContext(
 
     context.fill();
 
-
-    // ========================================================
-    // BASE TEXTURE
-    // ========================================================
 
     if (
         baseTexture
@@ -644,10 +674,6 @@ function drawHexOnContext(
     }
 
 
-    // ========================================================
-    // TERRAIN TEXTURE
-    // ========================================================
-
     if (
         terrainTexture
     ) {
@@ -691,10 +717,6 @@ function drawHexOnContext(
 
     }
 
-
-    // ========================================================
-    // NORMAL HEX GRID
-    // ========================================================
 
     createHexPath(
         context,
@@ -977,6 +999,11 @@ function drawBorderSegment(
 // ============================================================
 // DRAW OFFSET BORDER
 // ============================================================
+//
+// Uses stronger darkening (0.60) so light-colored countries
+// have visible borders.
+//
+// ============================================================
 
 function drawOffsetBorder(
     context,
@@ -1034,7 +1061,7 @@ function drawOffsetBorder(
 
         darkenColor(
             color,
-            0.35
+            0.60
         ),
 
         width,
@@ -1052,11 +1079,9 @@ function drawOffsetBorder(
 //
 // Country borders now use a double-line system:
 //
-//     1. Dark outline line (behind everything)
-//     2. Colored offset lines for each country
-//
-// Ocean borders are thicker and darker for a coastline
-// effect.
+//     1. Colored glow (country color, subtle)
+//     2. Dark outline (near black, strong)
+//     3. Darkened country color lines (visible for all colors)
 //
 // ============================================================
 
@@ -1065,32 +1090,28 @@ function drawPoliticalBorders() {
     mapCtx.save();
 
 
-    // ========================================================
-    // BORDER CONSTANTS
-    // ========================================================
-
     const COUNTRY_BORDER_WIDTH =
-        2.8;
-
-
-    const COUNTRY_BORDER_SEPARATION =
         3.0;
 
 
+    const COUNTRY_BORDER_SEPARATION =
+        3.2;
+
+
     const DARK_OUTLINE_WIDTH =
-        3.5;
+        4.0;
 
 
     const DARK_OUTLINE_ALPHA =
-        0.5;
+        0.55;
 
 
     const OCEAN_BORDER_WIDTH =
-        3.5;
+        4.0;
 
 
     const OCEAN_BORDER_ALPHA =
-        0.65;
+        0.70;
 
 
     const OCEAN_BORDER_COLOR =
@@ -1098,11 +1119,11 @@ function drawPoliticalBorders() {
 
 
     const GLOW_ALPHA =
-        0.40;
+        0.35;
 
 
     const GLOW_WIDTH =
-        5.0;
+        6.0;
 
 
     for (
@@ -1177,10 +1198,6 @@ function drawPoliticalBorders() {
                 ];
 
 
-            // =================================================
-            // LAND → OCEAN (coastline)
-            // =================================================
-
             if (
                 neighbour.owner ===
                 "ocean"
@@ -1206,10 +1223,6 @@ function drawPoliticalBorders() {
 
             }
 
-
-            // =================================================
-            // LAND → LAND
-            // =================================================
 
             const currentCountry =
                 countries[
@@ -1312,7 +1325,7 @@ function drawPoliticalBorders() {
 
 
             // -------------------------------------------------
-            // COUNTRY GLOW (behind everything)
+            // COUNTRY GLOW (subtle, behind everything)
             // -------------------------------------------------
 
             drawBorderSegment(
@@ -1348,7 +1361,7 @@ function drawPoliticalBorders() {
 
 
             // -------------------------------------------------
-            // DARK OUTLINE (center line)
+            // DARK OUTLINE (center line, strongest)
             // -------------------------------------------------
 
             drawBorderSegment(
@@ -1368,7 +1381,7 @@ function drawPoliticalBorders() {
 
 
             // -------------------------------------------------
-            // CURRENT COUNTRY COLORED LINE
+            // CURRENT COUNTRY COLORED LINE (darkened)
             // -------------------------------------------------
 
             drawOffsetBorder(
@@ -1391,7 +1404,7 @@ function drawPoliticalBorders() {
 
 
             // -------------------------------------------------
-            // NEIGHBOUR COUNTRY COLORED LINE
+            // NEIGHBOUR COUNTRY COLORED LINE (darkened)
             // -------------------------------------------------
 
             drawOffsetBorder(
@@ -1427,6 +1440,10 @@ function drawPoliticalBorders() {
 // ============================================================
 
 export function rebuildMapCanvas() {
+
+    const DPR =
+        window.devicePixelRatio || 1;
+
 
     const logicalWidth =
         MAP_WIDTH +
@@ -1702,10 +1719,6 @@ function drawHexHighlight(
 // ============================================================
 // DRAW OUTER FRAME
 // ============================================================
-//
-// Solid dark frame around the map edge.
-//
-// ============================================================
 
 function drawOuterFrame(ctx) {
 
@@ -1722,10 +1735,6 @@ function drawOuterFrame(ctx) {
         OUTER_FRAME_OVERHANG * 2;
 
 
-    // --------------------------------------------------------
-    // Solid dark frame
-    // --------------------------------------------------------
-
     ctx.fillStyle =
         FRAME_COLOR;
 
@@ -1736,10 +1745,6 @@ function drawOuterFrame(ctx) {
         frameHeight
     );
 
-
-    // --------------------------------------------------------
-    // Inner edge highlight
-    // --------------------------------------------------------
 
     ctx.strokeStyle =
         "rgba(216, 201, 160, 0.3)";
@@ -1756,10 +1761,6 @@ function drawOuterFrame(ctx) {
         frameHeight - 4
     );
 
-
-    // --------------------------------------------------------
-    // Outer edge highlight
-    // --------------------------------------------------------
 
     ctx.strokeStyle =
         "rgba(216, 201, 160, 0.15)";
@@ -1783,10 +1784,6 @@ function drawOuterFrame(ctx) {
 // DRAW
 // ============================================================
 
-// ============================================================
-// DRAW
-// ============================================================
-
 export function draw(
     ctx,
     canvas
@@ -1795,10 +1792,6 @@ export function draw(
     const DPR =
         window.devicePixelRatio || 1;
 
-
-    // --------------------------------------------------------
-    // Set DPR transform so drawing works in CSS pixels
-    // --------------------------------------------------------
 
     ctx.setTransform(
         DPR,
@@ -1810,10 +1803,6 @@ export function draw(
     );
 
 
-    // --------------------------------------------------------
-    // Clear canvas (in CSS pixel space)
-    // --------------------------------------------------------
-
     ctx.clearRect(
         0,
         0,
@@ -1824,10 +1813,6 @@ export function draw(
 
     ctx.save();
 
-
-    // --------------------------------------------------------
-    // Apply camera transform
-    // --------------------------------------------------------
 
     ctx.translate(
 
