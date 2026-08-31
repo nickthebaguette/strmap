@@ -7,6 +7,10 @@ import {
     HEX_SIZE
 } from "./map.js";
 
+import {
+    camera
+} from "./camera.js";
+
 
 export const cities = [];
 
@@ -248,6 +252,62 @@ export function drawCities(
 
 
         ctx.restore();
+
+
+        // ----------------------------------------------------
+        // CITY NAME
+        // ----------------------------------------------------
+
+        if (
+            city.name &&
+            city.name !== "Unnamed City"
+        ) {
+
+            ctx.save();
+
+
+            ctx.font =
+                `${12 / camera.zoom}px Georgia, serif`;
+
+
+            ctx.fillStyle =
+                "#d8c9a0";
+
+
+            ctx.textAlign =
+                "center";
+
+
+            ctx.textBaseline =
+                "top";
+
+
+            ctx.shadowColor =
+                "rgba(0, 0, 0, 0.7)";
+
+
+            ctx.shadowBlur =
+                4;
+
+
+            ctx.shadowOffsetX =
+                0;
+
+
+            ctx.shadowOffsetY =
+                1;
+
+
+            ctx.fillText(
+                city.name,
+                world.x,
+                world.y + size / 2 + 4
+            );
+
+
+            ctx.restore();
+
+        }
 
     }
 
