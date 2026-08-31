@@ -21,64 +21,6 @@ body {
 }
 
 /* ============================================================
-   OUTER RIM
-   ============================================================
-   
-   A dark leather/wood frame around the entire map.
-   
-   Takes up approximately 1.5 hexes worth of space.
-   
-   ============================================================ */
-
-#outer-rim {
-    position: fixed;
-
-    top: 0;
-    left: 0;
-
-    width: 100%;
-    height: 100%;
-
-    z-index: 60;
-
-    pointer-events: none;
-
-    border:
-        30px solid
-        #2a241e;
-
-    box-shadow:
-        inset 0 0 40px
-        rgba(0, 0, 0, 0.7),
-        inset 0 0 8px
-        rgba(0, 0, 0, 0.5),
-        0 0 20px
-        rgba(0, 0, 0, 0.6);
-
-    background:
-        linear-gradient(
-            135deg,
-            rgba(45, 35, 28, 0.08) 0%,
-            rgba(30, 24, 20, 0.12) 50%,
-            rgba(45, 35, 28, 0.08) 100%
-        );
-}
-
-/* ============================================================
-   MAP WRAPPER
-   ============================================================ */
-
-#map-wrapper {
-    position: fixed;
-
-    top: 0;
-    left: 0;
-
-    width: 100%;
-    height: 100%;
-}
-
-/* ============================================================
    MAP CANVAS
    ============================================================ */
 
@@ -980,9 +922,5 @@ body {
     .compass-circle {
         width: 50px;
         height: 50px;
-    }
-
-    #outer-rim {
-        border-width: 18px;
     }
 }
