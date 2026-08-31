@@ -97,9 +97,15 @@ function getCountryFlagImage(
 // ============================================================
 // DRAW ARMIES
 // ============================================================
+//
+// hoveredTile is optional. When provided, the army on that
+// tile is drawn larger.
+//
+// ============================================================
 
 export function drawArmies(
-    ctx
+    ctx,
+    hoveredTile = null
 ) {
 
     for (
@@ -111,6 +117,20 @@ export function drawArmies(
                 army.col,
                 army.row
             );
+
+
+        const isHovered =
+
+            hoveredTile !== null &&
+            hoveredTile.col === army.col &&
+            hoveredTile.row === army.row;
+
+
+        const size =
+
+            isHovered
+                ? ARMY_FLAG_SIZE * 1.25
+                : ARMY_FLAG_SIZE;
 
 
         const flag =
@@ -131,7 +151,7 @@ export function drawArmies(
 
 
         ctx.shadowBlur =
-            8;
+            isHovered ? 12 : 8;
 
 
         ctx.shadowOffsetX =
@@ -157,14 +177,10 @@ export function drawArmies(
                 flag,
                 world.x,
                 world.y,
-                ARMY_FLAG_SIZE
+                size
             );
 
         }
-
-        // ----------------------------------------------------
-        // FALLBACK
-        // ----------------------------------------------------
 
         else {
 
