@@ -318,24 +318,8 @@ async function loadQuotes() {
 // ============================================================
 // RUN LOADING SEQUENCE
 // ============================================================
-//
-// 1. Load paintings and quotes.
-// 2. Select random painting and quote.
-// 3. Painting fades in with heavy vignette.
-// 4. Date shows at top.
-// 5. Quote fades in.
-// 6. Painting info fades in at bottom.
-// 7. Click or auto-advance after 8 seconds.
-// 8. Cinematic sound plays.
-// 9. Fade to map.
-//
-// ============================================================
 
 async function runLoadingSequence() {
-
-    // --------------------------------------------------------
-    // Load paintings and quotes
-    // --------------------------------------------------------
 
     await loadPaintings();
 
@@ -384,10 +368,6 @@ async function runLoadingSequence() {
 
             };
 
-
-        // ----------------------------------------------------
-        // Show painting info
-        // ----------------------------------------------------
 
         loadingPaintingTitle.textContent =
             painting.title;
@@ -495,10 +475,6 @@ async function runLoadingSequence() {
             true;
 
 
-        // ----------------------------------------------------
-        // Play cinematic sound
-        // ----------------------------------------------------
-
         if (
             cinematicSound
         ) {
@@ -520,18 +496,10 @@ async function runLoadingSequence() {
         }
 
 
-        // ----------------------------------------------------
-        // Fade out loading overlay
-        // ----------------------------------------------------
-
         loadingOverlay.classList.add(
             "fade-out"
         );
 
-
-        // ----------------------------------------------------
-        // Show compass rose
-        // ----------------------------------------------------
 
         setTimeout(
             () => {
@@ -543,10 +511,6 @@ async function runLoadingSequence() {
             1200
         );
 
-
-        // ----------------------------------------------------
-        // Remove loading overlay
-        // ----------------------------------------------------
 
         setTimeout(
             () => {
@@ -561,19 +525,11 @@ async function runLoadingSequence() {
     }
 
 
-    // --------------------------------------------------------
-    // Click to advance
-    // --------------------------------------------------------
-
     loadingOverlay.addEventListener(
         "click",
         advanceToMap
     );
 
-
-    // --------------------------------------------------------
-    // Auto-advance after 8 seconds
-    // --------------------------------------------------------
 
     setTimeout(
         advanceToMap,
@@ -682,16 +638,30 @@ async function start() {
 
 function drawVignette() {
 
+    const DPR =
+        window.devicePixelRatio || 1;
+
+
+    ctx.setTransform(
+        DPR,
+        0,
+        0,
+        DPR,
+        0,
+        0
+    );
+
+
     const gradient =
         ctx.createRadialGradient(
 
-            canvas.width / 2,
-            canvas.height / 2,
-            canvas.width * 0.25,
+            window.innerWidth / 2,
+            window.innerHeight / 2,
+            window.innerWidth * 0.25,
 
-            canvas.width / 2,
-            canvas.height / 2,
-            canvas.width * 0.75
+            window.innerWidth / 2,
+            window.innerHeight / 2,
+            window.innerWidth * 0.75
 
         );
 
@@ -715,8 +685,8 @@ function drawVignette() {
     ctx.fillRect(
         0,
         0,
-        canvas.width,
-        canvas.height
+        window.innerWidth,
+        window.innerHeight
     );
 
 }
