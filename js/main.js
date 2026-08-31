@@ -356,6 +356,23 @@ function drawVignette() {
 
 
 // ============================================================
+// REDRAW
+// ============================================================
+
+function redraw() {
+
+    draw(
+        ctx,
+        canvas
+    );
+
+
+    drawVignette();
+
+}
+
+
+// ============================================================
 // UPDATE MANPOWER DISPLAY
 // ============================================================
 
@@ -532,11 +549,35 @@ function updateTerritoryPanel(
 
 
 // ============================================================
-// SHOW HOVER TOOLTIP
+// CLEAR TERRITORY PANEL
 // ============================================================
-//
-// Only shows when there is a city or army on the tile.
-//
+
+function clearTerritoryPanel() {
+
+    territoryName.textContent =
+        "No territory selected";
+
+
+    territoryOwner.textContent =
+        "";
+
+
+    territoryFlag.style.display =
+        "none";
+
+
+    territoryArmy.style.display =
+        "none";
+
+
+    territoryManpower.style.display =
+        "none";
+
+}
+
+
+// ============================================================
+// SHOW HOVER TOOLTIP
 // ============================================================
 
 function showHoverTooltip(
@@ -559,10 +600,6 @@ function showHoverTooltip(
         getArmyAtTile(tile);
 
 
-    // --------------------------------------------------------
-    // If no city or army, don't show tooltip
-    // --------------------------------------------------------
-
     if (
         !city &&
         !army
@@ -574,10 +611,6 @@ function showHoverTooltip(
 
     }
 
-
-    // --------------------------------------------------------
-    // Country
-    // --------------------------------------------------------
 
     if (country) {
 
@@ -598,10 +631,6 @@ function showHoverTooltip(
     }
 
 
-    // --------------------------------------------------------
-    // City
-    // --------------------------------------------------------
-
     if (city) {
 
         tooltipCity.textContent =
@@ -620,10 +649,6 @@ function showHoverTooltip(
 
     }
 
-
-    // --------------------------------------------------------
-    // Army
-    // --------------------------------------------------------
 
     if (army) {
 
@@ -725,10 +750,6 @@ function showHoverTooltip(
     }
 
 
-    // --------------------------------------------------------
-    // Position tooltip
-    // --------------------------------------------------------
-
     hoverTooltip.style.display =
         "block";
 
@@ -793,23 +814,6 @@ function hideHoverTooltip() {
 
     hoverTooltip.style.display =
         "none";
-
-}
-
-
-// ============================================================
-// REDRAW WITH VIGNETTE
-// ============================================================
-
-function redraw() {
-
-    draw(
-        ctx,
-        canvas
-    );
-
-
-    drawVignette();
 
 }
 
@@ -882,9 +886,36 @@ canvas.addEventListener(
             );
 
 
+        // ----------------------------------------------------
+        // Clicked empty area — clear selection
+        // ----------------------------------------------------
+
         if (!tile) {
 
             setSelectedTile(null);
+
+            clearTerritoryPanel();
+
+            redraw();
+
+            return;
+
+        }
+
+
+        // ----------------------------------------------------
+        // Clicked selected tile again — deselect
+        // ----------------------------------------------------
+
+        if (
+            selectedTileRef &&
+            selectedTileRef.col === tile.col &&
+            selectedTileRef.row === tile.row
+        ) {
+
+            setSelectedTile(null);
+
+            clearTerritoryPanel();
 
             redraw();
 
@@ -907,7 +938,7 @@ canvas.addEventListener(
 
 
         // ----------------------------------------------------
-        // Set selected tile
+        // Select new tile
         // ----------------------------------------------------
 
         setSelectedTile(
@@ -915,19 +946,11 @@ canvas.addEventListener(
         );
 
 
-        // ----------------------------------------------------
-        // Update panel
-        // ----------------------------------------------------
-
         updateTerritoryPanel(
             tile,
             country
         );
 
-
-        // ----------------------------------------------------
-        // Redraw
-        // ----------------------------------------------------
 
         redraw();
 
@@ -1001,10 +1024,6 @@ canvas.addEventListener(
         }
 
 
-        // ----------------------------------------------------
-        // Check for city or army
-        // ----------------------------------------------------
-
         const city =
             getCityAtTile(tile);
 
@@ -1036,10 +1055,6 @@ canvas.addEventListener(
 
         }
 
-
-        // ----------------------------------------------------
-        // Redraw
-        // ----------------------------------------------------
 
         redraw();
 
