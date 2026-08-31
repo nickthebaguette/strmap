@@ -32,7 +32,9 @@ import {
 
 import {
     rebuildMapCanvas,
-    draw
+    draw,
+    setSelectedTile,
+    setHoveredTile
 } from "./shared/renderer.js";
 
 import {
@@ -796,6 +798,23 @@ function hideHoverTooltip() {
 
 
 // ============================================================
+// REDRAW WITH VIGNETTE
+// ============================================================
+
+function redraw() {
+
+    draw(
+        ctx,
+        canvas
+    );
+
+
+    drawVignette();
+
+}
+
+
+// ============================================================
 // RESIZE
 // ============================================================
 
@@ -805,9 +824,7 @@ window.addEventListener(
 
         resizeCamera(canvas);
 
-        draw(ctx, canvas);
-
-        drawVignette();
+        redraw();
 
     }
 );
@@ -867,6 +884,10 @@ canvas.addEventListener(
 
         if (!tile) {
 
+            setSelectedTile(null);
+
+            redraw();
+
             return;
 
         }
@@ -885,10 +906,30 @@ canvas.addEventListener(
         }
 
 
+        // ----------------------------------------------------
+        // Set selected tile
+        // ----------------------------------------------------
+
+        setSelectedTile(
+            tile
+        );
+
+
+        // ----------------------------------------------------
+        // Update panel
+        // ----------------------------------------------------
+
         updateTerritoryPanel(
             tile,
             country
         );
+
+
+        // ----------------------------------------------------
+        // Redraw
+        // ----------------------------------------------------
+
+        redraw();
 
     }
 );
@@ -904,7 +945,11 @@ canvas.addEventListener(
 
         if (dragging) {
 
+            setHoveredTile(null);
+
             hideHoverTooltip();
+
+            redraw();
 
             return;
 
@@ -945,18 +990,58 @@ canvas.addEventListener(
 
         if (!tile) {
 
+            setHoveredTile(null);
+
             hideHoverTooltip();
+
+            redraw();
 
             return;
 
         }
 
 
-        showHoverTooltip(
-            tile,
-            event.clientX,
-            event.clientY
-        );
+        // ----------------------------------------------------
+        // Check for city or army
+        // ----------------------------------------------------
+
+        const city =
+            getCityAtTile(tile);
+
+
+        const army =
+            getArmyAtTile(tile);
+
+
+        if (
+            city ||
+            army
+        ) {
+
+            setHoveredTile(tile);
+
+            showHoverTooltip(
+                tile,
+                event.clientX,
+                event.clientY
+            );
+
+        }
+
+        else {
+
+            setHoveredTile(null);
+
+            hideHoverTooltip();
+
+        }
+
+
+        // ----------------------------------------------------
+        // Redraw
+        // ----------------------------------------------------
+
+        redraw();
 
     }
 );
@@ -968,7 +1053,15 @@ canvas.addEventListener(
 
 canvas.addEventListener(
     "mouseleave",
-    hideHoverTooltip
+    () => {
+
+        setHoveredTile(null);
+
+        hideHoverTooltip();
+
+        redraw();
+
+    }
 );
 
 
@@ -1055,13 +1148,12 @@ canvas.addEventListener(
             event.clientY;
 
 
-        draw(
-            ctx,
-            canvas
-        );
+        setHoveredTile(null);
+
+        hideHoverTooltip();
 
 
-        drawVignette();
+        redraw();
 
     }
 );
@@ -1098,16 +1190,12 @@ canvas.addEventListener(
         );
 
 
-        draw(
-            ctx,
-            canvas
-        );
-
-
-        drawVignette();
-
+        setHoveredTile(null);
 
         hideHoverTooltip();
+
+
+        redraw();
 
     }
 );
