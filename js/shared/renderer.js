@@ -237,10 +237,6 @@ for (
 // ============================================================
 // SELECTION STATE
 // ============================================================
-//
-// Used by main.js to highlight the selected tile.
-//
-// ============================================================
 
 export let selectedTileRef = null;
 
@@ -256,10 +252,6 @@ export function setSelectedTile(
 // ============================================================
 // HOVER STATE
 // ============================================================
-//
-// Used by main.js to highlight the hovered tile.
-//
-// ============================================================
 
 export let hoveredTileRef = null;
 
@@ -268,6 +260,26 @@ export function setHoveredTile(
 ) {
 
     hoveredTileRef = tile;
+
+}
+
+
+// ============================================================
+// HOVER ENTITY STATE
+// ============================================================
+//
+// Tracks whether the hovered tile has a city or army so
+// we can enlarge the icon.
+//
+// ============================================================
+
+export let hoveredEntityType = null;
+
+export function setHoveredEntityType(
+    type
+) {
+
+    hoveredEntityType = type;
 
 }
 
@@ -405,10 +417,6 @@ function drawHexOnContext(
     terrainTexture
 ) {
 
-    // ========================================================
-    // BASE COLOR
-    // ========================================================
-
     createHexPath(
         context,
         x,
@@ -423,10 +431,6 @@ function drawHexOnContext(
 
     context.fill();
 
-
-    // ========================================================
-    // BASE TEXTURE
-    // ========================================================
 
     if (
         baseTexture
@@ -472,10 +476,6 @@ function drawHexOnContext(
     }
 
 
-    // ========================================================
-    // TERRAIN TEXTURE
-    // ========================================================
-
     if (
         terrainTexture
     ) {
@@ -519,10 +519,6 @@ function drawHexOnContext(
 
     }
 
-
-    // ========================================================
-    // NORMAL HEX GRID
-    // ========================================================
 
     createHexPath(
         context,
@@ -979,10 +975,6 @@ function drawPoliticalBorders() {
                 ];
 
 
-            // =================================================
-            // LAND → OCEAN
-            // =================================================
-
             if (
                 neighbour.owner ===
                 "ocean"
@@ -1008,10 +1000,6 @@ function drawPoliticalBorders() {
 
             }
 
-
-            // =================================================
-            // LAND → LAND
-            // =================================================
 
             const currentCountry =
                 countries[
@@ -1382,12 +1370,6 @@ export function rebuildMapCanvas() {
 // ============================================================
 // DRAW HEX HIGHLIGHT
 // ============================================================
-//
-// Draws a glowing outline around a hex.
-//
-// Used for both selection and hover highlights.
-//
-// ============================================================
 
 function drawHexHighlight(
     ctx,
@@ -1483,87 +1465,6 @@ function drawHexHighlight(
 
 
 // ============================================================
-// DRAW WATER SHIMMER
-// ============================================================
-//
-// Subtle animated effect on ocean tiles.
-//
-// Called after the map cache is drawn.
-//
-// ============================================================
-
-let shimmerPhase = 0;
-
-function drawWaterShimmer(
-    ctx,
-    canvas
-) {
-
-    shimmerPhase += 0.008;
-
-
-    ctx.save();
-
-
-    for (
-        const tile of tiles
-    ) {
-
-        if (
-            tile.owner !== "ocean"
-        ) {
-
-            continue;
-
-        }
-
-
-        const world =
-            hexToWorld(
-                tile.col,
-                tile.row
-            );
-
-
-        const shimmer =
-
-            Math.sin(
-
-                shimmerPhase +
-                world.x * 0.08 +
-                world.y * 0.06
-
-            ) * 0.5 + 0.5;
-
-
-        const alpha =
-            0.03 +
-            shimmer * 0.04;
-
-
-        createHexPath(
-            ctx,
-            world.x,
-            world.y,
-            HEX_SIZE - 0.5
-        );
-
-
-        ctx.fillStyle =
-            `rgba(255, 255, 255, ${alpha})`;
-
-
-        ctx.fill();
-
-    }
-
-
-    ctx.restore();
-
-}
-
-
-// ============================================================
 // DRAW
 // ============================================================
 
@@ -1582,10 +1483,6 @@ export function draw(
 
     ctx.save();
 
-
-    // ========================================================
-    // CAMERA
-    // ========================================================
 
     ctx.translate(
 
@@ -1641,16 +1538,6 @@ export function draw(
         MAP_WIDTH + FRAME_OVERHANG * 2,
         MAP_HEIGHT + FRAME_OVERHANG * 2
 
-    );
-
-
-    // ========================================================
-    // WATER SHIMMER
-    // ========================================================
-
-    drawWaterShimmer(
-        ctx,
-        canvas
     );
 
 
