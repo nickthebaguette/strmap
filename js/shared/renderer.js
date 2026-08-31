@@ -276,88 +276,51 @@ export function setHoveredTile(
 
 function saturateColor(
     hex,
-    amount = 0.35
+    saturationBoost = 0.35,
+    lightnessReduction = 0.18
 ) {
 
     const value =
-        hex.replace(
-            "#",
-            ""
-        );
+        hex.replace("#", "");
 
-
-    const r =
-        parseInt(
-            value.substring(0, 2),
-            16
-        );
-
-
-    const g =
-        parseInt(
-            value.substring(2, 4),
-            16
-        );
-
-
-    const b =
-        parseInt(
-            value.substring(4, 6),
-            16
-        );
-
-
-    // Convert RGB to HSL.
+    const r = parseInt(value.substring(0, 2), 16);
+    const g = parseInt(value.substring(2, 4), 16);
+    const b = parseInt(value.substring(4, 6), 16);
 
     const rNorm = r / 255;
     const gNorm = g / 255;
     const bNorm = b / 255;
 
-
     const max = Math.max(rNorm, gNorm, bNorm);
     const min = Math.min(rNorm, gNorm, bNorm);
 
-
-    const lightness = (max + min) / 2;
-
+    let lightness = (max + min) / 2;
 
     let saturation = 0;
 
-
     if (max !== min) {
-
         const delta = max - min;
-
-
         saturation =
             lightness > 0.5
                 ? delta / (2 - max - min)
                 : delta / (max + min);
-
     }
 
-
-    // Boost saturation.
-
+    // Boost saturation
     saturation =
-        Math.min(
-            1,
-            saturation * (1 + amount)
-        );
+        Math.min(1, saturation * (1 + saturationBoost));
 
-
-    // Convert back to RGB.
+    // Darken lightness
+    lightness =
+        Math.max(0, lightness * (1 - lightnessReduction));
 
     const hue =
         getHue(rNorm, gNorm, bNorm, max, min);
 
-
     const [newR, newG, newB] =
         hslToRgb(hue, saturation, lightness);
 
-
     return `rgb(${newR}, ${newG}, ${newB})`;
-
 }
 
 
