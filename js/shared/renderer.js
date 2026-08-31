@@ -33,10 +33,6 @@ import {
     getTerrain
 } from "./terrain.js";
 
-import {
-    drawCountryLabels
-} from "./countryLabels.js";
-
 
 // ============================================================
 // DEVICE PIXEL RATIO
@@ -1897,10 +1893,6 @@ export function draw(
         );
 
     }
-
-    
-
-    drawCountryLabels(ctx);
 
     // ========================================================
     // CITIES
