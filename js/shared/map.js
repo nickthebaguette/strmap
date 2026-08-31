@@ -8,7 +8,7 @@ export const countries = {
 
     ocean: {
         name: "Ocean",
-        color: "#4f8194"
+        color: "#2E4C78"
     },
 
     france: {
