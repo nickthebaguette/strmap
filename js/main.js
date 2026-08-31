@@ -34,7 +34,9 @@ import {
     rebuildMapCanvas,
     draw,
     setSelectedTile,
-    setHoveredTile
+    setHoveredTile,
+    selectedTileRef,
+    hoveredTileRef
 } from "./shared/renderer.js";
 
 import {
