@@ -6,6 +6,53 @@
             "artist": "Ernest Meissonier",
             "year": "c. 1861-1875"
         },
-        
+        {
+            "file": "assets/paintings/austerlitz1805.jpg",
+            "title": "Battle of Austerlitz",
+            "artist": "François Gérard",
+            "year": "1810"
+        },
+        {
+            "file": "assets/paintings/jena1806.jpg",
+            "title": "The Battle of Jena",
+            "artist": "Horace Vernet",
+            "year": "1836"
+        },
+        {
+            "file": "assets/paintings/rivoli.jpg",
+            "title": "The Battle of Rivoli",
+            "artist": "Henri Philippoteaux",
+            "year": "1844"
+        },
+        {
+            "file": "assets/paintings/wagram.jpg",
+            "title": "The Battle of Wagram",
+            "artist": "Horace Vernet",
+            "year": "1836"
+        },
+        {
+            "file": "assets/paintings/berlin.jpg",
+            "title": "Entry of Napoleon into Berlin",
+            "artist": "Charles Meynier",
+            "year": "1810"
+        },
+        {
+            "file": "assets/paintings/1814.jpg",
+            "title": "French Campaign, 1814",
+            "artist": "Ernest Meissonier",
+            "year": "1860–1864"
+        },
+        {
+            "file": "assets/paintings/coronation.jpg",
+            "title": "The Coronation of Napoleon",
+            "artist": "Jacques-Louis David",
+            "year": "1805–1807"
+        },
+        {
+            "file": "assets/paintings/abdication.jpg",
+            "title": "Napoleon Signing His Abdication at Fontainebleau",
+            "artist": "François Bouchot",
+            "year": "1843"
+        }
     ]
 }
