@@ -12,6 +12,10 @@ import {
     getCountryFlagPath
 } from "./countryFlags.js";
 
+import {
+    camera
+} from "./camera.js";
+
 
 // ============================================================
 // ARMIES
@@ -38,6 +42,23 @@ export const MEN_PER_SOLDIER_ICON =
 
 export const MAX_SOLDIER_ICONS =
     4;
+
+
+// ============================================================
+// WAVING ANIMATION CONFIGURATION
+// ============================================================
+
+const WAVE_SLICES = 12;
+
+const WAVE_AMPLITUDE = 0.08;
+
+const WAVE_FREQUENCY = 2.5;
+
+const WAVE_SPEED = 2.5;
+
+const RIPPLE_SPEED = 1.8;
+
+const ANIMATION_MIN_ZOOM = 1.2;
 
 
 // ============================================================
@@ -95,18 +116,481 @@ function getCountryFlagImage(
 
 
 // ============================================================
-// DRAW ARMIES
+// GET SOLDIER ICON COUNT
+// ============================================================
+
+export function getSoldierIconCount(
+    strength
+) {
+
+    const count =
+        Math.floor(
+            strength /
+            MEN_PER_SOLDIER_ICON
+        );
+
+
+    return Math.max(
+        0,
+        Math.min(
+            count,
+            MAX_SOLDIER_ICONS
+        )
+    );
+
+}
+
+
+// ============================================================
+// DRAW WAVING FLAG
 // ============================================================
 //
-// hoveredTile is optional. When provided, the army on that
-// tile is drawn larger.
+// Draws the flag with horizontal slice distortion to
+// simulate a waving effect.
 //
+// Only used when zoomed in past ANIMATION_MIN_ZOOM.
+//
+// ============================================================
+
+function drawWavingFlag(
+    ctx,
+    image,
+    centerX,
+    centerY,
+    size,
+    time
+) {
+
+    const sourceWidth =
+        image.naturalWidth;
+
+
+    const sourceHeight =
+        image.naturalHeight;
+
+
+    if (
+        sourceWidth <= 0 ||
+        sourceHeight <= 0
+    ) {
+
+        return;
+
+    }
+
+
+    // --------------------------------------------------------
+    // Calculate contain dimensions
+    // --------------------------------------------------------
+
+    const scale =
+        Math.min(
+
+            size / sourceWidth,
+            size / sourceHeight
+
+        );
+
+
+    const drawWidth =
+        sourceWidth * scale;
+
+
+    const drawHeight =
+        sourceHeight * scale;
+
+
+    const drawX =
+        centerX - drawWidth / 2;
+
+
+    const drawY =
+        centerY - drawHeight / 2;
+
+
+    // --------------------------------------------------------
+    // Draw flag in horizontal slices with wave offset
+    // --------------------------------------------------------
+
+    const sliceHeight =
+        drawHeight / WAVE_SLICES;
+
+
+    const amplitude =
+        drawWidth * WAVE_AMPLITUDE;
+
+
+    for (
+        let i = 0;
+        i < WAVE_SLICES;
+        i++
+    ) {
+
+        const sourceY =
+            (i / WAVE_SLICES) * sourceHeight;
+
+
+        const sourceSliceHeight =
+            sourceHeight / WAVE_SLICES;
+
+
+        const destY =
+            drawY + i * sliceHeight;
+
+
+        // ----------------------------------------------------
+        // Wave offset
+        // ----------------------------------------------------
+
+        const waveOffset =
+            Math.sin(
+
+                time * WAVE_SPEED +
+                i * WAVE_FREQUENCY
+
+            ) * amplitude;
+
+
+        // ----------------------------------------------------
+        // Ripple highlight (brightness variation)
+        // ----------------------------------------------------
+
+        const ripple =
+            Math.sin(
+
+                time * RIPPLE_SPEED +
+                i * 1.8
+
+            );
+
+
+        ctx.save();
+
+
+        // ----------------------------------------------------
+        // Draw slice with slight brightness variation
+        // ----------------------------------------------------
+
+        ctx.drawImage(
+
+            image,
+
+            0,
+            sourceY,
+            sourceWidth,
+            sourceSliceHeight,
+
+            drawX + waveOffset,
+            destY,
+            drawWidth,
+            sliceHeight + 1
+
+        );
+
+
+        // ----------------------------------------------------
+        // Add highlight overlay on ripple peaks
+        // ----------------------------------------------------
+
+        if (
+            ripple > 0.3
+        ) {
+
+            ctx.globalAlpha =
+                ripple * 0.15;
+
+
+            ctx.fillStyle =
+                "#ffffff";
+
+
+            ctx.fillRect(
+
+                drawX + waveOffset,
+                destY,
+                drawWidth,
+                sliceHeight
+
+            );
+
+        }
+
+
+        ctx.restore();
+
+    }
+
+}
+
+
+// ============================================================
+// DRAW STATIC FLAG
+// ============================================================
+
+function drawStaticFlag(
+    ctx,
+    image,
+    centerX,
+    centerY,
+    size
+) {
+
+    const sourceWidth =
+        image.naturalWidth;
+
+
+    const sourceHeight =
+        image.naturalHeight;
+
+
+    if (
+        sourceWidth <= 0 ||
+        sourceHeight <= 0
+    ) {
+
+        return;
+
+    }
+
+
+    const scale =
+        Math.min(
+
+            size / sourceWidth,
+            size / sourceHeight
+
+        );
+
+
+    const drawWidth =
+        sourceWidth * scale;
+
+
+    const drawHeight =
+        sourceHeight * scale;
+
+
+    const drawX =
+        centerX - drawWidth / 2;
+
+
+    const drawY =
+        centerY - drawHeight / 2;
+
+
+    ctx.drawImage(
+
+        image,
+
+        drawX,
+        drawY,
+
+        drawWidth,
+        drawHeight
+
+    );
+
+}
+
+
+// ============================================================
+// DRAW STRENGTH RIBBONS
+// ============================================================
+//
+// Draws 1-4 ribbons hanging from the flag based on army
+// strength. Ribbons use the country color.
+//
+// ============================================================
+
+function drawStrengthRibbons(
+    ctx,
+    army,
+    centerX,
+    centerY,
+    flagSize
+) {
+
+    const ribbonCount =
+        getSoldierIconCount(
+            army.strength
+        );
+
+
+    if (
+        ribbonCount === 0
+    ) {
+
+        return;
+
+    }
+
+
+    const country =
+        countries[
+            army.country
+        ];
+
+
+    if (
+        !country
+    ) {
+
+        return;
+
+    }
+
+
+    // --------------------------------------------------------
+    // Ribbon dimensions
+    // --------------------------------------------------------
+
+    const ribbonWidth =
+        flagSize * 0.12;
+
+
+    const ribbonHeight =
+        flagSize * 0.45;
+
+
+    const ribbonGap =
+        flagSize * 0.08;
+
+
+    const totalRibbonsWidth =
+
+        ribbonCount * ribbonWidth +
+        (ribbonCount - 1) * ribbonGap;
+
+
+    const startX =
+        centerX - totalRibbonsWidth / 2;
+
+
+    const ribbonY =
+        centerY + flagSize * 0.35;
+
+
+    // --------------------------------------------------------
+    // Draw ribbons
+    // --------------------------------------------------------
+
+    for (
+        let i = 0;
+        i < ribbonCount;
+        i++
+    ) {
+
+        const ribbonX =
+            startX +
+            i * (ribbonWidth + ribbonGap);
+
+
+        ctx.save();
+
+
+        // ----------------------------------------------------
+        // Ribbon shadow
+        // ----------------------------------------------------
+
+        ctx.fillStyle =
+            "rgba(0, 0, 0, 0.4)";
+
+
+        ctx.fillRect(
+            ribbonX + 1,
+            ribbonY + 1,
+            ribbonWidth,
+            ribbonHeight
+        );
+
+
+        // ----------------------------------------------------
+        // Ribbon body (country color)
+        // ----------------------------------------------------
+
+        ctx.fillStyle =
+            country.color;
+
+
+        ctx.fillRect(
+            ribbonX,
+            ribbonY,
+            ribbonWidth,
+            ribbonHeight
+        );
+
+
+        // ----------------------------------------------------
+        // Ribbon highlight (left edge)
+        // ----------------------------------------------------
+
+        ctx.fillStyle =
+            "rgba(255, 255, 255, 0.25)";
+
+
+        ctx.fillRect(
+            ribbonX,
+            ribbonY,
+            ribbonWidth * 0.3,
+            ribbonHeight
+        );
+
+
+        // ----------------------------------------------------
+        // Ribbon bottom notch (V shape)
+        // ----------------------------------------------------
+
+        ctx.beginPath();
+
+
+        ctx.moveTo(
+            ribbonX,
+            ribbonY + ribbonHeight
+        );
+
+
+        ctx.lineTo(
+            ribbonX + ribbonWidth / 2,
+            ribbonY + ribbonHeight - ribbonWidth * 0.4
+        );
+
+
+        ctx.lineTo(
+            ribbonX + ribbonWidth,
+            ribbonY + ribbonHeight
+        );
+
+
+        ctx.closePath();
+
+
+        ctx.fillStyle =
+            country.color;
+
+
+        ctx.fill();
+
+
+        ctx.restore();
+
+    }
+
+}
+
+
+// ============================================================
+// DRAW ARMIES
 // ============================================================
 
 export function drawArmies(
     ctx,
-    hoveredTile = null
+    hoveredTile = null,
+    time = 0
 ) {
+
+    const isZoomedIn =
+        camera.zoom >= ANIMATION_MIN_ZOOM;
+
 
     for (
         const army of armies
@@ -172,13 +656,32 @@ export function drawArmies(
             flag.naturalWidth > 0
         ) {
 
-            drawFlagContain(
-                ctx,
-                flag,
-                world.x,
-                world.y,
-                size
-            );
+            if (
+                isZoomedIn
+            ) {
+
+                drawWavingFlag(
+                    ctx,
+                    flag,
+                    world.x,
+                    world.y,
+                    size,
+                    time
+                );
+
+            }
+
+            else {
+
+                drawStaticFlag(
+                    ctx,
+                    flag,
+                    world.x,
+                    world.y,
+                    size
+                );
+
+            }
 
         }
 
@@ -212,110 +715,20 @@ export function drawArmies(
 
         ctx.restore();
 
-    }
 
-}
+        // ----------------------------------------------------
+        // STRENGTH RIBBONS (no shadow, drawn after)
+        // ----------------------------------------------------
 
-
-// ============================================================
-// DRAW FLAG WITH CONTAIN BEHAVIOUR
-// ============================================================
-
-function drawFlagContain(
-    ctx,
-    image,
-    centerX,
-    centerY,
-    boxSize
-) {
-
-    const sourceWidth =
-        image.naturalWidth;
-
-
-    const sourceHeight =
-        image.naturalHeight;
-
-
-    if (
-        sourceWidth <= 0 ||
-        sourceHeight <= 0
-    ) {
-
-        return;
-
-    }
-
-
-    const scale =
-        Math.min(
-
-            boxSize /
-            sourceWidth,
-
-            boxSize /
-            sourceHeight
-
+        drawStrengthRibbons(
+            ctx,
+            army,
+            world.x,
+            world.y,
+            size
         );
 
-
-    const drawWidth =
-        sourceWidth *
-        scale;
-
-
-    const drawHeight =
-        sourceHeight *
-        scale;
-
-
-    const drawX =
-        centerX -
-        drawWidth / 2;
-
-
-    const drawY =
-        centerY -
-        drawHeight / 2;
-
-
-    ctx.drawImage(
-
-        image,
-
-        drawX,
-        drawY,
-
-        drawWidth,
-        drawHeight
-
-    );
-
-}
-
-
-// ============================================================
-// GET SOLDIER ICON COUNT
-// ============================================================
-
-export function getSoldierIconCount(
-    strength
-) {
-
-    const count =
-        Math.floor(
-            strength /
-            MEN_PER_SOLDIER_ICON
-        );
-
-
-    return Math.max(
-        0,
-        Math.min(
-            count,
-            MAX_SOLDIER_ICONS
-        )
-    );
+    }
 
 }
 
