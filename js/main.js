@@ -1847,33 +1847,3 @@ canvas.addEventListener(
 // ============================================================
 
 start();
-
-
-// ============================================================
-// ANIMATION LOOP
-// ============================================================
-//
-// Continuously redraws when zoomed in enough for the
-// waving flag animation.
-//
-// ============================================================
-
-function animationLoop(timestamp) {
-
-    // Only redraw if zoomed in enough for waving flags
-
-    if (
-        camera.zoom >= 1.2
-    ) {
-
-        redraw();
-
-    }
-
-
-    requestAnimationFrame(animationLoop);
-
-}
-
-
-requestAnimationFrame(animationLoop);
