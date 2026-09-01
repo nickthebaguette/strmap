@@ -342,6 +342,11 @@ async function runLoadingSequence() {
     await loadQuotes();
 
 
+    let hasAdvanced = false;
+
+    let paintingLoaded = false;
+
+
     if (
         paintings.length > 0
     ) {
@@ -368,6 +373,9 @@ async function runLoadingSequence() {
                     "loaded"
                 );
 
+
+                paintingLoaded = true;
+
             };
 
 
@@ -377,6 +385,9 @@ async function runLoadingSequence() {
                 console.warn(
                     `Could not load painting: ${painting.file}`
                 );
+
+
+                paintingLoaded = true;
 
             };
 
@@ -403,6 +414,12 @@ async function runLoadingSequence() {
             },
             1500
         );
+
+    }
+
+    else {
+
+        paintingLoaded = true;
 
     }
 
@@ -455,9 +472,6 @@ async function runLoadingSequence() {
     dateDisplay.classList.add(
         "corner"
     );
-
-
-    let hasAdvanced = false;
 
 
     function advanceToMap() {
@@ -527,13 +541,23 @@ async function runLoadingSequence() {
 
     loadingOverlay.addEventListener(
         "click",
-        advanceToMap
+        () => {
+
+            if (
+                paintingLoaded
+            ) {
+
+                advanceToMap();
+
+            }
+
+        }
     );
 
 
     setTimeout(
         advanceToMap,
-        8000
+        15000
     );
 
 }
