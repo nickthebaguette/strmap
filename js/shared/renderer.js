@@ -1911,7 +1911,8 @@ export function draw(
 
     drawArmies(
         ctx,
-        hoveredTileRef
+        hoveredTileRef,
+        performance.now() / 1000
     );
 
 
