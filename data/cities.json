@@ -8,13 +8,6 @@
       "row": 44
     },
     {
-      "id": 2,
-      "name": "Vienna",
-      "country": "austria",
-      "col": 51,
-      "row": 48
-    },
-    {
       "id": 3,
       "name": "Constantinople",
       "country": "ottoman",
@@ -50,13 +43,6 @@
       "row": 36
     },
     {
-      "id": 8,
-      "name": "Madrid",
-      "country": "spain",
-      "col": 20,
-      "row": 65
-    },
-    {
       "id": 9,
       "name": "Copenhagen",
       "country": "denmark",
@@ -69,6 +55,881 @@
       "country": "sweden",
       "col": 52,
       "row": 13
+    },
+    {
+      "id": 11,
+      "name": "Königsberg",
+      "country": "prussia",
+      "col": 56,
+      "row": 28
+    },
+    {
+      "id": 13,
+      "name": "Leipzig",
+      "country": "saxony",
+      "col": 44,
+      "row": 37
+    },
+    {
+      "id": 14,
+      "name": "Dresden",
+      "country": "saxony",
+      "col": 47,
+      "row": 37
+    },
+    {
+      "id": 15,
+      "name": "Warsaw",
+      "country": "prussia",
+      "col": 55,
+      "row": 35
+    },
+    {
+      "id": 16,
+      "name": "Amsterdam",
+      "country": "netherlands",
+      "col": 34,
+      "row": 35
+    },
+    {
+      "id": 17,
+      "name": "Rotterdam",
+      "country": "netherlands",
+      "col": 32,
+      "row": 37
+    },
+    {
+      "id": 18,
+      "name": "Oslo",
+      "country": "denmark",
+      "col": 42,
+      "row": 12
+    },
+    {
+      "id": 20,
+      "name": "Venice",
+      "country": "austria",
+      "col": 45,
+      "row": 52
+    },
+    {
+      "id": 21,
+      "name": "Munich",
+      "country": "bavaria",
+      "col": 44,
+      "row": 45
+    },
+    {
+      "id": 22,
+      "name": "Stuttgart",
+      "country": "badenwurttemberg",
+      "col": 40,
+      "row": 45
+    },
+    {
+      "id": 24,
+      "name": "Nuremberg",
+      "country": "bavaria",
+      "col": 44,
+      "row": 42
+    },
+    {
+      "id": 25,
+      "name": "Ulm",
+      "country": "hre",
+      "col": 42,
+      "row": 46
+    },
+    {
+      "id": 26,
+      "name": "Gibraltar",
+      "country": "britain",
+      "col": 18,
+      "row": 74
+    },
+    {
+      "id": 27,
+      "name": "Innsbruck",
+      "country": "austria",
+      "col": 43,
+      "row": 49
+    },
+    {
+      "id": 29,
+      "name": "Vienna",
+      "country": "austria",
+      "col": 51,
+      "row": 45
+    },
+    {
+      "id": 30,
+      "name": "Prague",
+      "country": "austria",
+      "col": 48,
+      "row": 41
+    },
+    {
+      "id": 31,
+      "name": "Zagreb",
+      "country": "austria",
+      "col": 50,
+      "row": 52
+    },
+    {
+      "id": 32,
+      "name": "Budapest",
+      "country": "austria",
+      "col": 55,
+      "row": 46
+    },
+    {
+      "id": 33,
+      "name": "Kraków",
+      "country": "austria",
+      "col": 54,
+      "row": 41
+    },
+    {
+      "id": 34,
+      "name": "Lublin",
+      "country": "austria",
+      "col": 59,
+      "row": 36
+    },
+    {
+      "id": 35,
+      "name": "Lviv",
+      "country": "austria",
+      "col": 60,
+      "row": 41
+    },
+    {
+      "id": 36,
+      "name": "Brasov",
+      "country": "austria",
+      "col": 60,
+      "row": 49
+    },
+    {
+      "id": 37,
+      "name": "Novi Sad",
+      "country": "austria",
+      "col": 56,
+      "row": 53
+    },
+    {
+      "id": 38,
+      "name": "Salzburg",
+      "country": "austria",
+      "col": 47,
+      "row": 46
+    },
+    {
+      "id": 39,
+      "name": "Milan",
+      "country": "italy",
+      "col": 41,
+      "row": 52
+    },
+    {
+      "id": 40,
+      "name": "Florence",
+      "country": "italy",
+      "col": 43,
+      "row": 56
+    },
+    {
+      "id": 41,
+      "name": "Split",
+      "country": "austria",
+      "col": 50,
+      "row": 57
+    },
+    {
+      "id": 42,
+      "name": "Rome",
+      "country": "papal",
+      "col": 44,
+      "row": 60
+    },
+    {
+      "id": 43,
+      "name": "Bucharest",
+      "country": "ottoman",
+      "col": 65,
+      "row": 55
+    },
+    {
+      "id": 44,
+      "name": "Belgrade",
+      "country": "ottoman",
+      "col": 58,
+      "row": 56
+    },
+    {
+      "id": 46,
+      "name": "Chișinău",
+      "country": "ottoman",
+      "col": 68,
+      "row": 50
+    },
+    {
+      "id": 49,
+      "name": "Athens",
+      "country": "ottoman",
+      "col": 61,
+      "row": 69
+    },
+    {
+      "id": 52,
+      "name": "Tiranë",
+      "country": "ottoman",
+      "col": 55,
+      "row": 63
+    },
+    {
+      "id": 53,
+      "name": "Sofia",
+      "country": "ottoman",
+      "col": 62,
+      "row": 59
+    },
+    {
+      "id": 54,
+      "name": "Tunis",
+      "country": "ottoman",
+      "col": 41,
+      "row": 73
+    },
+    {
+      "id": 55,
+      "name": "Algiers",
+      "country": "ottoman",
+      "col": 31,
+      "row": 72
+    },
+    {
+      "id": 56,
+      "name": "Trabzon",
+      "country": "ottoman",
+      "col": 87,
+      "row": 63
+    },
+    {
+      "id": 57,
+      "name": "Aleppo",
+      "country": "ottoman",
+      "col": 82,
+      "row": 72
+    },
+    {
+      "id": 58,
+      "name": "Sarajevo",
+      "country": "ottoman",
+      "col": 53,
+      "row": 57
+    },
+    {
+      "id": 59,
+      "name": "Ankara",
+      "country": "ottoman",
+      "col": 74,
+      "row": 66
+    },
+    {
+      "id": 60,
+      "name": "Lisbon",
+      "country": "portugal",
+      "col": 13,
+      "row": 66
+    },
+    {
+      "id": 61,
+      "name": "Porto",
+      "country": "portugal",
+      "col": 13,
+      "row": 61
+    },
+    {
+      "id": 62,
+      "name": "Faro",
+      "country": "portugal",
+      "col": 14,
+      "row": 71
+    },
+    {
+      "id": 63,
+      "name": "Casablanca",
+      "country": "ottoman",
+      "col": 17,
+      "row": 77
+    },
+    {
+      "id": 64,
+      "name": "Helsinki",
+      "country": "sweden",
+      "col": 62,
+      "row": 11
+    },
+    {
+      "id": 66,
+      "name": "Stralsund",
+      "country": "sweden",
+      "col": 46,
+      "row": 29
+    },
+    {
+      "id": 67,
+      "name": "Lubeck",
+      "country": "denmark",
+      "col": 43,
+      "row": 30
+    },
+    {
+      "id": 68,
+      "name": "Naples",
+      "country": "naples",
+      "col": 47,
+      "row": 63
+    },
+    {
+      "id": 69,
+      "name": "Taranto",
+      "country": "naples",
+      "col": 52,
+      "row": 64
+    },
+    {
+      "id": 70,
+      "name": "Palermo",
+      "country": "naples",
+      "col": 47,
+      "row": 70
+    },
+    {
+      "id": 71,
+      "name": "Turin",
+      "country": "france",
+      "col": 37,
+      "row": 53
+    },
+    {
+      "id": 72,
+      "name": "Genoa",
+      "country": "france",
+      "col": 40,
+      "row": 55
+    },
+    {
+      "id": 73,
+      "name": "Marseille",
+      "country": "france",
+      "col": 35,
+      "row": 58
+    },
+    {
+      "id": 74,
+      "name": "Toulouse",
+      "country": "france",
+      "col": 29,
+      "row": 57
+    },
+    {
+      "id": 75,
+      "name": "Bordeaux",
+      "country": "france",
+      "col": 25,
+      "row": 54
+    },
+    {
+      "id": 76,
+      "name": "Lyon",
+      "country": "france",
+      "col": 33,
+      "row": 51
+    },
+    {
+      "id": 80,
+      "name": "Calais",
+      "country": "france",
+      "col": 29,
+      "row": 40
+    },
+    {
+      "id": 81,
+      "name": "Brest",
+      "country": "france",
+      "col": 20,
+      "row": 46
+    },
+    {
+      "id": 82,
+      "name": "Brussels",
+      "country": "france",
+      "col": 33,
+      "row": 39
+    },
+    {
+      "id": 83,
+      "name": "Nantes",
+      "country": "france",
+      "col": 25,
+      "row": 48
+    },
+    {
+      "id": 85,
+      "name": "Luxembourg",
+      "country": "france",
+      "col": 35,
+      "row": 41
+    },
+    {
+      "id": 86,
+      "name": "Strasbourg",
+      "country": "france",
+      "col": 35,
+      "row": 45
+    },
+    {
+      "id": 87,
+      "name": "Genva",
+      "country": "switzerland",
+      "col": 36,
+      "row": 50
+    },
+    {
+      "id": 88,
+      "name": "Zurich",
+      "country": "switzerland",
+      "col": 39,
+      "row": 49
+    },
+    {
+      "id": 89,
+      "name": "Hannover",
+      "country": "france",
+      "col": 40,
+      "row": 33
+    },
+    {
+      "id": 90,
+      "name": "Frankfurt",
+      "country": "hre",
+      "col": 39,
+      "row": 40
+    },
+    {
+      "id": 91,
+      "name": "Bremen",
+      "country": "hre",
+      "col": 38,
+      "row": 31
+    },
+    {
+      "id": 92,
+      "name": "Cologne",
+      "country": "hre",
+      "col": 37,
+      "row": 37
+    },
+    {
+      "id": 93,
+      "name": "Würzburg",
+      "country": "hre",
+      "col": 42,
+      "row": 42
+    },
+    {
+      "id": 94,
+      "name": "Erfurt",
+      "country": "hre",
+      "col": 41,
+      "row": 37
+    },
+    {
+      "id": 95,
+      "name": "Bielefeld",
+      "country": "hre",
+      "col": 38,
+      "row": 35
+    },
+    {
+      "id": 96,
+      "name": "Katowice",
+      "country": "prussia",
+      "col": 51,
+      "row": 39
+    },
+    {
+      "id": 97,
+      "name": "Magdeburg",
+      "country": "prussia",
+      "col": 43,
+      "row": 36
+    },
+    {
+      "id": 98,
+      "name": "Stettin",
+      "country": "prussia",
+      "col": 49,
+      "row": 32
+    },
+    {
+      "id": 102,
+      "name": "Gdańsk",
+      "country": "prussia",
+      "col": 53,
+      "row": 29
+    },
+    {
+      "id": 103,
+      "name": "Koszalin",
+      "country": "prussia",
+      "col": 50,
+      "row": 29
+    },
+    {
+      "id": 104,
+      "name": "Bradenburg",
+      "country": "prussia",
+      "col": 45,
+      "row": 34
+    },
+    {
+      "id": 105,
+      "name": "Białystok",
+      "country": "prussia",
+      "col": 58,
+      "row": 31
+    },
+    {
+      "id": 107,
+      "name": "Poznań",
+      "country": "prussia",
+      "col": 52,
+      "row": 34
+    },
+    {
+      "id": 108,
+      "name": "Wrocław",
+      "country": "prussia",
+      "col": 50,
+      "row": 36
+    },
+    {
+      "id": 109,
+      "name": "Wittstock",
+      "country": "prussia",
+      "col": 45,
+      "row": 32
+    },
+    {
+      "id": 110,
+      "name": "Konstanz",
+      "country": "badenwurttemberg",
+      "col": 40,
+      "row": 47
+    },
+    {
+      "id": 111,
+      "name": "Sonneberg",
+      "country": "hre",
+      "col": 43,
+      "row": 40
+    },
+    {
+      "id": 112,
+      "name": "Cagliari",
+      "country": "sardinia",
+      "col": 39,
+      "row": 67
+    },
+    {
+      "id": 113,
+      "name": "Liverpool",
+      "country": "britain",
+      "col": 23,
+      "row": 30
+    },
+    {
+      "id": 115,
+      "name": "Cardiff",
+      "country": "britain",
+      "col": 20,
+      "row": 36
+    },
+    {
+      "id": 116,
+      "name": "Plymouth",
+      "country": "britain",
+      "col": 20,
+      "row": 40
+    },
+    {
+      "id": 117,
+      "name": "Southampton",
+      "country": "britain",
+      "col": 24,
+      "row": 39
+    },
+    {
+      "id": 118,
+      "name": "Dublin",
+      "country": "britain",
+      "col": 17,
+      "row": 31
+    },
+    {
+      "id": 119,
+      "name": "Belfast",
+      "country": "britain",
+      "col": 17,
+      "row": 28
+    },
+    {
+      "id": 120,
+      "name": "Norwhich",
+      "country": "britain",
+      "col": 28,
+      "row": 34
+    },
+    {
+      "id": 121,
+      "name": "Dover",
+      "country": "britain",
+      "col": 28,
+      "row": 38
+    },
+    {
+      "id": 122,
+      "name": "Edinburgh",
+      "country": "britain",
+      "col": 22,
+      "row": 24
+    },
+    {
+      "id": 124,
+      "name": "Birmingham",
+      "country": "britain",
+      "col": 23,
+      "row": 34
+    },
+    {
+      "id": 125,
+      "name": "Newcastle",
+      "country": "britain",
+      "col": 24,
+      "row": 27
+    },
+    {
+      "id": 126,
+      "name": "Aberdeen",
+      "country": "britain",
+      "col": 22,
+      "row": 21
+    },
+    {
+      "id": 127,
+      "name": "Glasgow",
+      "country": "britain",
+      "col": 20,
+      "row": 24
+    },
+    {
+      "id": 128,
+      "name": "Barcelona",
+      "country": "spain",
+      "col": 29,
+      "row": 62
+    },
+    {
+      "id": 129,
+      "name": "Zaragoza",
+      "country": "spain",
+      "col": 26,
+      "row": 61
+    },
+    {
+      "id": 130,
+      "name": "Valencia",
+      "country": "spain",
+      "col": 25,
+      "row": 67
+    },
+    {
+      "id": 131,
+      "name": "A Coruña",
+      "country": "spain",
+      "col": 14,
+      "row": 57
+    },
+    {
+      "id": 132,
+      "name": "Bilbao",
+      "country": "spain",
+      "col": 22,
+      "row": 59
+    },
+    {
+      "id": 133,
+      "name": "Seville",
+      "country": "spain",
+      "col": 18,
+      "row": 71
+    },
+    {
+      "id": 134,
+      "name": "Salamanca",
+      "country": "spain",
+      "col": 18,
+      "row": 64
+    },
+    {
+      "id": 135,
+      "name": "Burgos",
+      "country": "spain",
+      "col": 20,
+      "row": 61
+    },
+    {
+      "id": 136,
+      "name": "Andorra",
+      "country": "spain",
+      "col": 29,
+      "row": 60
+    },
+    {
+      "id": 137,
+      "name": "Murcia",
+      "country": "spain",
+      "col": 23,
+      "row": 70
+    },
+    {
+      "id": 138,
+      "name": "Teruel",
+      "country": "spain",
+      "col": 25,
+      "row": 64
+    },
+    {
+      "id": 139,
+      "name": "León",
+      "country": "spain",
+      "col": 18,
+      "row": 59
+    },
+    {
+      "id": 140,
+      "name": "Merdia",
+      "country": "spain",
+      "col": 18,
+      "row": 68
+    },
+    {
+      "id": 141,
+      "name": "Madrid",
+      "country": "spain",
+      "col": 21,
+      "row": 65
+    },
+    {
+      "id": 142,
+      "name": "Kiev",
+      "country": "russia",
+      "col": 71,
+      "row": 38
+    },
+    {
+      "id": 143,
+      "name": "Sevastopol",
+      "country": "russia",
+      "col": 76,
+      "row": 55
+    },
+    {
+      "id": 144,
+      "name": "Krasnodar",
+      "country": "russia",
+      "col": 85,
+      "row": 55
+    },
+    {
+      "id": 145,
+      "name": "Kaunas",
+      "country": "russia",
+      "col": 61,
+      "row": 25
+    },
+    {
+      "id": 147,
+      "name": "Minsk",
+      "country": "russia",
+      "col": 62,
+      "row": 29
+    },
+    {
+      "id": 148,
+      "name": "Riga",
+      "country": "russia",
+      "col": 62,
+      "row": 21
+    },
+    {
+      "id": 149,
+      "name": "Rostov",
+      "country": "russia",
+      "col": 83,
+      "row": 48
+    },
+    {
+      "id": 150,
+      "name": "Odessa",
+      "country": "russia",
+      "col": 72,
+      "row": 50
+    },
+    {
+      "id": 151,
+      "name": "Lutsk",
+      "country": "russia",
+      "col": 63,
+      "row": 37
+    },
+    {
+      "id": 152,
+      "name": "Kharkiv",
+      "country": "russia",
+      "col": 77,
+      "row": 41
+    },
+    {
+      "id": 153,
+      "name": "Smolensk",
+      "country": "russia",
+      "col": 69,
+      "row": 29
+    },
+    {
+      "id": 154,
+      "name": "Tallin",
+      "country": "russia",
+      "col": 64,
+      "row": 13
+    },
+    {
+      "id": 155,
+      "name": "Pskov",
+      "country": "russia",
+      "col": 67,
+      "row": 19
+    },
+    {
+      "id": 156,
+      "name": "Tver",
+      "country": "russia",
+      "col": 74,
+      "row": 24
     }
   ]
 }
