@@ -259,8 +259,9 @@ function drawStrengthBar(
 
 
     const barX =
-        flagCenterX +
-        flagSize * 0.55;
+        flagCenterX -
+        flagSize * 0.55 -
+        barWidth;
 
 
     const barY =
