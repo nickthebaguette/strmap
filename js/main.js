@@ -845,8 +845,8 @@ function updateTerritoryPanel(
 
         cityTypeDisplay.textContent =
             isMajorCity(city)
-                ? "Major City"
-                : "Village";
+                ? "National Centre"
+                : "Regional Centre";
 
     }
 
