@@ -12,10 +12,59 @@ import {
 } from "./camera.js";
 
 
+// ============================================================
+// CITIES ARRAY
+// ============================================================
+
 export const cities = [];
 
 let nextCityId = 1;
 
+
+// ============================================================
+// MAJOR CITIES
+// ============================================================
+//
+// Cities in this list are drawn with city.png and their
+// names are always shown on the map.
+//
+// All other cities are treated as villages, drawn with
+// village.png, and their names only show on hover/selection.
+//
+// Add or remove city names here to change which cities
+// appear as major cities.
+//
+// ============================================================
+
+export const MAJOR_CITIES = new Set([
+
+    "Paris",
+    "London",
+    "Madrid",
+    "Lisbon",
+    "Berlin",
+    "Vienna",
+    "Moscow",
+    "St. Petersburg",
+    "Stockholm",
+    "Copenhagen",
+    "Rome",
+    "Naples",
+    "Constantinople",
+    "Amsterdam",
+    "Brussels",
+    "Warsaw",
+    "Munich",
+    "Dresden",
+    "Milan",
+    "Venice"
+
+]);
+
+
+// ============================================================
+// CITY IMAGES
+// ============================================================
 
 const cityImage =
     new Image();
@@ -24,12 +73,42 @@ cityImage.src =
     "icons/cities/city.png";
 
 
+const villageImage =
+    new Image();
+
+villageImage.src =
+    "icons/cities/village.png";
+
+
 // ============================================================
-// CITY MARKER SIZE
+// CITY SIZE
+// ============================================================
+//
+// Different scaling for city vs village icons.
+//
 // ============================================================
 
 const CITY_SIZE =
-    HEX_SIZE * 1.6;
+    HEX_SIZE * 1.4;
+
+
+const VILLAGE_SIZE =
+    HEX_SIZE * 1.0;
+
+
+// ============================================================
+// CHECK IF CITY IS MAJOR
+// ============================================================
+
+export function isMajorCity(
+    city
+) {
+
+    return MAJOR_CITIES.has(
+        city.name
+    );
+
+}
 
 
 // ============================================================
@@ -104,7 +183,13 @@ export async function loadCities() {
                     Number(city.col),
 
                 row:
-                    Number(city.row)
+                    Number(city.row),
+
+                major:
+                    MAJOR_CITIES.has(
+                        city.name ||
+                        "Unnamed City"
+                    )
 
             });
 
@@ -158,7 +243,10 @@ export function addCity(
 
         col,
 
-        row
+        row,
+
+        major:
+            MAJOR_CITIES.has(name)
 
     };
 
@@ -177,11 +265,15 @@ export function addCity(
 // hoveredTile is optional. When provided, the city on that
 // tile is drawn larger.
 //
+// selectedTile is optional. When provided, the city on that
+// tile is drawn larger and its name is shown.
+//
 // ============================================================
 
 export function drawCities(
     ctx,
-    hoveredTile = null
+    hoveredTile = null,
+    selectedTile = null
 ) {
 
     for (
@@ -202,10 +294,29 @@ export function drawCities(
             hoveredTile.row === city.row;
 
 
+        const isSelected =
+
+            selectedTile !== null &&
+            selectedTile.col === city.col &&
+            selectedTile.row === city.row;
+
+
+        const baseSize =
+            city.major
+                ? CITY_SIZE
+                : VILLAGE_SIZE;
+
+
         const size =
-            isHovered
-                ? CITY_SIZE * 1.25
-                : CITY_SIZE;
+            (isHovered || isSelected)
+                ? baseSize * 1.25
+                : baseSize;
+
+
+        const image =
+            city.major
+                ? cityImage
+                : villageImage;
 
 
         ctx.save();
@@ -220,7 +331,7 @@ export function drawCities(
 
 
         ctx.shadowBlur =
-            isHovered ? 12 : 8;
+            (isHovered || isSelected) ? 12 : 8;
 
 
         ctx.shadowOffsetX =
@@ -232,13 +343,13 @@ export function drawCities(
 
 
         if (
-            cityImage.complete &&
-            cityImage.naturalWidth > 0
+            image.complete &&
+            image.naturalWidth > 0
         ) {
 
             drawImageContain(
                 ctx,
-                cityImage,
+                image,
                 world.x,
                 world.y,
                 size
@@ -272,8 +383,21 @@ export function drawCities(
         // ----------------------------------------------------
         // CITY NAME
         // ----------------------------------------------------
+        //
+        // Major cities: always show name.
+        // Villages: only show name when hovered or selected.
+        //
+        // ----------------------------------------------------
+
+        const showName =
+
+            city.major ||
+            isHovered ||
+            isSelected;
+
 
         if (
+            showName &&
             city.name &&
             city.name !== "Unnamed City"
         ) {
