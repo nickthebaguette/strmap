@@ -100,7 +100,7 @@
     },
     {
       "id": 18,
-      "name": "Oslo",
+      "name": "Christiania",
       "country": "denmark",
       "col": 42,
       "row": 12
@@ -170,14 +170,14 @@
     },
     {
       "id": 31,
-      "name": "Zagreb",
+      "name": "Agram",
       "country": "austria",
       "col": 50,
       "row": 52
     },
     {
       "id": 32,
-      "name": "Budapest",
+      "name": "Pest",
       "country": "austria",
       "col": 55,
       "row": 46
@@ -198,21 +198,21 @@
     },
     {
       "id": 35,
-      "name": "Lviv",
+      "name": "Lemberg",
       "country": "austria",
       "col": 60,
       "row": 41
     },
     {
       "id": 36,
-      "name": "Brasov",
+      "name": "Kronstadt",
       "country": "austria",
       "col": 60,
       "row": 49
     },
     {
       "id": 37,
-      "name": "Novi Sad",
+      "name": "Neusatz",
       "country": "austria",
       "col": 56,
       "row": 53
@@ -240,7 +240,7 @@
     },
     {
       "id": 41,
-      "name": "Split",
+      "name": "Spalato",
       "country": "austria",
       "col": 50,
       "row": 57
@@ -268,7 +268,7 @@
     },
     {
       "id": 46,
-      "name": "Chișinău",
+      "name": "Kishinev",
       "country": "ottoman",
       "col": 68,
       "row": 50
@@ -282,7 +282,7 @@
     },
     {
       "id": 52,
-      "name": "Tiranë",
+      "name": "Tirana",
       "country": "ottoman",
       "col": 55,
       "row": 63
@@ -310,7 +310,7 @@
     },
     {
       "id": 56,
-      "name": "Trabzon",
+      "name": "Trebizond",
       "country": "ottoman",
       "col": 87,
       "row": 63
@@ -331,7 +331,7 @@
     },
     {
       "id": 59,
-      "name": "Ankara",
+      "name": "Angora",
       "country": "ottoman",
       "col": 74,
       "row": 66
@@ -366,7 +366,7 @@
     },
     {
       "id": 64,
-      "name": "Helsinki",
+      "name": "Helsingfors",
       "country": "sweden",
       "col": 62,
       "row": 11
@@ -380,7 +380,7 @@
     },
     {
       "id": 67,
-      "name": "Lubeck",
+      "name": "Lübeck",
       "country": "denmark",
       "col": 43,
       "row": 30
@@ -492,7 +492,7 @@
     },
     {
       "id": 87,
-      "name": "Genva",
+      "name": "Geneva",
       "country": "switzerland",
       "col": 36,
       "row": 50
@@ -506,7 +506,7 @@
     },
     {
       "id": 89,
-      "name": "Hannover",
+      "name": "Hanover",
       "country": "france",
       "col": 40,
       "row": 33
@@ -555,7 +555,7 @@
     },
     {
       "id": 96,
-      "name": "Katowice",
+      "name": "Kattowitz",
       "country": "prussia",
       "col": 51,
       "row": 39
@@ -576,21 +576,21 @@
     },
     {
       "id": 102,
-      "name": "Gdańsk",
+      "name": "Danzig",
       "country": "prussia",
       "col": 53,
       "row": 29
     },
     {
       "id": 103,
-      "name": "Koszalin",
+      "name": "Köslin",
       "country": "prussia",
       "col": 50,
       "row": 29
     },
     {
       "id": 104,
-      "name": "Bradenburg",
+      "name": "Brandenburg",
       "country": "prussia",
       "col": 45,
       "row": 34
@@ -604,14 +604,14 @@
     },
     {
       "id": 107,
-      "name": "Poznań",
+      "name": "Posen",
       "country": "prussia",
       "col": 52,
       "row": 34
     },
     {
       "id": 108,
-      "name": "Wrocław",
+      "name": "Breslau",
       "country": "prussia",
       "col": 50,
       "row": 36
@@ -625,7 +625,7 @@
     },
     {
       "id": 110,
-      "name": "Konstanz",
+      "name": "Constance",
       "country": "badenwurttemberg",
       "col": 40,
       "row": 47
@@ -688,7 +688,7 @@
     },
     {
       "id": 120,
-      "name": "Norwhich",
+      "name": "Norwich",
       "country": "britain",
       "col": 28,
       "row": 34
@@ -744,7 +744,7 @@
     },
     {
       "id": 129,
-      "name": "Zaragoza",
+      "name": "Saragossa",
       "country": "spain",
       "col": 26,
       "row": 61
@@ -758,7 +758,7 @@
     },
     {
       "id": 131,
-      "name": "A Coruña",
+      "name": "Corunna",
       "country": "spain",
       "col": 14,
       "row": 57
@@ -821,7 +821,7 @@
     },
     {
       "id": 140,
-      "name": "Merdia",
+      "name": "Mérida",
       "country": "spain",
       "col": 18,
       "row": 68
@@ -849,14 +849,14 @@
     },
     {
       "id": 144,
-      "name": "Krasnodar",
+      "name": "Yekaterinodar",
       "country": "russia",
       "col": 85,
       "row": 55
     },
     {
       "id": 145,
-      "name": "Kaunas",
+      "name": "Kovno",
       "country": "russia",
       "col": 61,
       "row": 25
@@ -898,7 +898,7 @@
     },
     {
       "id": 152,
-      "name": "Kharkiv",
+      "name": "Kharkov",
       "country": "russia",
       "col": 77,
       "row": 41
@@ -912,7 +912,7 @@
     },
     {
       "id": 154,
-      "name": "Tallin",
+      "name": "Reval",
       "country": "russia",
       "col": 64,
       "row": 13
