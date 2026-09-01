@@ -20,7 +20,9 @@ import {
 } from "./shared/camera.js";
 
 import {
-    cities
+    cities,
+    loadCities,
+    isMajorCity
 } from "./shared/cities.js";
 
 import {
@@ -28,10 +30,6 @@ import {
     loadArmies,
     getSoldierIconCount
 } from "./shared/armies.js";
-
-import {
-    loadCities
-} from "./shared/cities.js";
 
 import {
     rebuildMapCanvas,
@@ -75,6 +73,21 @@ const territoryOwner =
 const territoryFlag =
     document.getElementById(
         "territory-flag"
+    );
+
+const territoryCity =
+    document.getElementById(
+        "territory-city"
+    );
+
+const cityNameDisplay =
+    document.getElementById(
+        "city-name-display"
+    );
+
+const cityTypeDisplay =
+    document.getElementById(
+        "city-type-display"
     );
 
 const territoryManpower =
@@ -812,6 +825,43 @@ function updateTerritoryPanel(
     );
 
 
+    // --------------------------------------------------------
+    // City
+    // --------------------------------------------------------
+
+    const city =
+        getCityAtTile(tile);
+
+
+    if (city) {
+
+        territoryCity.style.display =
+            "block";
+
+
+        cityNameDisplay.textContent =
+            city.name;
+
+
+        cityTypeDisplay.textContent =
+            isMajorCity(city)
+                ? "Major City"
+                : "Village";
+
+    }
+
+    else {
+
+        territoryCity.style.display =
+            "none";
+
+    }
+
+
+    // --------------------------------------------------------
+    // Army
+    // --------------------------------------------------------
+
     const army =
         getArmyAtTile(tile);
 
@@ -870,6 +920,10 @@ function clearTerritoryPanel() {
 
 
     territoryFlag.style.display =
+        "none";
+
+
+    territoryCity.style.display =
         "none";
 
 
@@ -1536,10 +1590,6 @@ let pinchStartDistance = 0;
 let pinchStartZoom = 0;
 
 
-// ============================================================
-// GET TOUCH DISTANCE
-// ============================================================
-
 function getTouchDistance(
     touches
 ) {
@@ -1570,47 +1620,6 @@ function getTouchDistance(
 
 }
 
-
-// ============================================================
-// GET TOUCH CENTER
-// ============================================================
-
-function getTouchCenter(
-    touches
-) {
-
-    let centerX = 0;
-
-    let centerY = 0;
-
-
-    for (
-        const touch of touches
-    ) {
-
-        centerX += touch.clientX;
-
-        centerY += touch.clientY;
-
-    }
-
-
-    return {
-
-        x:
-            centerX / touches.length,
-
-        y:
-            centerY / touches.length
-
-    };
-
-}
-
-
-// ============================================================
-// TOUCH START
-// ============================================================
 
 canvas.addEventListener(
     "touchstart",
@@ -1663,10 +1672,6 @@ canvas.addEventListener(
     }
 );
 
-
-// ============================================================
-// TOUCH MOVE
-// ============================================================
 
 canvas.addEventListener(
     "touchmove",
@@ -1782,10 +1787,6 @@ canvas.addEventListener(
 );
 
 
-// ============================================================
-// TOUCH END
-// ============================================================
-
 canvas.addEventListener(
     "touchend",
     event => {
@@ -1825,10 +1826,6 @@ canvas.addEventListener(
     }
 );
 
-
-// ============================================================
-// TOUCH CANCEL
-// ============================================================
 
 canvas.addEventListener(
     "touchcancel",
