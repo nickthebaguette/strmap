@@ -1901,7 +1901,8 @@ export function draw(
 
     drawCities(
         ctx,
-        hoveredTileRef
+        hoveredTileRef,
+        selectedTileRef
     );
 
 
